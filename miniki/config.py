@@ -1,0 +1,3 @@
+import hbp_app_python_auth.settings as auth_settings
+auth_settings.SOCIAL_AUTH_HBP_KEY = 'f0f138fb-6fa9-4e85-a20c-fddcec97a4cf'
+auth_settings.SOCIAL_AUTH_HBP_SECRET = 'RIsmRMIVFyyzCKHcuzEJLyq21yoHx4anzJa9jmc0Thse4vIhYgGP5USChpglLW0zWBbPdLbXd3KfPEwN1hqPog'
