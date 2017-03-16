@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.conf.urls import include
 
-from miniki.views import show, edit, config
+from miniki.views import show, edit, config, wellcome
 
 from django.contrib import admin
 
@@ -35,8 +35,10 @@ urlpatterns = [
     url('', include('social.apps.django_app.urls', namespace='social')),
     url('', include('hbp_app_python_auth.urls', namespace='hbp-social')),
 
-    url(r'^$', show, name='wiki_page_show'),
-    url(r'^edit/$', edit, name='wiki_page_edit'),
+    url(r'^$', show, name='ticket_page_show'),
+    url(r'^edit/$', edit, name='ticket_page_edit'),
+    url(r'^wellcome/$', wellcome, name='wellcome_page'),
+    
 
     #url(r'^config.json$', 'miniki.views.config', name='config'),
     url(r'^config.json$', config, name='config'),

@@ -2,8 +2,8 @@ from django.db import models
 from django.core.urlresolvers import reverse
 
 
-class WikiPage(models.Model):
-    """A wiki page"""
+class TicketPage(models.Model):
+    """A Ticket page"""
 
     title = models.CharField(max_length=1024)
     text = models.TextField(help_text="formatted using ReST")
@@ -25,4 +25,15 @@ class WikiPage(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return reverse('wiki_page_show', args=[str(self.ctx)])
+        return reverse('ticket_page_show', args=[str(self.ctx)])
+
+class WellcomePage(models.Model):
+    title = models.CharField(max_length=1024) #"blabla Title ?"
+    ctx = models.UUIDField(unique=True)
+
+    def as_json(self):
+        return {
+            'title': self.title,
+            'ctx': str(self.ctx),
+        }
+    

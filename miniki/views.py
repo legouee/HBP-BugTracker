@@ -11,8 +11,8 @@ import bleach
 
 from markdown import markdown
 
-from .forms import WikiPageForm
-from .models import WikiPage
+from .forms import TicketPageForm, WellcomePageForm
+from .models import TicketPage, WellcomePage
 
 
 from django.conf import settings
@@ -23,18 +23,30 @@ import hbp_app_python_auth.settings as auth_settings
 
 import requests
 
+@login_required(login_url='/login/hbp')
+def wellcome(request):
+    context = UUID(request.GET.get('ctx'))
+    try:
+        wellcome_page = WellcomePage.objects.get(ctx=context)
+        #content = markdown(wellcome_page.text)
+        content = 'try ok'
+    except WellcomePage.DoesNotExist:
+        wellcome_page = None
+        content = 'try not ok'
+
+    return render(request,'wellcome.html', {'wellcome_page': wellcome_page, 'content': content})
 
 @login_required(login_url='/login/hbp')
 def show(request):
     '''Render the wiki page using the provided context query parameter'''
     context = UUID(request.GET.get('ctx'))
     try:
-        wiki_page = WikiPage.objects.get(ctx=context)
-        content = markdown(wiki_page.text)
-    except WikiPage.DoesNotExist:
-        wiki_page = None
+        ticket_page = TicketPage.objects.get(ctx=context)
+        content = markdown(ticket_page.text)
+    except TicketPage.DoesNotExist:
+        ticket_page = None
         content = ''
-    return render(request,'show.html', {'wiki_page': wiki_page, 'content': content})
+    return render(request,'show.html', {'ticket_page': ticket_page, 'content': content})
     #render_to_response('show.html', {'wiki_page': wiki_page, 'content': content})
 
 
@@ -55,19 +67,19 @@ ntext query parameter'''
     context = UUID(request.GET.get('ctx'))
     # get or build the wiki page
     try:
-        wiki_page = WikiPage.objects.get(ctx=context)
-    except WikiPage.DoesNotExist:
-        wiki_page = WikiPage(ctx=context)
+        ticket_page = TicketPage.objects.get(ctx=context)
+    except TicketPage.DoesNotExist:
+        ticket_page = TicketPage(ctx=context)
 
     if request.method == 'POST':
-        form = WikiPageForm(request.POST, instance=wiki_page)
+        form = TicketPageForm(request.POST, instance=ticket_page)
         if form.is_valid():
-            wiki_page = form.save(commit=False)
+            ticket_page = form.save(commit=False)
             # Clean up user input
-            wiki_page.text = bleach.clean(wiki_page.text)
-            wiki_page.save()
+            ticket_page.text = bleach.clean(ticket_page.text)
+            ticket_page.save()
     else:
-        form = WikiPageForm(instance=wiki_page)
+        form = TicketPageForm(instance=ticket_page)
 
     return render(request, 'edit.html', {'form': form, 'ctx': str(context)})
 

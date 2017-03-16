@@ -1,7 +1,7 @@
 (function() {
 // Define the miniki application, currently doing nothing.
 angular.module('miniki', ['hbpCommon'])
-.controller('wikiPageForm', function($scope) {
+.controller('TicketPageForm', function($scope) {
   
   // The form controller that manage the displays of preview.
   $scope.isPreviewOpen = false;
