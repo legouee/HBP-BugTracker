@@ -2,12 +2,27 @@
 {% extends "layout.html" %}
 
 {% block content %}
+
+
+<script ="text/javascript">
+    
+    //console.log(window.location.href );
+    //var currentLocation = window.location.href 
+    //alert("URL is " + currentLocation );
+</script>
+
+
+
+
+
 <main class="page">
     <div class="navbar navbar-form">
         <form action="home">
             <input type="submit" value="Home" />
         </form>
+        <br/>
     </div>
+
 
 
     {% if ticket_page %}
@@ -30,4 +45,6 @@
 
 
 </main>
+
+
 {% endblock %}

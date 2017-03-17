@@ -4,6 +4,16 @@
 {% load jsonify %}
 
 {% block content %}
+
+<div class="navbar navbar-form">
+        <form action="home">
+            <input type="submit" value="Home" />
+        </form>
+        <br/>
+    </div>
+
+
+
 <form action="" class="ticket-form" method="POST"
     ng-controller="ticketPageForm" ng-init='ticketPage = {{form.instance.as_json|jsonify}}'>
     <div class="ticket-form-fields"

@@ -36,4 +36,8 @@ class HomePage(models.Model):
             'title': self.title,
             'ctx': str(self.ctx),
         }
+
+    @models.permalink
+    def get_absolute_url(self):
+        return reverse('home_page', args=[str(self.ctx)])
     

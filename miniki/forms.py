@@ -15,7 +15,7 @@ class TicketPageForm(forms.ModelForm):
             }),
             'text': forms.Textarea(attrs={
                 'class': 'form-control form-control-editor',
-                'ng-model': 'ticketPage.text',
+                'ng-model': 'TicketPage.text',
             }),
         }
 
@@ -28,7 +28,7 @@ class HomePageForm(forms.ModelForm):
             'ctx': forms.HiddenInput(),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
-                'ng-model': 'HomePage.title',
+                'ng-model': 'TomePage.title',
             })
         }
 
