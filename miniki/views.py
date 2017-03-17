@@ -25,34 +25,34 @@ import requests
 
 @login_required(login_url='/login/hbp')
 def home(request):
-    context = UUID(request.GET.get('ctx'))
+    #context = UUID(request.GET.get('ctx'))
     try:
-        home_page = HomePage.objects.get(ctx=context)
-        #content = markdown(wellcome_page.text)
-        content = 'try ok'
+        home_page = HomePage.objects.get()  #ctx=context)
+        #content = markdown(home_page.text)
+        content = 'Home page'
     except HomePage.DoesNotExist:
         home_page = None
-        content = 'try not ok'
+        content = ''
 
-    return render(request,'wellcome.html', {'home_page': home_page, 'content': content})
+    return render(request,'home.html', {'home_page': home_page, 'content': content})
 
 @login_required(login_url='/login/hbp')
-def show(request):
+def show_ticket(request):
     '''Render the wiki page using the provided context query parameter'''
-    context = UUID(request.GET.get('ctx'))
+    #context = UUID(request.GET.get('ctx'))
     try:
-        ticket_page = TicketPage.objects.get(ctx=context)
+        ticket_page = TicketPage.objects.get() #ctx=context)
         content = markdown(ticket_page.text)
     except TicketPage.DoesNotExist:
         ticket_page = None
         content = ''
-    return render(request,'show.html', {'ticket_page': ticket_page, 'content': content})
+    return render(request,'show_ticket.html', {'ticket_page': ticket_page, 'content': content})
     #render_to_response('show.html', {'wiki_page': wiki_page, 'content': content})
 
 
 
 @login_required(login_url='/login/hbp')
-def edit(request):
+def edit_ticket(request):
     '''Render the wiki edit form using the provided cofrom django.conf import settings
 from django.http import HttpResponseForbidden
 
@@ -60,16 +60,15 @@ from hbp_app_python_auth.auth import get_access_token, get_token_type, get_auth_
 import hbp_app_python_auth.settings as auth_settings
 ntext query parameter'''
 
-
     if not _is_collaborator(request):
         return HttpResponseForbidden()
 
-    context = UUID(request.GET.get('ctx'))
+    #context = UUID(request.GET.get('ctx'))
     # get or build the wiki page
     try:
-        ticket_page = TicketPage.objects.get(ctx=context)
+        ticket_page = TicketPage.objects.get() #ctx=context)
     except TicketPage.DoesNotExist:
-        ticket_page = TicketPage(ctx=context)
+        ticket_page = TicketPage() #ctx=context)
 
     if request.method == 'POST':
         form = TicketPageForm(request.POST, instance=ticket_page)
@@ -81,15 +80,18 @@ ntext query parameter'''
     else:
         form = TicketPageForm(instance=ticket_page)
 
-    return render(request, 'edit.html', {'form': form, 'ctx': str(context)})
+    return render(request, 'edit.html', {'form': form,  })#'ctx': str(context)})
 
 def _reverse_url(view_name, context_uuid):
     """generate an URL for a view including the ctx query param"""
-    return '%s?ctx=%s' % (reverse(view_name), context_uuid)
+    print ("Passing by view edit_ticket _reverse_url ?")
+    
+    return '%s?ctx=%s' % (reverse(view_name)  , context_uuid)
 
 
 def _is_collaborator(request):
     '''check access depending on context'''
+    print ("Passing by view edit_ticket _is_collaborator ?")
 
     svc_url = settings.HBP_COLLAB_SERVICE_URL
 

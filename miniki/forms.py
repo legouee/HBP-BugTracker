@@ -6,9 +6,9 @@ class TicketPageForm(forms.ModelForm):
 
     class Meta:
         model = TicketPage
-        fields = ['title', 'text', 'ctx']
+        fields = ['title', 'text'] #, 'ctx']
         widgets = {
-            'ctx': forms.HiddenInput(),
+            # 'ctx': forms.HiddenInput(),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
                 'ng-model': 'TicketPage.title',
@@ -19,16 +19,16 @@ class TicketPageForm(forms.ModelForm):
             }),
         }
 
-
+        
 class HomePageForm(forms.ModelForm):
     class Meta:
         model = HomePage
-        fields = ['title', 'ctx']
+        fields = ['title'] #, 'ctx']
         widgets = {
-            'ctx': forms.HiddenInput(),
+            # 'ctx': forms.HiddenInput(),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
-                'ng-model': 'TomePage.title',
+                'ng-model': 'HomePage.title',
             })
         }
 

@@ -16,33 +16,21 @@ Including another URLconf
 from django.conf.urls import url
 from django.conf.urls import include
 
-from miniki.views import show, edit, config, home
+from miniki.views import show_ticket, edit_ticket, config, home
 
 from django.contrib import admin
 
-# urlpatterns = [
-#     url(r'^admin/', admin.site.urls),
-#     url(r'^$', 'miniki.views.show', name='wiki_page_show'),
-#     url(r'^edit/$', 'miniki.views.edit', name='wiki_page_edit'),
-# ]
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    # url(r'^$', 'miniki.views.show', name='wiki_page_show'),
-    # url(r'^edit/$', 'miniki.views.edit', name='wiki_page_edit'),
-
 
     url('', include('social.apps.django_app.urls', namespace='social')),
     url('', include('hbp_app_python_auth.urls', namespace='hbp-social')),
 
-    url(r'^$', show, name='ticket_page_show'),
-    url(r'^edit/$', edit, name='ticket_page_edit'),
-    url(r'^home/$', home, name='home_page'),
+    url(r'^show_ticket/$', show_ticket, name='ticket_page_show'),
+    url(r'^edit_ticket/$', edit_ticket, name='ticket_page_edit'),
+    url(r'^$', home, name='home_page'),
     
-
-    #url(r'^config.json$', 'miniki.views.config', name='config'),
     url(r'^config.json$', config, name='config'),
-    
-
     
 ]

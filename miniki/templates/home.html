@@ -20,4 +20,19 @@
     </section>
     {% endif %}
 </main>
+
+
+<!--just testing stuffs-->
+<br/><br/><a href="{% url 'home_page' %}">Juste a link to test</a>
+<br/><br/><br/>
+<p id="current_url"></p>
+<script>
+document.getElementById("current_url").innerHTML = window.location.href;
+</script>
+
+<a href="{% url 'ticket_page_show' %}">link to show</a>
+<br/>
+<a href="{% url 'ticket_page_edit' %}">link to edit page</a>
+
+
 {% endblock %}

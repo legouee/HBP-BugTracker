@@ -8,7 +8,7 @@ class TicketPage(models.Model):
     title = models.CharField(max_length=1024)
     text = models.TextField(help_text="formatted using ReST")
     # This field stores the UUID added as an argument by the Collaboratory.
-    ctx = models.UUIDField(unique=True)
+    # ctx = models.UUIDField(unique=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
@@ -20,24 +20,27 @@ class TicketPage(models.Model):
         return {
             'title': self.title,
             'text': self.text,
-            'ctx': str(self.ctx),
+            # 'ctx': str(self.ctx),
         }
 
     @models.permalink
     def get_absolute_url(self):
-        return reverse('ticket_page_show', args=[str(self.ctx)])
+        return reverse('ticket_page_show') #, args=[str(self.ctx)])
 
 class HomePage(models.Model):
-    title = models.CharField(max_length=1024) #"blabla Title ?"
-    ctx = models.UUIDField(unique=True)
+    title = models.CharField(max_length=1024) 
+    #ctx = models.UUIDField(unique=True)
+
+    def __unicode__(self):
+        return self.title
 
     def as_json(self):
         return {
             'title': self.title,
-            'ctx': str(self.ctx),
+     #       'ctx': str(self.ctx),
         }
 
     @models.permalink
     def get_absolute_url(self):
-        return reverse('home_page', args=[str(self.ctx)])
+        return reverse('home_page') #, args=[str(self.ctx)])
     
