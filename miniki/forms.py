@@ -1,5 +1,5 @@
 from django import forms
-from .models import TicketPage, WellcomePage
+from .models import TicketPage, HomePage
 
 class TicketPageForm(forms.ModelForm):
     """Ticket Page edition form"""
@@ -20,15 +20,15 @@ class TicketPageForm(forms.ModelForm):
         }
 
 
-class WellcomePageForm(forms.ModelForm):
+class HomePageForm(forms.ModelForm):
     class Meta:
-        model = WellcomePage
+        model = HomePage
         fields = ['title', 'ctx']
         widgets = {
             'ctx': forms.HiddenInput(),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
-                'ng-model': 'WellcomePage.title',
+                'ng-model': 'HomePage.title',
             })
         }
 

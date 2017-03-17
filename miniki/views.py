@@ -11,8 +11,8 @@ import bleach
 
 from markdown import markdown
 
-from .forms import TicketPageForm, WellcomePageForm
-from .models import TicketPage, WellcomePage
+from .forms import TicketPageForm, HomePageForm
+from .models import TicketPage, HomePage
 
 
 from django.conf import settings
@@ -24,17 +24,17 @@ import hbp_app_python_auth.settings as auth_settings
 import requests
 
 @login_required(login_url='/login/hbp')
-def wellcome(request):
+def home(request):
     context = UUID(request.GET.get('ctx'))
     try:
-        wellcome_page = WellcomePage.objects.get(ctx=context)
+        home_page = HomePage.objects.get(ctx=context)
         #content = markdown(wellcome_page.text)
         content = 'try ok'
-    except WellcomePage.DoesNotExist:
-        wellcome_page = None
+    except HomePage.DoesNotExist:
+        home_page = None
         content = 'try not ok'
 
-    return render(request,'wellcome.html', {'wellcome_page': wellcome_page, 'content': content})
+    return render(request,'wellcome.html', {'home_page': home_page, 'content': content})
 
 @login_required(login_url='/login/hbp')
 def show(request):

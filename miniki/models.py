@@ -27,7 +27,7 @@ class TicketPage(models.Model):
     def get_absolute_url(self):
         return reverse('ticket_page_show', args=[str(self.ctx)])
 
-class WellcomePage(models.Model):
+class HomePage(models.Model):
     title = models.CharField(max_length=1024) #"blabla Title ?"
     ctx = models.UUIDField(unique=True)
 
