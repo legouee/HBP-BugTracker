@@ -1,14 +1,12 @@
 (function() {
 // Define the miniki application, currently doing nothing.
 angular.module('miniki', ['hbpCommon'])
-.controller('TicketPageForm', function($scope) {
+//.controller('TicketCreationPageForm', function($scope) {
   
   // The form controller that manage the displays of preview.
-  $scope.isPreviewOpen = false;
-  $scope.togglePreview = function () {
-    $scope.isPreviewOpen = !$scope.isPreviewOpen;
-  };
-});
+
+  
+//});
 
 // Bootstrap function
 angular.bootstrap().invoke(function($http, $log) {

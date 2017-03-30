@@ -11,8 +11,8 @@ import bleach
 
 from markdown import markdown
 
-from .forms import TicketPageForm, HomePageForm
-from .models import TicketPage, HomePage
+from .forms import TicketPageForm, HomePageForm, TicketCreationPageForm
+from .models import TicketPage, HomePage, TicketPageCreate
 
 
 from django.conf import settings
@@ -22,6 +22,16 @@ from hbp_app_python_auth.auth import get_access_token, get_token_type, get_auth_
 import hbp_app_python_auth.settings as auth_settings
 
 import requests
+
+def form_valid(self, form):
+
+    self.object = form.save()
+    print('blav')
+    # Envoi d'un message à l'utilisateur
+
+    messages.success(self.request, "Votre profil a été mis à jour avec succès.")
+
+    return HttpResponseRedirect(self.get_success_url())
 
 @login_required(login_url='/login/hbp')
 def home(request):
@@ -88,6 +98,40 @@ def _reverse_url(view_name, context_uuid):
     
     return '%s?ctx=%s' % (reverse(view_name)  , context_uuid)
 
+@login_required(login_url='/login/hbp')
+def create_ticket(request):
+    '''Render the wiki create form'''
+
+    if not _is_collaborator(request):
+        return HttpResponseForbidden()
+
+    #context = UUID(request.GET.get('ctx'))
+    # get or build the wiki page
+    try:
+        ticket_creation_page = TicketPageCreate.objects.get() #ctx=context)
+        content = markdown(ticket_creation_page.text)
+    except TicketPageCreate.DoesNotExist:
+        ticket_creation_page = TicketPageCreate() #ctx=context)
+       
+
+    if request.method == 'post':
+        form = TicketCreationPageForm(request.POST, instance=ticket_creation_page)
+        if form.is_valid():
+            ticket_creation_page = form.save(commit=False)
+            # Clean up user input
+            ticket_creation_page.created_by = 1
+            #ticket_creation_page.text = bleach.clean(ticket_creation_page.text)
+            ticket_creation_page.save()
+    else:
+        form = TicketCreationPageForm(instance=ticket_creation_page)
+
+    return render(request, 'create_ticket.html', {'form': form  })#'ctx': str(context)})
+
+def _reverse_url(view_name, context_uuid):
+    """generate an URL for a view including the ctx query param"""
+    print ("Passing by view create_ticket _reverse_url ?")
+    
+    return '%s?ctx=%s' % (reverse(view_name)  , context_uuid)
 
 def _is_collaborator(request):
     '''check access depending on context'''
