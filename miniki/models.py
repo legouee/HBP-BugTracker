@@ -54,7 +54,7 @@ class TicketPageCreate(models.Model):
     def get_absolute_url(self):
         return reverse('ticket_page_create') #, args=[str(self.ctx)])
 
-class HomePage(models.Model):
+class Home(models.Model):
     title = models.CharField(max_length=1024) 
     #ctx = models.UUIDField(unique=True)
 
@@ -69,5 +69,5 @@ class HomePage(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return reverse('home_page') #, args=[str(self.ctx)])
+        return reverse('home') #, args=[str(self.ctx)])
     

@@ -11,8 +11,8 @@ import bleach
 
 from markdown import markdown
 
-from .forms import TicketPageForm, HomePageForm, TicketCreationPageForm
-from .models import TicketPage, HomePage, TicketPageCreate
+from .forms import TicketPageForm, HomeForm, TicketCreationPageForm
+from .models import TicketPage, Home, TicketPageCreate
 
 
 from django.conf import settings
@@ -27,9 +27,9 @@ def form_valid(self, form):
 
     self.object = form.save()
     print('blav')
-    # Envoi d'un message à l'utilisateur
+    # Envoi d'un message a l'utilisateur
 
-    messages.success(self.request, "Votre profil a été mis à jour avec succès.")
+    messages.success(self.request, "Votre profil a ete mis a jour avec succes.")
 
     return HttpResponseRedirect(self.get_success_url())
 
@@ -37,14 +37,14 @@ def form_valid(self, form):
 def home(request):
     #context = UUID(request.GET.get('ctx'))
     try:
-        home_page = HomePage.objects.get()  #ctx=context)
+        home = Home.objects.get()  #ctx=context)
         #content = markdown(home_page.text)
-        content = 'Home page'
-    except HomePage.DoesNotExist:
-        home_page = None
+        content = 'Home'
+    except Home.DoesNotExist:
+        home = None
         content = ''
 
-    return render(request,'home.html', {'home_page': home_page, 'content': content})
+    return render(request,'home.html', {'home_page': home, 'content': content})
 
 @login_required(login_url='/login/hbp')
 def show_ticket(request):

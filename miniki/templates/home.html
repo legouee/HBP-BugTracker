@@ -23,7 +23,7 @@
 
 
 <!--just testing stuffs-->
-<br/><br/><a href="{% url 'home_page' %}">Juste a link to test</a>
+<br/><br/><a href="{% url 'home' %}">Juste a link to test</a>
 <br/><br/><br/>
 <p id="current_url"></p>
 <script>
@@ -34,6 +34,6 @@ document.getElementById("current_url").innerHTML = window.location.href;
 <br/>
 <a href="{% url 'ticket_page_edit' %}">link to edit page</a>
 <br/>
-<a href="{% url 'create_ticket' %}">link to create page</a>
+<a href="{% url 'ticket_page_create' %}">link to create page</a>
 
 {% endblock %}
