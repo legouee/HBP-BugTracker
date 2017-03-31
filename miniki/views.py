@@ -12,7 +12,7 @@ import bleach
 from markdown import markdown
 
 from .forms import TicketPageForm, HomeForm, TicketCreationPageForm
-from .models import TicketPage, Home, TicketPageCreate
+from .models import TicketPage, Home, TicketPageCreate, TicketList
 
 
 from django.conf import settings
@@ -22,6 +22,9 @@ from hbp_app_python_auth.auth import get_access_token, get_token_type, get_auth_
 import hbp_app_python_auth.settings as auth_settings
 
 import requests
+
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 
 def form_valid(self, form):
 
@@ -179,3 +182,13 @@ def config(request):
     }
 
     return JsonResponse(config)
+
+class TicketListView(ListView):   #DetailView):   #ListView):
+    
+    model = TicketPage
+    template_name = "ticket_list.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super(TicketListView, self).get_context_data(**kwargs)
+        #context['now'] = timezone.now()
+        return context

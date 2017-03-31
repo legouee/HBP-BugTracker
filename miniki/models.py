@@ -71,3 +71,17 @@ class Home(models.Model):
     def get_absolute_url(self):
         return reverse('home') #, args=[str(self.ctx)])
     
+class TicketList (models.Model) :
+    title = models.CharField(max_length=1024)
+    ticket_list = models.CharField(max_length=1024)
+
+    def __unicode__(self):
+        return self.title
+
+    def as_json(self):
+        return {
+            'title': self.title,
+            #'ctx': str(self.ctx),
+            'ticket_list': [1,2,3,4,5] #self.ticket_list
+
+        }

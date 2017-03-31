@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.conf.urls import include
 
-from miniki.views import show_ticket, edit_ticket, config, home, create_ticket
+from miniki.views import show_ticket, edit_ticket, config, home, create_ticket, TicketListView
 
 from django.contrib import admin
 
@@ -32,6 +32,9 @@ urlpatterns = [
     url(r'^create_ticket$', create_ticket, name='ticket_page_create'), #create_ticket/
     url(r'^$', home, name='home'),
     
+
+    url(r'^ticket_list/$',TicketListView.as_view(), name='ticket-list'),
+
     url(r'^config.json$', config, name='config'),
     
 ]

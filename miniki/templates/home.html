@@ -3,9 +3,9 @@
 
 {% block content %}
 <main class="page">
-    {% if home_page %}
+    {% if home %}
     <header class="page-header">
-        <h1>{{home_page.title}}</h1>
+        <h1>{{home.title}}</h1>
     </header>
 
     <section role="content">
@@ -35,5 +35,6 @@ document.getElementById("current_url").innerHTML = window.location.href;
 <a href="{% url 'ticket_page_edit' %}">link to edit page</a>
 <br/>
 <a href="{% url 'ticket_page_create' %}">link to create page</a>
-
+<br/>
+<a href="{% url 'ticket-list' %}">link to ticket list page</a>
 {% endblock %}
