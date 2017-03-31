@@ -82,6 +82,6 @@ class TicketList (models.Model) :
         return {
             'title': self.title,
             #'ctx': str(self.ctx),
-            'ticket_list': [1,2,3,4,5] #self.ticket_list
+            #'ticket_list': [1,2,3,4,5] #self.ticket_list
 
         }
