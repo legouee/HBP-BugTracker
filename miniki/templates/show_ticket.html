@@ -2,7 +2,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-
+ 
 <script ="text/javascript">
     
 </script>
@@ -37,6 +37,12 @@
         </section>
         {% endif %}
     </form>
+
+    <p id="current_url"></p>
+    <script>
+    document.getElementById("current_url").innerHTML = window.location.href;
+    </script>
+
 </main>
 
 

@@ -16,7 +16,13 @@ Including another URLconf
 from django.conf.urls import url
 from django.conf.urls import include
 
-from miniki.views import show_ticket, edit_ticket, config, home, create_ticket, TicketListView
+from miniki.views import show_ticket
+from miniki.views import config
+from miniki.views import home
+from miniki.views import edit_ticket
+from miniki.views import create_ticket
+from miniki.views import TicketListView
+
 
 from django.contrib import admin
 

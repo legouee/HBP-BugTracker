@@ -11,8 +11,12 @@ import bleach
 
 from markdown import markdown
 
-from .forms import TicketPageForm, HomeForm, TicketCreationPageForm
-from .models import TicketPage, Home, TicketPageCreate, TicketList
+from .forms import TicketPageForm
+from .forms import HomeForm
+
+from .models import TicketPage 
+from .models import Home
+from .models import TicketList
 
 
 from django.conf import settings
@@ -26,24 +30,31 @@ import requests
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-def form_valid(self, form):
+# def form_valid(self, form):
 
-    self.object = form.save()
-    print('blav')
-    # Envoi d'un message a l'utilisateur
+#     self.object = form.save()
+#     print('blav')
+#     # Envoi d'un message a l'utilisateur
 
-    messages.success(self.request, "Votre profil a ete mis a jour avec succes.")
+#     messages.success(self.request, "Votre profil a ete mis a jour avec succes.")
 
-    return HttpResponseRedirect(self.get_success_url())
+#     return HttpResponseRedirect(self.get_success_url())
 
 @login_required(login_url='/login/hbp')
 def home(request):
-    #context = UUID(request.GET.get('ctx'))
+    # context = UUID(request.GET.get('ctx'))
+
+    import uuid
+    context = uuid.uuid4()
+    print (context)
+
     try:
-        home = Home.objects.get()  #ctx=context)
-        #content = markdown(home_page.text)
-        content = 'Home'
+        home = Home.objects.get(ctx=context)
+        content = markdown(home_page.text)
+        print ("Home view try is ok")
+        #content = 'Home'
     except Home.DoesNotExist:
+        print ("Home view try not ok")
         home = None
         content = ''
 
@@ -52,15 +63,24 @@ def home(request):
 @login_required(login_url='/login/hbp')
 def show_ticket(request):
     '''Render the wiki page using the provided context query parameter'''
-    #context = UUID(request.GET.get('ctx'))
+    print ("###############################################")
+    print (request.GET.get('ctx'))
+    print ("###############################################")
+    
+    # context = UUID(request.GET.get('ctx'))
+
+    import uuid
+    context = uuid.uuid4()
+    print (context)
+
     try:
-        ticket_page = TicketPage.objects.get() #ctx=context)
+        ticket_page = TicketPage.objects.get(ctx=context)
         content = markdown(ticket_page.text)
     except TicketPage.DoesNotExist:
         ticket_page = None
         content = ''
     return render(request,'show_ticket.html', {'ticket_page': ticket_page, 'content': content})
-    #render_to_response('show.html', {'wiki_page': wiki_page, 'content': content})
+
 
 
 
@@ -76,12 +96,12 @@ ntext query parameter'''
     if not _is_collaborator(request):
         return HttpResponseForbidden()
 
-    #context = UUID(request.GET.get('ctx'))
+    context = UUID(request.GET.get('ctx'))
     # get or build the wiki page
     try:
-        ticket_page = TicketPage.objects.get() #ctx=context)
+        ticket_page = TicketPage.objects.get(ctx=context)
     except TicketPage.DoesNotExist:
-        ticket_page = TicketPage() #ctx=context)
+        ticket_page = TicketPage(ctx=context)
 
     if request.method == 'POST':
         form = TicketPageForm(request.POST, instance=ticket_page)
@@ -93,7 +113,7 @@ ntext query parameter'''
     else:
         form = TicketPageForm(instance=ticket_page)
 
-    return render(request, 'edit.html', {'form': form,  })#'ctx': str(context)})
+    return render(request, 'edit.html', {'form': form, 'ctx': str(context)})
 
 def _reverse_url(view_name, context_uuid):
     """generate an URL for a view including the ctx query param"""
@@ -105,36 +125,46 @@ def _reverse_url(view_name, context_uuid):
 def create_ticket(request):
     '''Render the wiki create form'''
 
-    if not _is_collaborator(request):
-        return HttpResponseForbidden()
+    # if not _is_collaborator(request):
+    #     return HttpResponseForbidden()
 
-    #context = UUID(request.GET.get('ctx'))
+    # context = UUID(request.GET.get('ctx'))
+
+    import uuid
+    context = uuid.uuid4()
+    print (context)
+
     # get or build the wiki page
     try:
-        ticket_creation_page = TicketPageCreate.objects.get() #ctx=context)
+        ticket_creation_page = TicketPage.objects.get(ctx=context)
         content = markdown(ticket_creation_page.text)
-    except TicketPageCreate.DoesNotExist:
-        ticket_creation_page = TicketPageCreate() #ctx=context)
+        print ("In create_ticket view : Try is ok")
+    except TicketPage.DoesNotExist:
+        ticket_creation_page = TicketPage(ctx=context)
+        print ("In create_ticket view : Try not ok")
+        
        
 
-    if request.method == 'post':
-        form = TicketCreationPageForm(request.POST, instance=ticket_creation_page)
+    if request.method == 'POST':
+        print ("request.method == 'POST'")
+        form = TicketPageForm(request.POST, instance=ticket_creation_page)
+
         if form.is_valid():
+            print ("Yes form is valid")
             ticket_creation_page = form.save(commit=False)
             # Clean up user input
             ticket_creation_page.created_by = 1
             #ticket_creation_page.text = bleach.clean(ticket_creation_page.text)
             ticket_creation_page.save()
+        else :
+            print ("form not valid")
     else:
-        form = TicketCreationPageForm(instance=ticket_creation_page)
+        print ("NOT request.method == 'post'")
+        
+        form = TicketPageForm(instance=ticket_creation_page)
 
-    return render(request, 'create_ticket.html', {'form': form  })#'ctx': str(context)})
+    return render(request, 'create_ticket.html', {'form': form , 'ctx': str(context)})
 
-def _reverse_url(view_name, context_uuid):
-    """generate an URL for a view including the ctx query param"""
-    print ("Passing by view create_ticket _reverse_url ?")
-    
-    return '%s?ctx=%s' % (reverse(view_name)  , context_uuid)
 
 def _is_collaborator(request):
     '''check access depending on context'''
@@ -187,8 +217,13 @@ class TicketListView(ListView):   #DetailView):   #ListView):
     
     model = TicketPage
     template_name = "ticket_list.html"
+    #context = UUID(request.GET.get('ctx'))
     
-    def get_context_data(self, **kwargs):
-        context = super(TicketListView, self).get_context_data(**kwargs)
-        #context['now'] = timezone.now()
-        return context
+    
+    # def get_context_data(self, **kwargs):
+    #     context = super(TicketListView, self).get_context_data(**kwargs)
+    #     #context['now'] = timezone.now()
+    #     return context
+
+
+

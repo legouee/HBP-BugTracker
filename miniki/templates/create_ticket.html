@@ -4,19 +4,20 @@
 
 {% block content %}
 <div class="navbar navbar-form">
-        <form action= {% url 'home_page' %}>
+        <form action= {% url 'home' %}>
             <input type="submit" value="Home" />
         </form>
         <br/>
     </div>
 
 <form action="" class="ticket-form" method="post">
+    
     <!--ng-controller="ticketCreationPageForm" ng-init='create_ticket_Page = {{form.instance.as_json|jsonify}}'>-->
     <div class="ticket-form-fields">
 
         {% csrf_token %}
         {{ form.non_field_errors }}
-        <!--{{ form.ctx }}-->
+        {{ form.ctx }}
         <div class="form-group">
             {{ form.title.label_tag }}
             {{ form.title }}
