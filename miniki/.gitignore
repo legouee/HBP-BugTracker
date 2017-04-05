@@ -49,6 +49,8 @@ dist
 .coverage
 cover
 
+config.py
+
 # OS generated files #
 ######################
 .directory
@@ -58,9 +60,4 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
-# Server files #
-################
 
-.csr
-.crt
-.key
