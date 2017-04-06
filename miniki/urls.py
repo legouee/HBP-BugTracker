@@ -18,7 +18,7 @@ from django.conf.urls import include
 
 from miniki.views import show_ticket
 from miniki.views import config
-from miniki.views import home
+from miniki.views import HomeView
 from miniki.views import edit_ticket
 from miniki.views import create_ticket
 from miniki.views import TicketListView
@@ -28,7 +28,6 @@ from miniki.views import Test_Menu_deroulant
 from miniki.views import TicketDetailView
 
 >>>>>>> upstream/master
-
 
 
 from django.contrib import admin
@@ -65,6 +64,7 @@ urlpatterns = [
     # url(r'^(?P<title>\w+)/$', TicketDetailView.as_view(), name='ticket-detail'),
     
 
+>>>>>>> upstream/master
     url(r'^config.json$', config, name='config'),
     
 ]
