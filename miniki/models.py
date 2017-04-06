@@ -3,8 +3,9 @@ from django.core.urlresolvers import reverse
 
 import uuid
 
-class TicketPage(models.Model):
-    """A Ticket page"""
+#class TicketPage(models.Model): 
+class Ticket(models.Model):                   
+    """A Ticket"""
 
     title = models.CharField(max_length=1024)
     text = models.TextField(help_text="formatted using ReST")
@@ -28,7 +29,6 @@ class TicketPage(models.Model):
     def __str__(self):
         return self.title
 
-
     # UUIDField is not supported by automatic JSON serializer
     # so we add a method that retrieve a more convenient dict.
     def as_json(self):
@@ -41,7 +41,9 @@ class TicketPage(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return reverse('ticket_page_show', args=[str(self.ctx)])
+        #return reverse('ticket_page_show', args=[str(self.ctx)])
+        return reverse('ticket_show', args=[str(self.ctx)])
+
 
 
 class Home(models.Model):

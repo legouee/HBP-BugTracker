@@ -16,10 +16,12 @@ import bleach
 
 from markdown import markdown
 
-from .forms import TicketPageForm
+#from .forms import TicketPageForm
+from .forms import TicketForm
 from .forms import HomeForm
 
-from .models import TicketPage 
+#from .models import TicketPage
+from .models import Ticket
 from .models import Home
 
 
@@ -58,7 +60,8 @@ def home(request):
 
     try:
         home = Home.objects.get(ctx=context)
-        content = markdown(home_page.text)
+        #content = markdown(home_page.text)
+        content = markdown(home.text)
         print ("Home view try is ok")
         #content = 'Home'
     except Home.DoesNotExist:
@@ -66,8 +69,9 @@ def home(request):
         home = None
         content = ''
 
-    return render(request,'home.html', {'home_page': home, 'content': content})
-
+    #return render(request,'home.html', {'home_page': home, 'content': content})
+    return render(request,'home.html', {'home': home, 'content': content})
+    
 @login_required(login_url='/login/hbp')
 def show_ticket(request):
     '''Render the wiki page using the provided context query parameter'''
@@ -82,12 +86,17 @@ def show_ticket(request):
     print (context)
 
     try:
-        ticket_page = TicketPage.objects.get(ctx=context)
-        content = markdown(ticket_page.text)
-    except TicketPage.DoesNotExist:
-        ticket_page = None
+        #ticket_page = TicketPage.objects.get(ctx=context)
+        ticket = Ticket.objects.get(ctx=context)
+        #content = markdown(ticket_page.text)
+        content = markdown(ticket.text)
+    #except TicketPage.DoesNotExist:  
+    except Ticket.DoesNotExist:                  
+        #ticket_page = None
+        ticket = None
         content = ''
-    return render(request,'show_ticket.html', {'ticket_page': ticket_page, 'content': content})
+    #return render(request,'show_ticket.html', {'ticket_page': ticket_page, 'content': content})
+    return render(request,'show_ticket.html', {'ticket': ticket, 'content': content})
 
 
 
@@ -107,19 +116,29 @@ ntext query parameter'''
     context = UUID(request.GET.get('ctx'))
     # get or build the wiki page
     try:
-        ticket_page = TicketPage.objects.get(ctx=context)
-    except TicketPage.DoesNotExist:
-        ticket_page = TicketPage(ctx=context)
+        #ticket_page = TicketPage.objects.get(ctx=context)
+        ticket = Ticket.objects.get(ctx=context)
+    #except TicketPage.DoesNotExist:
+    except Ticket.DoesNotExist:                    
+        #ticket_page = TicketPage(ctx=context)
+        ticket = Ticket(ctx=context)
 
     if request.method == 'POST':
-        form = TicketPageForm(request.POST, instance=ticket_page)
+        #form = TicketPageForm(request.POST, instance=ticket_page)
+        #form = TicketForm(request.POST, instance=ticket_page)
+        form = TicketForm(request.POST, instance=ticket)
+
         if form.is_valid():
-            ticket_page = form.save(commit=False)
+            #ticket_page = form.save(commit=False)
+            ticket = form.save(commit=False)
             # Clean up user input
-            ticket_page.text = bleach.clean(ticket_page.text)
-            ticket_page.save()
+            #ticket_page.text = bleach.clean(ticket_page.text)
+            ticket.text = bleach.clean(ticket.text)
+            #ticket_page.save()
+            ticket.save()
     else:
-        form = TicketPageForm(instance=ticket_page)
+        #form = TicketPageForm(instance=ticket_page)
+        form = TicketForm(instance=ticket)
 
     return render(request, 'edit.html', {'form': form, 'ctx': str(context)})
 
@@ -144,32 +163,42 @@ def create_ticket(request):
 
     # get or build the wiki page
     try:
-        ticket_creation_page = TicketPage.objects.get(ctx=context)
-        content = markdown(ticket_creation_page.text)
+        #ticket_creation_page = TicketPage.objects.get(ctx=context)
+        ticket_creation = Ticket.objects.get(ctx=context)
+        #content = markdown(ticket_creation_page.text)
+        content = markdown(ticket_creation.text)
         print ("In create_ticket view : Try is ok")
-    except TicketPage.DoesNotExist:
-        ticket_creation_page = TicketPage(ctx=context)
+    #except TicketPage.DoesNotExist: 
+    except Ticket.DoesNotExist:                     
+        #ticket_creation_page = TicketPage(ctx=context)
+        ticket_creation = Ticket(ctx=context)
         print ("In create_ticket view : Try not ok")
         
        
 
     if request.method == 'POST':
         print ("request.method == 'POST'")
-        form = TicketPageForm(request.POST, instance=ticket_creation_page)
+
+        form = TicketForm(request.POST, instance=ticket_creation)
         print (form)
+
         if form.is_valid():
             print ("Yes form is valid")
-            ticket_creation_page = form.save(commit=False)
+            #ticket_creation_page = form.save(commit=False)
+            ticket_creation = form.save(commit=False)
             # Clean up user input
-            ticket_creation_page.created_by = 1
+            #ticket_creation_page.created_by = 1
+            ticket_creation.created_by = 1
             #ticket_creation_page.text = bleach.clean(ticket_creation_page.text)
-            ticket_creation_page.save()
+            #ticket_creation_page.save()
+            ticket_creation.save()
         else :
             print ("form not valid")
     else:
         print ("NOT request.method == 'post'")
         
-        form = TicketPageForm(instance=ticket_creation_page)
+        #form = TicketPageForm(instance=ticket_creation_page)
+        form = TicketForm(instance=ticket_creation)
 
     return render(request, 'create_ticket.html', {'form': form , 'ctx': str(context)})
 
@@ -223,7 +252,8 @@ def config(request):
 
 class TicketListView(ListView):   #DetailView):   #ListView):
     
-    model = TicketPage
+    #model = TicketPage
+    model = Ticket
     template_name = "ticket_list.html"
     #context = UUID(request.GET.get('ctx'))
     
