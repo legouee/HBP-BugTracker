@@ -22,7 +22,12 @@ from miniki.views import home
 from miniki.views import edit_ticket
 from miniki.views import create_ticket
 from miniki.views import TicketListView
+<<<<<<< HEAD
 from miniki.views import Test_Menu_deroulant
+=======
+from miniki.views import TicketDetailView
+
+>>>>>>> upstream/master
 
 
 
@@ -46,6 +51,19 @@ urlpatterns = [
     
 
     url(r'^ticket_list/$',TicketListView.as_view(), name='ticket-list'),
+
+    # url(r'^ticket_detail/$',TicketDetailView.as_view(), name='ticket-detail'),
+
+    # url(r'^ticket_detail/(?P<ticket_id>.*)/$', TicketDetailView.as_view(), name="ticket-detail"),
+
+    # url(r'^(?P<slug>[-\w]+)/$', TicketDetailView.as_view(), name='ticket-detail'),
+    # url(r'^(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
+    url(r'^ticket_detail/(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
+    
+
+
+    # url(r'^(?P<title>\w+)/$', TicketDetailView.as_view(), name='ticket-detail'),
+    
 
     url(r'^config.json$', config, name='config'),
     

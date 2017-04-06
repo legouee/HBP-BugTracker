@@ -1,7 +1,12 @@
 
 '''Views'''
 
-from django.shortcuts import render_to_response, render, redirect
+from django.shortcuts import render_to_response 
+from django.shortcuts import render
+from django.shortcuts import redirect
+from django.shortcuts import get_list_or_404
+from django.shortcuts import get_object_or_404
+
 from django.core.urlresolvers import reverse
 from uuid import UUID
 
@@ -18,7 +23,10 @@ from .forms import HomeForm
 #from .models import TicketPage
 from .models import Ticket
 from .models import Home
-from .models import TicketList
+
+
+
+
 
 
 from django.conf import settings
@@ -199,8 +207,9 @@ def create_ticket(request):
 
     if request.method == 'POST':
         print ("request.method == 'POST'")
-        #form = TicketPageForm(request.POST, instance=ticket_creation_page)
+
         form = TicketForm(request.POST, instance=ticket_creation)
+        print (form)
 
         if form.is_valid():
             print ("Yes form is valid")
@@ -278,10 +287,41 @@ class TicketListView(ListView):   #DetailView):   #ListView):
     #context = UUID(request.GET.get('ctx'))
     
     
-    # def get_context_data(self, **kwargs):
-    #     context = super(TicketListView, self).get_context_data(**kwargs)
-    #     #context['now'] = timezone.now()
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super(TicketListView, self).get_context_data(**kwargs)
+        #context['now'] = timezone.now()
+        return context
+
+    def get_queryset(self):
+        """Return the last five published questions."""
+        return Question.objects.order_by('-pub_date')[:5]
 
 
+class TicketDetailView(DetailView):
+    # model = TicketPage
+    template_name = "ticket_detail.html"
+    # slug_field = 'ticket_slug'
 
+    # slug_url_kwarg = 'ticket_id' #need to acces to ticket id  #may be not usefull....
+
+    context_object_name = 'context_object_name' #just in case
+
+    #just for now
+    queryset = TicketPage.objects.all()
+
+
+    def get_object(self):
+        return get_object_or_404(TicketPage, pk=1)
+
+    # def get_object(self):
+    #        object = get_object_or_404(TicketPage,title=self.kwargs['title'])
+    #        return object
+
+    def get_context_data(self, **kwargs):
+        context = super(TicketDetailView, self).get_context_data(**kwargs)
+        # context['now'] = timezone.now()
+        return context
+
+    def get_queryset(self):
+        pass 
+        #this should just return one to test

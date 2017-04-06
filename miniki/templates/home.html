@@ -19,7 +19,7 @@
 
     </section>
     {% endif %}
-</main>
+</main> 
 
 
 <!--just testing stuffs-->
@@ -42,4 +42,11 @@ document.getElementById("current_url").innerHTML = window.location.href;
 
 
 <a href="{% url 'ticket-list' %}">link to ticket list page</a>
+<br/>
+
+{#<!--<a href="{% url 'ticket-detail' %}">link to one ticket detail page</a>-->#}
+
+<a href="{% url 'ticket-detail' pk=1 %}">link to one ticket detail page</a>
+
+
 {% endblock %}
