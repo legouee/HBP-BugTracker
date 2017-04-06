@@ -14,8 +14,20 @@ class TicketPage(models.Model):
     # created_on = models.DateTimeField(auto_now_add=True)
     # created_by = models.IntegerField()
 
+    # content = models.TextField()
+    
+    # slug = models.SlugField(max_length=255, unique=True, default='ticket_slug')
+
+    # def save(self, *args, **kwargs):
+    #     self.slug = slugify(self.name)
+    #     super(Tag, self).save(*args, **kwargs)
+
     def __unicode__(self):
         return self.title
+
+    def __str__(self):
+        return self.title
+
 
     # UUIDField is not supported by automatic JSON serializer
     # so we add a method that retrieve a more convenient dict.
@@ -54,19 +66,3 @@ class Home(models.Model):
     def get_absolute_url(self):
         return reverse('home', args=[str(self.ctx)])
     
-class TicketList (models.Model) :
-    title = models.CharField(max_length=1024)
-    ticket_list = models.CharField(max_length=1024)
-    # ctx = models.UUIDField(unique=True, default=uuid.uuid4, editable=True )
-    ctx = models.UUIDField(unique=True)
-
-    def __unicode__(self):
-        return self.title
-
-    def as_json(self):
-        return {
-            'title': self.title,
-            'ctx': str(self.ctx),
-            #'ticket_list': [1,2,3,4,5] #self.ticket_list
-
-        }

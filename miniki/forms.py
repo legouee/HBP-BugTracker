@@ -34,5 +34,3 @@ class HomeForm(forms.ModelForm):
             })
         }
 
-
-#class ticketListForm ?
