@@ -3,7 +3,8 @@ from .models import TicketPage
 from .models import Home
 
 
-class TicketPageForm(forms.ModelForm):
+#class TicketPageForm(forms.ModelForm): 
+class TicketForm(forms.ModelForm):           
     """Ticket Page edition form"""
 
     class Meta:
@@ -13,7 +14,7 @@ class TicketPageForm(forms.ModelForm):
             'ctx': forms.HiddenInput(),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
-                'ng-model': 'TicketPage.title',
+                'ng-model': 'TicketPage.title', 
             }),
             'text': forms.Textarea(attrs={
                 'class': 'form-control form-control-editor',
