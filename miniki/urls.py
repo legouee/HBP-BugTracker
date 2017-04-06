@@ -22,6 +22,9 @@ from miniki.views import HomeView
 from miniki.views import edit_ticket
 from miniki.views import create_ticket
 from miniki.views import TicketListView
+from miniki.views import TicketDetailView
+
+
 
 from django.contrib import admin
 
@@ -32,11 +35,31 @@ urlpatterns = [
     url('', include('social.apps.django_app.urls', namespace='social')),
     url('', include('hbp_app_python_auth.urls', namespace='hbp-social')),
 
-    url(r'^show_ticket/$', show_ticket, name='ticket_page_show'),
-    url(r'^edit_ticket/$', edit_ticket, name='ticket_page_edit'),
-    url(r'^create_ticket/$', create_ticket, name='ticket_page_create'), #create_ticket/
-    url(r'^$', HomeView.as_view(), name='home'),
+    #url(r'^show_ticket/$', show_ticket, name='ticket_page_show'),
+    url(r'^show_ticket/$', show_ticket, name='ticket_show'),
+    #url(r'^edit_ticket/$', edit_ticket, name='ticket_page_edit'),
+    url(r'^edit_ticket/$', edit_ticket, name='ticket_edit'),
+    #url(r'^create_ticket$', create_ticket, name='ticket_page_create'), #create_ticket/
+    url(r'^create_ticket$', create_ticket, name='ticket_create'), #create_ticket/
+    url(r'^$', home, name='home'),
+    
+
     url(r'^ticket_list/$',TicketListView.as_view(), name='ticket-list'),
+
+    # url(r'^ticket_detail/$',TicketDetailView.as_view(), name='ticket-detail'),
+
+    # url(r'^ticket_detail/(?P<ticket_id>.*)/$', TicketDetailView.as_view(), name="ticket-detail"),
+
+    # url(r'^(?P<slug>[-\w]+)/$', TicketDetailView.as_view(), name='ticket-detail'),
+    # url(r'^(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
+    url(r'^ticket_detail/(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
+    
+
+
+    # url(r'^(?P<title>\w+)/$', TicketDetailView.as_view(), name='ticket-detail'),
+    
+
+>>>>>>> upstream/master
     url(r'^config.json$', config, name='config'),
     
 ]

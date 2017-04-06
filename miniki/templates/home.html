@@ -22,6 +22,7 @@
     </block>
 
     {% else %}
+<<<<<<< HEAD
     <block>
 
             
@@ -68,14 +69,22 @@
 <script>
 document.getElementById("current_url").innerHTML = window.location.href;
 </script>
-<a href="{% url 'ticket_page_create' %}">link to create page</a>
+
+<a href="{% url 'ticket_create' %}">link to create page</a>
 <br/>
 
-<a href="{% url 'ticket_page_edit' %}">link to edit page</a>
+
+<a href="{% url 'ticket_edit' %}">link to edit page</a>
 <br/>
+
 
 <a href="{% url 'ticket-list' %}">link to ticket list page</a>
+
+<br/>
+
+{#<!--<a href="{% url 'ticket-detail' %}">link to one ticket detail page</a>-->#}
+
+<a href="{% url 'ticket-detail' pk=1 %}">link to one ticket detail page</a>
+
+
 {% endblock %}
-
-
-

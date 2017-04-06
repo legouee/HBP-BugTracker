@@ -1,7 +1,12 @@
 
 '''Views'''
 
-from django.shortcuts import render_to_response, render, redirect
+from django.shortcuts import render_to_response 
+from django.shortcuts import render
+from django.shortcuts import redirect
+from django.shortcuts import get_list_or_404
+from django.shortcuts import get_object_or_404
+
 from django.core.urlresolvers import reverse
 from uuid import UUID
 
@@ -12,11 +17,20 @@ import bleach
 
 from markdown import markdown
 
-from .forms import TicketPageForm
+#from .forms import TicketPageForm
+from .forms import TicketForm
 from .forms import HomeForm
 
-from .models import TicketPage 
+#from .models import TicketPage
+from .models import Ticket
 from .models import Home
+<<<<<<< HEAD
+=======
+
+
+
+
+>>>>>>> upstream/master
 
 
 from django.conf import settings
@@ -129,12 +143,17 @@ def show_ticket(request):
     print (context)
 
     try:
-        ticket_page = TicketPage.objects.get(ctx=context)
-        content = markdown(ticket_page.text)
-    except TicketPage.DoesNotExist:
-        ticket_page = None
+        #ticket_page = TicketPage.objects.get(ctx=context)
+        ticket = Ticket.objects.get(ctx=context)
+        #content = markdown(ticket_page.text)
+        content = markdown(ticket.text)
+    #except TicketPage.DoesNotExist:  
+    except Ticket.DoesNotExist:                  
+        #ticket_page = None
+        ticket = None
         content = ''
-    return render(request,'show_ticket.html', {'ticket_page': ticket_page, 'content': content})
+    #return render(request,'show_ticket.html', {'ticket_page': ticket_page, 'content': content})
+    return render(request,'show_ticket.html', {'ticket': ticket, 'content': content})
 
 
 
@@ -154,19 +173,29 @@ ntext query parameter'''
     context = UUID(request.GET.get('ctx'))
     # get or build the wiki page
     try:
-        ticket_page = TicketPage.objects.get(ctx=context)
-    except TicketPage.DoesNotExist:
-        ticket_page = TicketPage(ctx=context)
+        #ticket_page = TicketPage.objects.get(ctx=context)
+        ticket = Ticket.objects.get(ctx=context)
+    #except TicketPage.DoesNotExist:
+    except Ticket.DoesNotExist:                    
+        #ticket_page = TicketPage(ctx=context)
+        ticket = Ticket(ctx=context)
 
     if request.method == 'POST':
-        form = TicketPageForm(request.POST, instance=ticket_page)
+        #form = TicketPageForm(request.POST, instance=ticket_page)
+        #form = TicketForm(request.POST, instance=ticket_page)
+        form = TicketForm(request.POST, instance=ticket)
+
         if form.is_valid():
-            ticket_page = form.save(commit=False)
+            #ticket_page = form.save(commit=False)
+            ticket = form.save(commit=False)
             # Clean up user input
-            ticket_page.text = bleach.clean(ticket_page.text)
-            ticket_page.save()
+            #ticket_page.text = bleach.clean(ticket_page.text)
+            ticket.text = bleach.clean(ticket.text)
+            #ticket_page.save()
+            ticket.save()
     else:
-        form = TicketPageForm(instance=ticket_page)
+        #form = TicketPageForm(instance=ticket_page)
+        form = TicketForm(instance=ticket)
 
     return render(request, 'edit.html', {'form': form, 'ctx': str(context)})
 
@@ -191,32 +220,47 @@ def create_ticket(request):
 
     # get or build the wiki page
     try:
-        ticket_creation_page = TicketPage.objects.get(ctx=context)
-        content = markdown(ticket_creation_page.text)
+        #ticket_creation_page = TicketPage.objects.get(ctx=context)
+        ticket_creation = Ticket.objects.get(ctx=context)
+        #content = markdown(ticket_creation_page.text)
+        content = markdown(ticket_creation.text)
         print ("In create_ticket view : Try is ok")
-    except TicketPage.DoesNotExist:
-        ticket_creation_page = TicketPage(ctx=context)
+    #except TicketPage.DoesNotExist: 
+    except Ticket.DoesNotExist:                     
+        #ticket_creation_page = TicketPage(ctx=context)
+        ticket_creation = Ticket(ctx=context)
         print ("In create_ticket view : Try not ok")
         
        
 
     if request.method == 'POST':
+<<<<<<< HEAD
         print ("request.methodlogin_url == 'POST'")
         form = TicketPageForm(request.POST, instance=ticket_creation_page)
+=======
+        print ("request.method == 'POST'")
+
+        form = TicketForm(request.POST, instance=ticket_creation)
+        print (form)
+>>>>>>> upstream/master
 
         if form.is_valid():
             print ("Yes form is valid")
-            ticket_creation_page = form.save(commit=False)
+            #ticket_creation_page = form.save(commit=False)
+            ticket_creation = form.save(commit=False)
             # Clean up user input
-            ticket_creation_page.created_by = 1
+            #ticket_creation_page.created_by = 1
+            ticket_creation.created_by = 1
             #ticket_creation_page.text = bleach.clean(ticket_creation_page.text)
-            ticket_creation_page.save()
+            #ticket_creation_page.save()
+            ticket_creation.save()
         else :
             print ("form not valid")
     else:
         print ("NOT request.method == 'post'")
         
-        form = TicketPageForm(instance=ticket_creation_page)
+        #form = TicketPageForm(instance=ticket_creation_page)
+        form = TicketForm(instance=ticket_creation)
 
     return render(request, 'create_ticket.html', {'form': form , 'ctx': str(context)})
 
@@ -270,15 +314,47 @@ def config(request):
 
 class TicketListView(ListView):   #DetailView):   #ListView):
     
-    model = TicketPage
+    #model = TicketPage
+    model = Ticket
     template_name = "ticket_list.html"
     #context = UUID(request.GET.get('ctx'))
     
     
-    # def get_context_data(self, **kwargs):
-    #     context = super(TicketListView, self).get_context_data(**kwargs)
-    #     #context['now'] = timezone.now()
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super(TicketListView, self).get_context_data(**kwargs)
+        #context['now'] = timezone.now()
+        return context
+
+    def get_queryset(self):
+        """Return the last five published questions."""
+        return Question.objects.order_by('-pub_date')[:5]
 
 
+class TicketDetailView(DetailView):
+    # model = TicketPage
+    template_name = "ticket_detail.html"
+    # slug_field = 'ticket_slug'
 
+    # slug_url_kwarg = 'ticket_id' #need to acces to ticket id  #may be not usefull....
+
+    context_object_name = 'context_object_name' #just in case
+
+    #just for now
+    queryset = TicketPage.objects.all()
+
+
+    def get_object(self):
+        return get_object_or_404(TicketPage, pk=1)
+
+    # def get_object(self):
+    #        object = get_object_or_404(TicketPage,title=self.kwargs['title'])
+    #        return object
+
+    def get_context_data(self, **kwargs):
+        context = super(TicketDetailView, self).get_context_data(**kwargs)
+        # context['now'] = timezone.now()
+        return context
+
+    def get_queryset(self):
+        pass 
+        #this should just return one to test
