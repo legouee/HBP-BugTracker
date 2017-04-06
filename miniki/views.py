@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from uuid import UUID
 
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 import bleach
 
@@ -16,7 +17,6 @@ from .forms import HomeForm
 
 from .models import TicketPage 
 from .models import Home
-from .models import TicketList
 
 
 from django.conf import settings
@@ -28,6 +28,7 @@ import hbp_app_python_auth.settings as auth_settings
 import requests
 
 from django.views.generic.list import ListView
+from django.views.generic.base import  TemplateView, View
 from django.views.generic.detail import DetailView
 
 # def form_valid(self, form):
@@ -40,25 +41,79 @@ from django.views.generic.detail import DetailView
 
 #     return HttpResponseRedirect(self.get_success_url())
 
-@login_required(login_url='/login/hbp')
-def home(request):
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )  #???
+class HomeView(View):
     # context = UUID(request.GET.get('ctx'))
+    template_name = "home.html"
+    model = Home
+    form_class = HomeForm
+    
 
-    import uuid
-    context = uuid.uuid4()
-    print (context)
+    def get(self, request, *args, **kwargs):
+        import uuid
+        context = uuid.uuid4()
+        print ("request method",request.method)
+        try:
+            h = Home.objects.get(ctx=context)
+            print('page exist')
+        except Home.DoesNotExist:
+            print('page does not exist')
+            h = Home(ctx=context)
 
-    try:
-        home = Home.objects.get(ctx=context)
-        content = markdown(home_page.text)
-        print ("Home view try is ok")
-        #content = 'Home'
-    except Home.DoesNotExist:
-        print ("Home view try not ok")
-        home = None
-        content = ''
+        form = self.form_class(instance = h)
 
-    return render(request,'home.html', {'home_page': home, 'content': content})
+        return render(request, self.template_name, {'form': form, 'ctx': str(context)})
+    
+    def post(self, request, *args, **kwargs):
+        print("in post")
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            p = form.save(commit=False)
+                 # Clean up user input
+            p.save()
+            return HttpResponseRedirect('home.html')
+        return render(request, 'home.html', {'form': p, 'ctx': str(context)})
+
+    # @classmethod
+    # def create_Project(self, **kwargs):
+    #     print("in create project")
+        
+    #     if request.method == 'POST':
+    #         form = HomeForm(request.POST, instance=p)
+    #     if form.is_valid():
+    #         p = form.save(commit=False)
+    #              # Clean up user input
+    #         p.save()
+    #     else:
+    #         form = HomeForm(instance=p)
+
+    #     return render(request,'home.html', {'new_project': new_project, 'content': content})
+       
+# @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )  #???
+# class CreateProjectView(ListView):
+#     template_name = "home.html"
+#     model = Home
+#     import uuid
+#     context = uuid.uuid4()
+#     print (context)
+#     try:
+#         p = Home.objects.get(ctx=context)
+#         content = markdown(p.text)
+#     except Home.DoesNotExist:
+#         p = None
+#         content = ''
+
+#     if request.method == 'POST':
+#         form = HomeForm(request.POST, instance=p)
+#     if form.is_valid():
+#         p = form.save(commit=False)
+#             # Clean up user input
+#         p.save()
+#     else:
+#         form = HomeForm(instance=p)
+
+#     #return render(request,'create_project.html', {'new_project': new_project, 'content': content})
 
 @login_required(login_url='/login/hbp')
 def show_ticket(request):
@@ -146,7 +201,7 @@ def create_ticket(request):
        
 
     if request.method == 'POST':
-        print ("request.method == 'POST'")
+        print ("request.methodlogin_url == 'POST'")
         form = TicketPageForm(request.POST, instance=ticket_creation_page)
 
         if form.is_valid():

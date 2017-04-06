@@ -11,7 +11,7 @@ class TicketPage(models.Model):
     # This field stores the UUID added as an argument by the Collaboratory.
     # ctx = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
     ctx = models.UUIDField(unique=True)
-    # created_on = models.DateTimeField(auto_now_add=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
     # created_by = models.IntegerField()
 
     def __unicode__(self):
@@ -33,40 +33,23 @@ class TicketPage(models.Model):
 
 
 class Home(models.Model):
-    title = models.CharField(max_length=1024) 
     # ctx = models.UUIDField(unique=True, default=uuid.uuid4, editable=True ) #, unique=True was at primary_key=True spot,   # editable=False)
     #id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4(), editable=True ) #bytes="abcdefghijklmno"
     # print ("Home ctx : ")
     # print (ctx) # ok probleme ici..... peut etre pour ca que ctx = None .....
 
+    project_name = models.CharField(max_length=1024) 
     ctx = models.UUIDField(unique=True)
 
     def __unicode__(self):
-        return self.title
+        return self.project_name
 
     def as_json(self):
         return {
-            'title': self.title,
+            'project_name': self.project_name,
             'ctx': str(self.ctx),
         }
 
     @models.permalink
     def get_absolute_url(self):
         return reverse('home', args=[str(self.ctx)])
-    
-class TicketList (models.Model) :
-    title = models.CharField(max_length=1024)
-    ticket_list = models.CharField(max_length=1024)
-    # ctx = models.UUIDField(unique=True, default=uuid.uuid4, editable=True )
-    ctx = models.UUIDField(unique=True)
-
-    def __unicode__(self):
-        return self.title
-
-    def as_json(self):
-        return {
-            'title': self.title,
-            'ctx': str(self.ctx),
-            #'ticket_list': [1,2,3,4,5] #self.ticket_list
-
-        }

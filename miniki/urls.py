@@ -18,11 +18,10 @@ from django.conf.urls import include
 
 from miniki.views import show_ticket
 from miniki.views import config
-from miniki.views import home
+from miniki.views import HomeView
 from miniki.views import edit_ticket
 from miniki.views import create_ticket
 from miniki.views import TicketListView
-
 
 from django.contrib import admin
 
@@ -35,12 +34,9 @@ urlpatterns = [
 
     url(r'^show_ticket/$', show_ticket, name='ticket_page_show'),
     url(r'^edit_ticket/$', edit_ticket, name='ticket_page_edit'),
-    url(r'^create_ticket$', create_ticket, name='ticket_page_create'), #create_ticket/
-    url(r'^$', home, name='home'),
-    
-
+    url(r'^create_ticket/$', create_ticket, name='ticket_page_create'), #create_ticket/
+    url(r'^$', HomeView.as_view(), name='home'),
     url(r'^ticket_list/$',TicketListView.as_view(), name='ticket-list'),
-
     url(r'^config.json$', config, name='config'),
     
 ]
