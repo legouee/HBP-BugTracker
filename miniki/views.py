@@ -93,6 +93,35 @@ def show_ticket(request):
 
 
 
+
+
+@login_required(login_url='/login/hbp')
+def Test_Menu_deroulant(request):
+    '''Render the wiki page using the provided context query parameter'''
+    print ("###############################################")
+    print (request.GET.get('ctx'))
+    print ("###############################################")
+    
+    # context = UUID(request.GET.get('ctx'))
+
+    import uuid
+    context = uuid.uuid4()
+    print (context)
+
+    try:
+        ticket = Ticket.objects.get(ctx=context)
+        content = markdown(ticket.text)  
+    except Ticket.DoesNotExist:                  
+        ticket = None
+        content = ''
+    return render(request,'Test_Menu_deroulant.html', {'ticket': ticket, 'content': content})
+
+
+
+
+
+
+
 @login_required(login_url='/login/hbp')
 def edit_ticket(request):
     '''Render the wiki edit form using the provided cofrom django.conf import settings

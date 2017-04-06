@@ -22,6 +22,7 @@ from miniki.views import home
 from miniki.views import edit_ticket
 from miniki.views import create_ticket
 from miniki.views import TicketListView
+from miniki.views import Test_Menu_deroulant
 
 
 
@@ -40,6 +41,7 @@ urlpatterns = [
     url(r'^edit_ticket/$', edit_ticket, name='ticket_edit'),
     #url(r'^create_ticket$', create_ticket, name='ticket_page_create'), #create_ticket/
     url(r'^create_ticket$', create_ticket, name='ticket_create'), #create_ticket/
+    url(r'^Menu_deroulant$', Test_Menu_deroulant, name='Menu_deroulant'), 
     url(r'^$', home, name='home'),
     
 
