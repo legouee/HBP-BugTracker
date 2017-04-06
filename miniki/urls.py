@@ -22,8 +22,12 @@ from miniki.views import HomeView
 from miniki.views import edit_ticket
 from miniki.views import create_ticket
 from miniki.views import TicketListView
+<<<<<<< HEAD
+from miniki.views import Test_Menu_deroulant
+=======
 from miniki.views import TicketDetailView
 
+>>>>>>> upstream/master
 
 
 from django.contrib import admin
@@ -41,6 +45,7 @@ urlpatterns = [
     url(r'^edit_ticket/$', edit_ticket, name='ticket_edit'),
     #url(r'^create_ticket$', create_ticket, name='ticket_page_create'), #create_ticket/
     url(r'^create_ticket$', create_ticket, name='ticket_create'), #create_ticket/
+    url(r'^Menu_deroulant$', Test_Menu_deroulant, name='Menu_deroulant'), 
     url(r'^$', home, name='home'),
     
 

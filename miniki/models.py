@@ -15,20 +15,8 @@ class Ticket(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     # created_by = models.IntegerField()
 
-    # content = models.TextField()
-    
-    # slug = models.SlugField(max_length=255, unique=True, default='ticket_slug')
-
-    # def save(self, *args, **kwargs):
-    #     self.slug = slugify(self.name)
-    #     super(Tag, self).save(*args, **kwargs)
-
     def __unicode__(self):
         return self.title
-
-    def __str__(self):
-        return self.title
-
     # UUIDField is not supported by automatic JSON serializer
     # so we add a method that retrieve a more convenient dict.
     def as_json(self):
