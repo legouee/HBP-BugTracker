@@ -13,7 +13,7 @@
     </section>
     {% else %}
     <header class="page-header">
-        <h1>This page does not exists</h1>
+        <h1>Title to the page : This page does not exists</h1>
     </header>
     <section role="content">
 
@@ -30,11 +30,13 @@
 document.getElementById("current_url").innerHTML = window.location.href;
 </script>
 
-<a href="{% url 'ticket_page_create' %}">link to create page</a>
+<a href="{% url 'ticket_create' %}">link to create page</a>
 <br/>
 
-<a href="{% url 'ticket_page_edit' %}">link to edit page</a>
+
+<a href="{% url 'ticket_edit' %}">link to edit page</a>
 <br/>
+
 
 <a href="{% url 'ticket-list' %}">link to ticket list page</a>
 {% endblock %}

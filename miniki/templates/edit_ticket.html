@@ -6,7 +6,8 @@
 {% block content %}
 
 <div class="navbar navbar-form">
-        <form action= {% url 'home_page' %}>
+        <!--<form action= {% url 'home_page' %}> -->
+        <form action= {% url 'home' %}>       
             <input type="submit" value="Home" />
         </form>
         <br/>
@@ -15,7 +16,7 @@
 
 
 <form action="" class="ticket-form" method="POST"
-    ng-controller="ticketPageForm" ng-init='ticketPage = {{form.instance.as_json|jsonify}}'>
+    ng-controller="ticketForm" ng-init='ticket = {{form.instance.as_json|jsonify}}'>
     <div class="ticket-form-fields"
         ng-show="!isPreviewOpen">
         {% csrf_token %}
@@ -36,10 +37,12 @@
     <div class="ticket-form-preview"
          ng-show="isPreviewOpen">
         <header class="page-header">
-            <h1 ng-bind="ticketPage.title"></h1>
+            <!--<h1 ng-bind="ticketPage.title"></h1>-->
+            <h1 ng-bind="ticket.title"></h1>
         </header>
 
-        <section role="content" ng-bind-html="ticketPage.text|hbpMarkdown"></section>
+        <!--<section role="content" ng-bind-html="ticketPage.text|hbpMarkdown"></section>-->
+        <section role="content" ng-bind-html="ticket.text|hbpMarkdown"></section> 
     </div>
 
 

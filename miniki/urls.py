@@ -24,6 +24,7 @@ from miniki.views import create_ticket
 from miniki.views import TicketListView
 
 
+
 from django.contrib import admin
 
 
@@ -33,9 +34,12 @@ urlpatterns = [
     url('', include('social.apps.django_app.urls', namespace='social')),
     url('', include('hbp_app_python_auth.urls', namespace='hbp-social')),
 
-    url(r'^show_ticket/$', show_ticket, name='ticket_page_show'),
-    url(r'^edit_ticket/$', edit_ticket, name='ticket_page_edit'),
-    url(r'^create_ticket$', create_ticket, name='ticket_page_create'), #create_ticket/
+    #url(r'^show_ticket/$', show_ticket, name='ticket_page_show'),
+    url(r'^show_ticket/$', show_ticket, name='ticket_show'),
+    #url(r'^edit_ticket/$', edit_ticket, name='ticket_page_edit'),
+    url(r'^edit_ticket/$', edit_ticket, name='ticket_edit'),
+    #url(r'^create_ticket$', create_ticket, name='ticket_page_create'), #create_ticket/
+    url(r'^create_ticket$', create_ticket, name='ticket_create'), #create_ticket/
     url(r'^$', home, name='home'),
     
 

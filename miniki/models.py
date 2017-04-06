@@ -3,8 +3,9 @@ from django.core.urlresolvers import reverse
 
 import uuid
 
-class TicketPage(models.Model):                
-    """A Ticket page"""
+#class TicketPage(models.Model): 
+class Ticket(models.Model):                   
+    """A Ticket"""
 
     title = models.CharField(max_length=1024)
     text = models.TextField(help_text="formatted using ReST")
