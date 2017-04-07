@@ -2,65 +2,72 @@
 {% extends "layout.html" %}
 {% load jsonify %}
 
-{% block content %}
-<main action="" class="homeForm" method="POST" 
-    ng-controller="HomeForm" ng-init='home = {{form.instance.as_json|jsonify}}'>
+<!--{% block content %}
+<main action="" class="homeForm" method="POST" >
+    <!--ng-controller="HomeForm" ng-init='home = {{form.instance.as_json|jsonify}}'>-->
 
-    {% if home %}
-    <header class="page-header">
-        <h1>{{home.title}}</h1>
-    </header>
+    <!--{% if home %}
 
     <block>
 
-        <section role="content">
-            {{content|safe}}
-        </section>
+        <h1>Projects</h1>
+        <ul>
+            {% for project in view.projects %}
+                <li>{{ project.project_name }} </li>
+    
+            {% empty %}
+                <li>No articles yet.</li>
+            {% endfor %}
+        </ul>
 
-        <a class="btn btn-primary" href="{% url 'home' %}" ng-click="createProject()">New project</a>     
-        
+        <section role="content">
+            <a class="btn btn-primary" href="{% url 'home' %}" ng-click="createProject()">New project</a>     
+        </section>
     </block>
 
     {% else %}
-<<<<<<< HEAD
     <block>
-
-            
-
-                <div class="project-form-fields" ng-show='create'>
-                    <h1>You are about to create a project.</h1>
-                    {% csrf_token %}
-                    {{ form.non_field_errors }}
-                    {{ form.ctx }}
-                    <div class="form-group">
-                        {{ form.project_name.label_tag }}
-                        {{ form.project_name }}
-                        <p class="help-text">{{ form.title.errors }}</p>
-                    </div>
-                    <div class="navbar navbar-form">
-                        <button type="submit" method="post" class="btn btn-primary">Save your project</button>
-                        <input type="submit" class="btn btn-primary">Save your project</input>
-                    </div>
-
-                </div>
-
-                <div class="project-form-non-fields" ng-show='!create'>   
-                    <header class="page-header">
-                        <h1>There is no project saved. Please create a new project.</h1>
-                    </header>
-
-                    <section role="content">
-                        <a class="btn btn-primary" href="{% url 'home' %}" ng-click="createProject()">New project</a>
-                    </section> 
+                <form action="{% url 'home' %}" method="POST">
+                    <div class="project-form-fields" ng-show='create'>
                     
-                </div>
+                        <h1>You are about to create a project.</h1>
+                    
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+                        {{ form.ctx }}
+                    
+                        <div class="form-group">
+                            {{ form.project_name.label_tag }}
+                            {{ form.project_name }}
+                            <p class="help-text">{{ form.project_name.errors }}</p>
+                        </div>
+
+                    </div>
+                    <div class="navbar navbar-form" ng-show='create'>
+                        
+                            <button class="btn btn-primary" href="{% url 'home' %}" ng-click="saveProject()" >Save your project</button>
+                        
+                    
+                    </div>
+               
+                    <div class="project-form-non-fields" ng-show='!create'>   
+                        <header class="page-header">
+                            <h1>There is no project saved. Please create a new project.</h1>
+                        </header>
+
+                        <section role="content">
+                            <a class="btn btn-primary" href="{% url 'home' %}" ng-click="createProject()">New project</a>
+                        </section> 
+                    
+                    </div>
+                </form> 
            
 
     </block>
 
-    {% endif %}
+    {% endif %}-->
 
-</main>
+<!--</main>-->
 
 <!--just testing stuffs-->
 <br/><br/><a href="{% url 'home' %}">Juste a link to test</a>
@@ -70,15 +77,18 @@
 document.getElementById("current_url").innerHTML = window.location.href;
 </script>
 
-<a href="{% url 'ticket_create' %}">link to create page</a>
+<a href="{% url 'project-list' %}">link to create a new project</a>
+<br/>
+
+<a href="{% url 'ticket-create' %}">link to create page</a>
 <br/>
 
 
-<a href="{% url 'ticket_edit' %}">link to edit page</a>
+<a href="{% url 'ticket-edit' %}">link to edit page</a>
 <br/>
 
 
-<a href="{% url 'ticket-list' %}">link to ticket list page</a>
+<a href="{% url 'ticket-list' pk=2 %}">link to ticket list page</a>
 
 <br/>
 

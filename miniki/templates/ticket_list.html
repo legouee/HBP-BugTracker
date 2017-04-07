@@ -3,15 +3,28 @@
 {% block content %}
 
 
-<h1>Ticket</h1>
-<ul>
-{% for ticket in object_list %}
-    <li>{{ ticket.title }} </li>
-    
-{% empty %}
-    <li>No articles yet.</li>
-{% endfor %}
-</ul>
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <h3 class="panel-title">La jolie liste :</h3>
+  </div>
+
+    {% for ticket in object_list %}
+        <div class="list-group">
+
+        <a href="{% url 'ticket-detail' pk=ticket.pk %}" class="list-group-item"> {#Le pk ici ne sert qu'a l'affichage de l'url dans le navigateur#}
+            
+
+            
+            <span class="badge">120</span>
+            {{ ticket.title }} 
+            <br/> 
+            {{ ticket.text }} 
+
+        </a>
+        </div>
+    {% endfor %}
+</div>
+
 
 
 {% endblock %}

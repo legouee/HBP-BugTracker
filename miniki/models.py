@@ -13,6 +13,7 @@ class Ticket(models.Model):
     # ctx = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
     ctx = models.UUIDField(unique=True)
     creation_date = models.DateTimeField(auto_now_add=True)
+    id_projet = models.IntegerField()
     # created_by = models.IntegerField()
 
     # content = models.TextField()
@@ -36,14 +37,39 @@ class Ticket(models.Model):
             'title': self.title,
             'text': self.text,
             'ctx': str(self.ctx),
+            'id_projet': self.id_projet
             #'created_by': self.created_by
         }
 
     @models.permalink
     def get_absolute_url(self):
         #return reverse('ticket_page_show', args=[str(self.ctx)])
-        return reverse('ticket_show', args=[str(self.ctx)])
+        return reverse('ticket-show', args=[str(self.ctx)])
 
+class Project(models.Model):                   
+    """A Project"""
+
+    title = models.CharField(max_length=1024)
+    ctx = models.UUIDField(unique=True)
+
+    def __unicode__(self):
+        return self.title
+
+    def __str__(self):
+        return self.title
+
+    # UUIDField is not supported by automatic JSON serializer
+    # so we add a method that retrieve a more convenient dict.
+    def as_json(self):
+        return {
+            'title': self.title,
+            'ctx': str(self.ctx),
+            #'created_by': self.created_by
+        }
+
+    @models.permalink
+    def get_absolute_url(self):
+        return reverse('project-list', args=[str(self.ctx)])
 
 
 class Home(models.Model):
