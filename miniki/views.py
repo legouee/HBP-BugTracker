@@ -24,13 +24,7 @@ from .forms import HomeForm
 #from .models import TicketPage
 from .models import Ticket
 from .models import Home
-<<<<<<< HEAD
-=======
 
-
-
-
->>>>>>> upstream/master
 
 
 from django.conf import settings
