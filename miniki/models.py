@@ -41,9 +41,24 @@ class Ticket(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        #return reverse('ticket_page_show', args=[str(self.ctx)])
         return reverse('ticket_show', args=[str(self.ctx)])
 
+class Comment(models.Model):
+    # use_name = models.CharField(max_length=1024)
+    text = models.TextField(help_text="formatted using ReST")
+    ctx = models.UUIDField(unique=True)
+
+    def as_json(self):
+        return {
+            'title': self.title,
+            'text': self.text,
+            'ctx': str(self.ctx),
+            #'created_by': self.created_by
+        }
+
+    @models.permalink
+    def get_absolute_url(self):
+        return reverse('ticket_show', args=[str(self.ctx)])
 
 
 class Home(models.Model):

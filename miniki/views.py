@@ -263,9 +263,9 @@ class TicketListView(ListView):   #DetailView):   #ListView):
         #context['now'] = timezone.now()
         return context
 
-    def get_queryset(self):
-        """Return the last five published questions."""
-        return Question.objects.order_by('-pub_date')[:5]
+    # def get_queryset(self):
+    #     """Return the last five published questions."""
+    #     return Ticket.objects.order_by('-pub_date')[:5]
 
 
 class TicketDetailView(DetailView):
@@ -278,11 +278,13 @@ class TicketDetailView(DetailView):
     context_object_name = 'context_object_name' #just in case
 
     #just for now
-    queryset = TicketPage.objects.all()
+    queryset = Ticket.objects.all()
 
 
     def get_object(self):
-        return get_object_or_404(TicketPage, pk=1)
+        return get_object_or_404(Ticket, pk=1)
+        # return get_object_or_404(Ticket, pk=)
+        
 
     # def get_object(self):
     #        object = get_object_or_404(TicketPage,title=self.kwargs['title'])
@@ -296,3 +298,5 @@ class TicketDetailView(DetailView):
     def get_queryset(self):
         pass 
         #this should just return one to test
+
+

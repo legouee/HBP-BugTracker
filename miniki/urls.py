@@ -54,6 +54,8 @@ urlpatterns = [
     # url(r'^(?P<slug>[-\w]+)/$', TicketDetailView.as_view(), name='ticket-detail'),
     # url(r'^(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
     url(r'^ticket_detail/(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
+
+
     
 
 
