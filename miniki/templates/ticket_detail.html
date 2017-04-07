@@ -14,11 +14,17 @@
         <br/>
     </div>
 
+<h1>{{ object.title }}</h1>
+<br/>
+<div style="border: 2px solid #1c75c8; padding: 3px; background-color: #c5ddf6; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; -moz-border-radius-bottomright: 5px; -moz-border-radius-bottomleft: 5px;">
+<p>
+<strong>Text</strong>: {{ object.text }}
+</p>
+</div>
 <br/><br/><br/>
-<h1>Title: {{ object.title }}</h1>
-<p>Text: {{ object.text }}</p>
 
-<br/><br/><br/>
+
+
 
     <form action="" class="ticket-form" method="POST" >
         {% csrf_token %}
