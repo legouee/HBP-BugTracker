@@ -333,7 +333,6 @@ def config(request):
 
 class TicketListView(ListView):   #DetailView):   #ListView):
     
-    #model = TicketPage
     model = Ticket
     template_name = "ticket_list.html"
     #context = UUID(request.GET.get('ctx'))
@@ -350,7 +349,7 @@ class TicketListView(ListView):   #DetailView):   #ListView):
 
 
 class TicketDetailView(DetailView):
-    # model = TicketPage
+    # model = Ticket
     template_name = "ticket_detail.html"
     # slug_field = 'ticket_slug'
 
@@ -359,12 +358,14 @@ class TicketDetailView(DetailView):
     context_object_name = 'context_object_name' #just in case
 
     #just for now
-    queryset = Ticket.objects.all()
+    # queryset = Ticket.objects.all()
 
+    ticket_id = None
 
     def get_object(self):
-        return get_object_or_404(Ticket, pk=1)
-        # return get_object_or_404(Ticket, pk=)
+
+        return get_object_or_404(Ticket, pk=self.kwargs['pk'])
+        # return get_object_or_404(Ticket, pk=1)
         
 
     # def get_object(self):
