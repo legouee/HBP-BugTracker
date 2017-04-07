@@ -16,20 +16,8 @@ class Ticket(models.Model):
     id_projet = models.IntegerField()
     # created_by = models.IntegerField()
 
-    # content = models.TextField()
-    
-    # slug = models.SlugField(max_length=255, unique=True, default='ticket_slug')
-
-    # def save(self, *args, **kwargs):
-    #     self.slug = slugify(self.name)
-    #     super(Tag, self).save(*args, **kwargs)
-
     def __unicode__(self):
         return self.title
-
-    def __str__(self):
-        return self.title
-
     # UUIDField is not supported by automatic JSON serializer
     # so we add a method that retrieve a more convenient dict.
     def as_json(self):
@@ -43,7 +31,6 @@ class Ticket(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        #return reverse('ticket_page_show', args=[str(self.ctx)])
         return reverse('ticket-show', args=[str(self.ctx)])
 
 class Project(models.Model):                   
@@ -63,13 +50,30 @@ class Project(models.Model):
     def as_json(self):
         return {
             'title': self.title,
+        }
+    return reverse('project-list', args=[str(self.ctx)])
+
+class Comment(models.Model):
+    # use_name = models.CharField(max_length=1024)
+    text = models.TextField(help_text="formatted using ReST")
+    ctx = models.UUIDField(unique=True)
+
+    def as_json(self):
+        return {
+            'title': self.title,
+            'text': self.text,
             'ctx': str(self.ctx),
             #'created_by': self.created_by
         }
 
     @models.permalink
     def get_absolute_url(self):
+
+
         return reverse('project-list', args=[str(self.ctx)])
+=======
+        return reverse('ticket_show', args=[str(self.ctx)])
+>>>>>>> upstream/master
 
 
 class Home(models.Model):

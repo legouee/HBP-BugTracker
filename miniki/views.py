@@ -151,6 +151,35 @@ def show_ticket(request):
 
 
 
+
+
+@login_required(login_url='/login/hbp')
+def Test_Menu_deroulant(request):
+    '''Render the wiki page using the provided context query parameter'''
+    print ("###############################################")
+    print (request.GET.get('ctx'))
+    print ("###############################################")
+    
+    # context = UUID(request.GET.get('ctx'))
+
+    import uuid
+    context = uuid.uuid4()
+    print (context)
+
+    try:
+        ticket = Ticket.objects.get(ctx=context)
+        content = markdown(ticket.text)  
+    except Ticket.DoesNotExist:                  
+        ticket = None
+        content = ''
+    return render(request,'Test_Menu_deroulant.html', {'ticket': ticket, 'content': content})
+
+
+
+
+
+
+
 @login_required(login_url='/login/hbp')
 def edit_ticket(request):
     '''Render the wiki edit form using the provided cofrom django.conf import settings
@@ -276,7 +305,6 @@ def config(request):
 
 class TicketListView(ListView):   #DetailView):   #ListView):
     
-    #model = TicketPage
     model = Ticket
     template_name = "ticket_list.html"
     #context = UUID(request.GET.get('ctx'))
@@ -287,13 +315,13 @@ class TicketListView(ListView):   #DetailView):   #ListView):
         #context['now'] = timezone.now()
         return context
 
-    def get_queryset(self):
-        """Return the last five published questions."""
-        return Question.objects.order_by('-pub_date')[:5]
+    # def get_queryset(self):
+    #     """Return the last five published questions."""
+    #     return Ticket.objects.order_by('-pub_date')[:5]
 
 
 class TicketDetailView(DetailView):
-    # model = TicketPage
+    # model = Ticket
     template_name = "ticket_detail.html"
     # slug_field = 'ticket_slug'
 
@@ -302,11 +330,15 @@ class TicketDetailView(DetailView):
     context_object_name = 'context_object_name' #just in case
 
     #just for now
-    queryset = Ticket.objects.all()
+    # queryset = Ticket.objects.all()
 
+    ticket_id = None
 
     def get_object(self):
-        return get_object_or_404(Ticket, pk=1)
+
+        return get_object_or_404(Ticket, pk=self.kwargs['pk'])
+        # return get_object_or_404(Ticket, pk=1)
+
 
     # def get_object(self):
     #        object = get_object_or_404(TicketPage,title=self.kwargs['title'])
@@ -320,3 +352,5 @@ class TicketDetailView(DetailView):
     def get_queryset(self):
         pass 
         #this should just return one to test
+
+
