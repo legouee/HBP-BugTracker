@@ -251,7 +251,7 @@ def create_ticket(request):
             ticket_creation.created_by = 1
             ticket_creation.save()
 
-        form = TicketForm(instance=ticket_creation)
+    form = TicketForm(instance=ticket_creation)
 
     return render(request, 'create_ticket.html', {'form': form , 'ctx': str(context)})
 
@@ -287,7 +287,7 @@ def _is_collaborator(request):
 def config(request):
     '''Render the config file'''
 
-    res = requests.get(settings.HBP_ENV_URL)
+    res = requests.get(seid_projectttings.HBP_ENV_URL)
     config = res.json()
 
     # Use this app client ID

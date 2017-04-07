@@ -2,6 +2,15 @@
 {% extends "layout.html" %}
 {% load jsonify %}
 
+{% block content %}
+ 
+    <div class="navbar navbar-form">
+        <form action= {% url 'home' %}>
+            <input type="submit" value="Home" />
+        </form>
+        <br/>
+    </div>
+
 
 <!--just testing stuffs-->
 <br/><br/><a href="{% url 'home' %}">Juste a link to test</a>
