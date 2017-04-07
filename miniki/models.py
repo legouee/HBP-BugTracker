@@ -13,6 +13,7 @@ class Ticket(models.Model):
     # ctx = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
     ctx = models.UUIDField(unique=True)
     creation_date = models.DateTimeField(auto_now_add=True)
+    id_project = models.ForeignKey('Project', on_delete=model.CASCADE())
     # created_by = models.IntegerField()
 
     def __unicode__(self):
@@ -24,12 +25,35 @@ class Ticket(models.Model):
             'title': self.title,
             'text': self.text,
             'ctx': str(self.ctx),
+            'id_project': self.id_project
             #'created_by': self.created_by
         }
 
     @models.permalink
     def get_absolute_url(self):
-        return reverse('ticket_show', args=[str(self.ctx)])
+        return reverse('ticket-show', args=[str(self.ctx)])
+
+class Project(models.Model):                   
+    """A Project"""
+
+    title = models.CharField(max_length=1024)
+    ctx = models.UUIDField(unique=True)
+
+    def __unicode__(self):
+        return self.title
+
+    def __str__(self):
+        return self.title
+
+    # UUIDField is not supported by automatic JSON serializer
+    # so we add a method that retrieve a more convenient dict.
+    def as_json(self):
+        return {
+            'title': self.title,
+        }
+    @models.permalink
+    def get_absolute_url(self):  
+        return reverse('project-list', args=[str(self.ctx)])
 
 class Comment(models.Model):
     # use_name = models.CharField(max_length=1024)
@@ -38,7 +62,6 @@ class Comment(models.Model):
 
     def as_json(self):
         return {
-            'title': self.title,
             'text': self.text,
             'ctx': str(self.ctx),
             #'created_by': self.created_by
@@ -47,7 +70,6 @@ class Comment(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return reverse('ticket_show', args=[str(self.ctx)])
-
 
 class Home(models.Model):
     # ctx = models.UUIDField(unique=True, default=uuid.uuid4, editable=True ) #, unique=True was at primary_key=True spot,   # editable=False)

@@ -2,26 +2,6 @@
 
 {% block content %}
 
-
-<h1>Tickets</h1>
-<!--<ul>
-{% for ticket in object_list %}
-    <li>{{ ticket.title }} </li>
-    
-{% empty %}
-    <li>No articles yet.</li>
-{% endfor %}
-</ul>
-
-<br/><br/><br/><br/><br/><br/>
--->
-
-
-
-
-
-
-
 <div class="panel panel-info">
   <div class="panel-heading">
     <h3 class="panel-title">La jolie liste :</h3>
@@ -33,11 +13,6 @@
         <a href="{% url 'ticket-detail' pk=ticket.pk %}" class="list-group-item"> {#Le pk ici ne sert qu'a l'affichage de l'url dans le navigateur#}
             
 
-
-
-
-
-
             
             <span class="badge">120</span>
             {{ ticket.title }} 
@@ -47,8 +22,14 @@
         </a>
         </div>
     {% endfor %}
-</div>
 
+    <div class="navbar navbar-form">
+      <form action="{% url 'ticket-create' %}">
+            <button class="btn btn-primary" >Create new ticket</button>
+      </form>      
+    </div>
+
+</div>
 
 <!--<div class="panel panel-primary">
     <div class="panel-heading">
