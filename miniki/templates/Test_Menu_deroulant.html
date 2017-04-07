@@ -1,0 +1,224 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+<h1>Menu deroulant à déploiement vertical au passage de la souris</h1>
+
+<html>
+    <head>
+      <style type="text/css">
+        #monmenu {font-family: trebuchet ms, arial, tahoma, verdana, sans-serif; font-size: 90%; font-weight:bold;}
+        #monmenu ul ul {display: none; position: absolute; margin:0px; padding: 0px; border: 1px solid #B0B0B0;}
+        #monmenu ul.niveau2 {left: 0px; top: 22px;}
+        #monmenu ul.niveau3 {left: 144px; top: -1px;}
+        #monmenu li {list-style-type: none; position: relative; width: 140px; background-color: #E0E0E0; padding: 2px; margin: 0px}
+        #monmenu li:hover, #monmenu li.sfhover {background-color: #FFFF70;}
+        #monmenu li a {text-decoration:none;}
+        #monmenu li:hover ul.niveau2, #monmenu li li:hover ul.niveau3, #monmenu li.sfhover ul.niveau2, #monmenu li li.sfhover ul.niveau3 {display: block}
+        #monmenu li.plus {background-position:right; background-image: url(illustrations/ fdroite.gif); background-repeat: no-repeat; border-bottom: 1px solid #B0B0B0;}
+      </style>
+    </head> 
+
+  <body>
+
+    <div id="monmenu">
+
+        <ul class="niveau1">
+           <li> Menu
+
+               <ul class="niveau2">
+                  <li class="plus">
+                       Extras
+
+                    <ul class="niveau3">
+                      <li>
+                           Demander la note
+                      </li>
+                    </ul><!-- fin Classse 3-->
+
+                  </li> <!--Fin Classe plus-->
+
+                  <li>
+                        Entrée
+                  </li>
+
+                  <li>
+                        Plat
+                  </li>
+
+                  <li>
+                        Dessert
+                   </li>
+
+                   <li>
+                        Café
+                   </li> <!-- Fin Classe café-->
+
+                </ul> <!-- Fin Classe niveau 2-->
+
+             </li> <!-- Fin Menu-->
+
+          </ul> <!--Fin Classe niveau 1-->
+
+    </div>
+
+  </body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Lier deux listes deroulantes entre elles </h1>
+
+<html>
+<head>
+	<script type="text/javascript">
+	var pays = []; //nouveau tableau
+	pays[0] = ["p0", "pays0"]; //nouveau tableau, on va donc avoir pays[0][0]="p0"
+	pays[1] = ["p1", "pays1"];
+	pays[2] = ["p2", "pays2"];
+	 
+	var ville=[];
+	// pays0
+	ville["p0"] = [];
+	ville["p0"][0] = ["p0v0", "pays0-ville0"];
+	ville["p0"][1] = ["p0v1", "pays0-ville1"];
+	 
+	//pays1
+	ville["p1"]=[];
+	ville["p1"][0] = ["p1v0", "pays1-ville0"];
+	ville["p1"][1] = ["p1v1", "pays1-ville1"];
+	 
+	//pays2
+	ville["p2"] = [];
+	ville["p2"][0] = ["p2v0", "pays2-ville0"];
+	ville["p2"][1] = ["p2v1", "pays2-ville1"];
+	 
+	 
+	var rue = [];
+	//pays0-ville0
+	rue["p0v0"] = [];
+	rue["p0v0"][0] = ["p0v0r0", "pays0-ville0-rue0"];
+	rue["p0v0"][1] = ["p0v0r1", "pays0-ville0-rue1"];
+	 
+	//pays0-ville1
+	rue["p0v1"] = [];
+	rue["p0v1"][0] = ["p0v1r0", "pays0-ville1-rue0"];
+	rue["p0v1"][1] = ["p0v1r1", "pays0-ville1-rue1"];
+	rue["p0v1"][2] = ["p0v1r2", "pays0-ville1-rue2"];
+	 
+	 
+	//pays1-ville0
+	rue["p1v0"] = [];
+	rue["p1v0"][0] = ["p1v0r0", "pays1-ville0-rue0"];
+	rue["p1v0"][1] = ["p1v0r1", "pays1-ville0-rue1"];
+	 
+	//pays1-ville1
+	rue["p1v1"] = [];
+	rue["p1v1"][0] = ["p1v1r0", "pays1-ville1-rue0"];
+	rue["p1v1"][1] = ["p1v1r1", "pays1-ville1-rue1"];
+	 
+	 
+	//pays2-ville0
+	rue["p2v0"] = [];
+	rue["p2v0"][0] = ["p2v0r0", "pays2-ville0-rue0"];
+	rue["p2v0"][1] = ["p2v0r1", "pays2-ville0-rue1"];
+	 
+	//pays1-ville1
+	rue["p2v1"] = [];
+	rue["p2v1"][0] = ["p2v1r0", "pays2-ville1-rue0"];
+	rue["p2v1"][1] = ["p2v1r1", "pays2-ville1-rue1"];
+	rue["p2v1"][2] = ["p2v1r2", "pays2-ville1-rue2"];
+	function filltheselect(liste, choix)
+	{switch (liste)
+	   {
+	   case "listepays":
+	      raz("listeville");
+	      raz("listerue");
+	      for (i=0; i<ville[choix].length; i++)
+	         {
+	         new_option = new Option(ville[choix][i][1],ville[choix][i][0]);
+	         document.formu.elements["listeville"].
+	 options[document.formu.elements["listeville"].length]=new_option;
+	         }
+	      for (i=0; i<rue[choix+"v0"].length; i++)
+	         {
+	         new_option = new Option(rue[choix+"v0"][i][1],rue[choix+"v0"][i][0]);
+	         document.formu.elements["listerue"].options[document.formu.
+	 elements["listerue"].length]=new_option;
+	         }
+	      break;
+	   case "listeville":
+	      raz("listerue");
+	      for (i=0; i<rue[choix].length; i++)
+	         {
+	         new_option = new Option(rue[choix][i][1],rue[choix][i][0]);
+	         document.formu.elements["listerue"].options[document.formu.
+	 elements["listerue"].length]=new_option;
+	         }
+	      break;
+	   }
+	}
+	 
+	function raz(liste)
+	{l=document.formu.elements[liste].length;
+	for (i=l; i>=0; i--)
+	   document.formu.elements[liste].options[i]=null;
+	}
+	</script>
+</head>
+<body>
+	<form name="formu"> 
+	Choisir un pays 
+	<select name="listepays" onChange='filltheselect(this.name, this.value)'>
+	   <script language="javascript">
+	   for (i=0; i<pays.length; i++)
+	      document.write("<option value=\"" +pays[i][0]+ "\">" +pays[i][1]);
+	   </script>
+	</select>
+	<br>
+	 Choisir une ville
+	<select name="listeville" onChange='filltheselect(this.name, this.value)'>
+	   <script language="javascript">
+	   for (i=0; i<ville["p0"].length; i++)
+	      document.write("<option value=\"" +ville["p0"][i][0]+ "\">" +ville["p0"][i][1]);
+	   </script>
+	</select>
+	 <br>
+	 Choisir une rue
+	<select name="listerue">
+	   <script language="javascript">
+	   for (i=0; i<rue["p0v0"].length; i++)
+	      document.write("&lt;option value=\"" +rue["p0v0"][i][0]+ "\">" +rue["p0v0"][i][1]);
+	   </script>
+	</select>
+	 </form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+{% endblock %}

@@ -1,26 +1,65 @@
 
 {% extends "layout.html" %}
+{% load jsonify %}
 
 {% block content %}
-<main class="page">
+<main action="" class="homeForm" method="POST" 
+    ng-controller="HomeForm" ng-init='home = {{form.instance.as_json|jsonify}}'>
+
     {% if home %}
     <header class="page-header">
         <h1>{{home.title}}</h1>
     </header>
 
-    <section role="content">
-        {{content|safe}}
-    </section>
+    <block>
+
+        <section role="content">
+            {{content|safe}}
+        </section>
+
+        <a class="btn btn-primary" href="{% url 'home' %}" ng-click="createProject()">New project</a>     
+        
+    </block>
+
     {% else %}
-    <header class="page-header">
-        <h1>Title to the page : This page does not exists</h1>
-    </header>
-    <section role="content">
+    <block>
 
-    </section>
+            
+
+                <div class="project-form-fields" ng-show='create'>
+                    <h1>You are about to create a project.</h1>
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    {{ form.ctx }}
+                    <div class="form-group">
+                        {{ form.project_name.label_tag }}
+                        {{ form.project_name }}
+                        <p class="help-text">{{ form.title.errors }}</p>
+                    </div>
+                    <div class="navbar navbar-form">
+                        <button type="submit" method="post" class="btn btn-primary">Save your project</button>
+                        <input type="submit" class="btn btn-primary">Save your project</input>
+                    </div>
+
+                </div>
+
+                <div class="project-form-non-fields" ng-show='!create'>   
+                    <header class="page-header">
+                        <h1>There is no project saved. Please create a new project.</h1>
+                    </header>
+
+                    <section role="content">
+                        <a class="btn btn-primary" href="{% url 'home' %}" ng-click="createProject()">New project</a>
+                    </section> 
+                    
+                </div>
+           
+
+    </block>
+
     {% endif %}
-</main>
 
+</main>
 
 <!--just testing stuffs-->
 <br/><br/><a href="{% url 'home' %}">Juste a link to test</a>
@@ -37,8 +76,12 @@ document.getElementById("current_url").innerHTML = window.location.href;
 <a href="{% url 'ticket_edit' %}">link to edit page</a>
 <br/>
 
+<a href="{% url 'Menu_deroulant' %}">link to Menu deroulant</a>
+<br/>
+
 
 <a href="{% url 'ticket-list' %}">link to ticket list page</a>
+
 <br/>
 
 {#<!--<a href="{% url 'ticket-detail' %}">link to one ticket detail page</a>-->#}
