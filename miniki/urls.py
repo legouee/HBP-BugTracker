@@ -50,7 +50,7 @@ urlpatterns = [
 
     url(r'^project_list/$',ProjectListView.as_view(), name='project-list'),
     url(r'^create_project/$', create_project, name='project-create'),
-    url(r'^ticket_list/(?P<pk>\d+)/$',TicketListView.as_view(), name='ticket-list2'),
+    #url(r'^ticket_list/(?P<pk>\d+)/$',TicketListView.as_view(), name='ticket-list2'),
     url(r'^ticket_list/$',TicketListView.as_view(), name='ticket-list'),
     url(r'^ticket_detail/(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
     url(r'^config.json$', config, name='config'),

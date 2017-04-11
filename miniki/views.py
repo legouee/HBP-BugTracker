@@ -65,15 +65,11 @@ class ProjectListView(ListView):
 def create_project(request):
     '''Render the wiki create form'''
 
-    import uuid
-    context = uuid.uuid4()
-    print (context)
-
     try:
-        p = Project.objects.get(ctx=context)
+        p = Project.objects.get()
         content = markdown(p.text) 
     except Project.DoesNotExist:                     
-        p = Project(ctx=context)
+        p = Project()
         
     if request.method == 'POST':
         form = ProjectForm(request.POST, instance=p)
@@ -84,7 +80,7 @@ def create_project(request):
 
     form = ProjectForm(instance=p)
 
-    return render(request, 'create_project.html', {'form': form , 'ctx': str(context)})
+    return render(request, 'create_project.html', {'form': form})
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class HomeView(TemplateView):
@@ -287,7 +283,7 @@ def _is_collaborator(request):
 def config(request):
     '''Render the config file'''
 
-    res = requests.get(seid_projectttings.HBP_ENV_URL)
+    res = requests.get(self_projects.HBP_ENV_URL)
     config = res.json()
 
     # Use this app client ID

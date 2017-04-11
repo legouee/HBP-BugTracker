@@ -13,7 +13,8 @@ class Ticket(models.Model):
     # ctx = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
     ctx = models.UUIDField(unique=True)
     creation_date = models.DateTimeField(auto_now_add=True)
-    id_project = models.ForeignKey('Project', on_delete=model.CASCADE())
+    id_project =  models.IntegerField(default=0) #models.ForeignKey('Project', default=1)#, on_delete=models.CASCADE())
+    status = models.IntegerField(default=0) 
     # created_by = models.IntegerField()
 
     def __unicode__(self):
@@ -25,7 +26,8 @@ class Ticket(models.Model):
             'title': self.title,
             'text': self.text,
             'ctx': str(self.ctx),
-            'id_project': self.id_project
+            'id_project': self.id_project,
+            'status': self.status,
             #'created_by': self.created_by
         }
 
