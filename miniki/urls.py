@@ -21,11 +21,13 @@ from miniki.views import config
 from miniki.views import HomeView
 # from miniki.views import edit_ticket
 from miniki.views import create_ticket
+from miniki.views import create_project
 from miniki.views import TicketListView
 
 from miniki.views import Test_Menu_deroulant
 
 from miniki.views import TicketDetailView
+from miniki.views import ProjectListView
 
 
 
@@ -45,11 +47,15 @@ urlpatterns = [
     # url(r'^edit_ticket/$', edit_ticket, name='ticket_edit'),
     #url(r'^create_ticket$', create_ticket, name='ticket_page_create'), #create_ticket/
     url(r'^create_ticket$', create_ticket, name='ticket_create'), #create_ticket/
+
     url(r'^Menu_deroulant$', Test_Menu_deroulant, name='Menu_deroulant'), 
     url(r'^$', HomeView.as_view(), name='home'),
-    
 
+    url(r'^project_list/$',ProjectListView.as_view(), name='project-list'),
+    url(r'^create_project/$', create_project, name='project-create'),
+    url(r'^ticket_list/(?P<pk>\d+)/$',TicketListView.as_view(), name='ticket-list2'),
     url(r'^ticket_list/$',TicketListView.as_view(), name='ticket-list'),
+
 
     # url(r'^ticket_detail/$',TicketDetailView.as_view(), name='ticket-detail'),
 
@@ -58,19 +64,6 @@ urlpatterns = [
     # url(r'^(?P<slug>[-\w]+)/$', TicketDetailView.as_view(), name='ticket-detail'),
     # url(r'^(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
     url(r'^ticket/(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
-
-
-
-
-    # url(r'^ticket/(?P<pk>\d+)/comment/$', views.add_comment_to_post, name='add_comment_to_post'),
-
-
-
-
-
-
-    # url(r'^(?P<title>\w+)/$', TicketDetailView.as_view(), name='ticket-detail'),
-    
 
     url(r'^config.json$', config, name='config'),
     

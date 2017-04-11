@@ -1,0 +1,37 @@
+
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="navbar navbar-form">
+        <form action= {% url 'home' %}>       
+            <input type="submit" value="Home" />
+        </form>
+        <br/>
+</div>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <h3 class="panel-title"> Projects</h3>
+  </div>
+
+    {% for project in view.projects %}
+        <div class="list-group">
+        <a href="{% url 'ticket-list2' pk=project.pk %}" class="list-group-item"> {#Le pk ici ne sert qu'a l'affichage de l'url dans le navigateur#}
+         <span class="badge">120</span>
+            {{ project.title }} 
+        <br/>
+        </a>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="navbar navbar-form">
+    <form action="create_project">
+            <button class="btn btn-primary" href="{% url 'project-create' %}" >Create new project</button>
+    </form>      
+</div>
+
+
+
+{% endblock %}
