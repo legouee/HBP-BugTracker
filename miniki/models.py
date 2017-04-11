@@ -53,6 +53,7 @@ class Ticket(models.Model):
             'status': self.status,
             # 'ctx': str(self.ctx),
             'id_project': self.id_project
+
             #'created_by': self.created_by
         }
 
