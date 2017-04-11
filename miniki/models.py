@@ -3,7 +3,31 @@ from django.core.urlresolvers import reverse
 
 import uuid
 
-#class TicketPage(models.Model): 
+
+
+class Project(models.Model):                   
+    """A Project"""
+
+    title = models.CharField(max_length=1024)
+    # ctx = models.UUIDField(unique=True)
+
+    def __unicode__(self):
+        return self.title
+
+    def __str__(self):
+        return self.title
+
+    # UUIDField is not supported by automatic JSON serializer
+    # so we add a method that retrieve a more convenient dict.
+    def as_json(self):
+        return {
+            'title': self.title,
+        }
+    @models.permalink
+    def get_absolute_url(self):  
+        return reverse('project-list' ) #, args=[str(self.ctx)])
+
+
 class Ticket(models.Model):                   
     """A Ticket"""
     # comments = models.ForeignKey(Comment)
@@ -13,7 +37,8 @@ class Ticket(models.Model):
     # ctx = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
     # ctx = models.UUIDField(unique=True)
     creation_date = models.DateTimeField(auto_now_add=True)
-    id_project = models.ForeignKey('Project', on_delete=model.CASCADE())
+    # id_project = models.ForeignKey(Project)#, on_delete=models.CASCADE())
+    id_project = models.IntegerField(default = 0)
     # created_by = models.IntegerField()
 
     def __unicode__(self):
@@ -35,27 +60,7 @@ class Ticket(models.Model):
     def get_absolute_url(self):
         return reverse('ticket_show' )#, args=[str(self.ctx)])
 
-class Project(models.Model):                   
-    """A Project"""
 
-    title = models.CharField(max_length=1024)
-    ctx = models.UUIDField(unique=True)
-
-    def __unicode__(self):
-        return self.title
-
-    def __str__(self):
-        return self.title
-
-    # UUIDField is not supported by automatic JSON serializer
-    # so we add a method that retrieve a more convenient dict.
-    def as_json(self):
-        return {
-            'title': self.title,
-        }
-    @models.permalink
-    def get_absolute_url(self):  
-        return reverse('project-list', args=[str(self.ctx)])
 
 
 class Comment(models.Model):

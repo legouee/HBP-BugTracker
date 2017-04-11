@@ -27,6 +27,8 @@ from .forms import ProjectForm
 from .models import Ticket
 from .models import Home
 from .models import Project
+from .models import Comment
+
 
 
 
@@ -68,15 +70,15 @@ class ProjectListView(ListView):
 def create_project(request):
     '''Render the wiki create form'''
 
-    import uuid
-    context = uuid.uuid4()
-    print (context)
+    # import uuid
+    # context = uuid.uuid4()
+    # print (context)
 
     try:
-        p = Project.objects.get(ctx=context)
+        p = Project.objects.get()#ctx=context)
         content = markdown(p.text) 
     except Project.DoesNotExist:                     
-        p = Project(ctx=context)
+        p = Project()#ctx=context)
         
     if request.method == 'POST':
         form = ProjectForm(request.POST, instance=p)
@@ -87,7 +89,7 @@ def create_project(request):
 
     form = ProjectForm(instance=p)
 
-    return render(request, 'create_project.html', {'form': form , 'ctx': str(context)})
+    return render(request, 'create_project.html', {'form': form })#, 'ctx': str(context)})
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class HomeView(TemplateView):
@@ -138,7 +140,7 @@ class HomeView(TemplateView):
 
     #     return render(request,'home.html', {'new_project': new_project, 'content': content})
        
-            form.save()
+        form.save()
         return render(request, self.template_name, {'form': form, 'ctx': str(context)})
 
 
@@ -293,7 +295,7 @@ def _is_collaborator(request):
 def config(request):
     '''Render the config file'''
 
-    res = requests.get(seid_projectttings.HBP_ENV_URL)
+    res = requests.get(settings.HBP_ENV_URL)
     config = res.json()
 
     # Use this app client ID

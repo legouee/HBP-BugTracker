@@ -40,9 +40,9 @@ class ProjectForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        fields = ['title', 'ctx']
+        fields = ['title' ] #, 'ctx']
         widgets = {
-            'ctx': forms.HiddenInput(),
+            # 'ctx': forms.HiddenInput(),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
                 'ng-model': 'Project.title',

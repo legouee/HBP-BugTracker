@@ -46,7 +46,7 @@ urlpatterns = [
     #url(r'^edit_ticket/$', edit_ticket, name='ticket_page_edit'),
     # url(r'^edit_ticket/$', edit_ticket, name='ticket_edit'),
     #url(r'^create_ticket$', create_ticket, name='ticket_page_create'), #create_ticket/
-    url(r'^create_ticket$', create_ticket, name='ticket_create'), #create_ticket/
+    url(r'^create_ticket$', create_ticket, name='ticket-create'), #create_ticket/
 
     url(r'^Menu_deroulant$', Test_Menu_deroulant, name='Menu_deroulant'), 
     url(r'^$', HomeView.as_view(), name='home'),
