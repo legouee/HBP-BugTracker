@@ -16,7 +16,12 @@
 <br/><br/><br/><br/><br/><br/>
 -->
 
-
+    <div class="navbar navbar-form">
+        <form action= "{% url 'home' %}">
+            <input type="submit" value="Home" />
+        </form>
+        <br/>
+    </div>
 
 
 
@@ -31,7 +36,7 @@
         <div class="list-group">
 
         <a href="{% url 'ticket-detail' pk=ticket.pk %}" class="list-group-item"> {#Le pk ici ne sert qu'a l'affichage de l'url dans le navigateur#}
-            
+           {# >Comments: {{ post.comments.count }} #} 
 
 
 

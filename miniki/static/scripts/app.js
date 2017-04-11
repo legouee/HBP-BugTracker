@@ -11,6 +11,16 @@ app.controller('HomeForm', function($scope) {
    };
 });
 
+
+app.controller('CommentForm', function($scope) {
+   // The form controller that manage the displays of preview
+   $scope.create = false
+   $scope.createComment = function () {
+     $scope.create = !$scope.create;
+     console.log("create comment")
+   };
+});
+
 // Bootstrap function
 angular.bootstrap().invoke(function($http, $log) {
   $http.get('/config.json').then(function(res) {

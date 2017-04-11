@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-
+{% load jsonify %}
 {% block content %}
 
 <script ="text/javascript">
@@ -8,7 +8,7 @@
 <main class="page">
 
     <div class="navbar navbar-form">
-        <form action="home">
+        <form action= "{% url 'home' %}">
             <input type="submit" value="Home" />
         </form>
         <br/>
@@ -25,7 +25,8 @@
 
 
 
-
+<!--WTF is this ?-->
+<p>tatata</p>
     <form action="" class="ticket-form" method="POST" >
         {% csrf_token %}
 
@@ -36,10 +37,7 @@
         <section role="content">
             {{content|safe}}
         </section>  
-
     </form>
-
-
 
 
 
@@ -47,6 +45,106 @@
     <script>
     document.getElementById("current_url").innerHTML = window.location.href;
     </script>
+
+
+<!--Tests for the comments !-->
+
+<hr>
+
+{% for comment in object.comments.all %}
+    <div class="comment">
+        <div class="date">{{ comment.created_date }}</div>
+        <!--<strong>{{ comment.author }}</strong>-->
+        <p>{{ comment.text|linebreaks }}</p>
+    </div>
+{% empty %}
+    <p>No comments here yet, but yours can be the first one</p>
+{% endfor %}
+
+
+
+  
+       
+
+
+<main action="" class="commentForm" method="POST" ng-controller="CommentForm" >  <!--ng-init='home = {{form.instance.as_json|jsonify}}'> -->
+        
+        
+        
+        <block>
+        </block>
+            <form action="" class="ticket-form" method="POST">
+                <div class="ticket-form-fields">
+
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    {{ form.ctx }}
+                    <div class="form-group">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                        <p class="help-text">{{ form.title.errors }}</p>
+                    </div>
+                    <div class="form-group form-group-editor">
+                        {{form.text.label_tag}}
+                        {{form.text}}
+                        <p class="help-text">{{ form.text.errors }}</p>
+                    </div>
+                </div>
+
+    <div class="navbar navbar-form">
+            <button type="submit" class="btn btn-primary">Save</button> 
+
+
+
+                </div>
+            </form>
+
+        </br></br></br>
+        
+        <block>
+    
+                <form action="" class="comment-form" method="POST">
+                        <div class="comment-form-fields" ng-show='create'>
+                    
+                                <p>Ok c'est parti !</p>
+                                {% csrf_token %}
+                                {{ form.non_field_errors }}
+                                {{ form.ctx }}
+                    
+                                <!--<div class="form-group">-->
+                                    <!--{# {{ form.author.label_tag }} #}
+                                    {# {{ form.author }} #}-->
+
+                               <div class="form-group form-group-editor">
+                                        {{form.text.label_tag}}
+                                        {{form.text}}
+                                        <p class="help-text">{{ form.text.errors }}</p>
+                                </div>
+
+                            <!--<p class="help-text">{{ form.project_name.errors }}</p>-->
+                        <!--</div>-->
+                        </div>
+
+                        <!--<div class="navbar navbar-form" ng-show='create'>
+                                <button type="submit" class="btn btn-primary"  >Save your project</button>
+                        </div>-->
+              
+                        <div class="comment-form-non-fields" ng-show='!create'>  
+                                <header class="page-header">
+  
+                                </header>
+
+                                <section role="content">
+                                        <a class="btn btn-primary"  ng-click="createComment()">New comment</a>
+                                </section>
+                    
+                        </div>
+                </form>
+        </block>
+</main>
+   
+
+
 
 </main>
 

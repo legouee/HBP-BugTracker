@@ -16,10 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.conf.urls import include
 
-from miniki.views import show_ticket
+# from miniki.views import show_ticket
 from miniki.views import config
 from miniki.views import HomeView
-from miniki.views import edit_ticket
+# from miniki.views import edit_ticket
 from miniki.views import create_ticket
 from miniki.views import TicketListView
 
@@ -40,9 +40,9 @@ urlpatterns = [
     url('', include('hbp_app_python_auth.urls', namespace='hbp-social')),
 
     #url(r'^show_ticket/$', show_ticket, name='ticket_page_show'),
-    url(r'^show_ticket/$', show_ticket, name='ticket_show'),
+    # url(r'^show_ticket/$', show_ticket, name='ticket_show'),
     #url(r'^edit_ticket/$', edit_ticket, name='ticket_page_edit'),
-    url(r'^edit_ticket/$', edit_ticket, name='ticket_edit'),
+    # url(r'^edit_ticket/$', edit_ticket, name='ticket_edit'),
     #url(r'^create_ticket$', create_ticket, name='ticket_page_create'), #create_ticket/
     url(r'^create_ticket$', create_ticket, name='ticket_create'), #create_ticket/
     url(r'^Menu_deroulant$', Test_Menu_deroulant, name='Menu_deroulant'), 
@@ -57,10 +57,16 @@ urlpatterns = [
 
     # url(r'^(?P<slug>[-\w]+)/$', TicketDetailView.as_view(), name='ticket-detail'),
     # url(r'^(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
-    url(r'^ticket_detail/(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
+    url(r'^ticket/(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
 
 
-    
+
+
+    # url(r'^ticket/(?P<pk>\d+)/comment/$', views.add_comment_to_post, name='add_comment_to_post'),
+
+
+
+
 
 
     # url(r'^(?P<title>\w+)/$', TicketDetailView.as_view(), name='ticket-detail'),

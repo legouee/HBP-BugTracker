@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="navbar navbar-form">
-        <form action= {% url 'home' %}>
+        <form action= "{% url 'home' %}">
             <input type="submit" value="Home" />
         </form>
         <br/>
@@ -30,9 +30,8 @@
         </div>
     </div>
 
- <div class="navbar navbar-form">
-        <button type="submit" class="btn btn-primary">Save</button>
-            
+    <div class="navbar navbar-form">
+            <button type="submit" class="btn btn-primary">Save</button>    
     </div>
 </form>
 {% endblock %}

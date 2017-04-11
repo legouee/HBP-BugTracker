@@ -2,6 +2,8 @@ from django import forms
 #from .models import TicketPage 
 from .models import Ticket
 from .models import Home
+from .models import Comment
+
 
 
 #class TicketPageForm(forms.ModelForm): 
@@ -11,9 +13,9 @@ class TicketForm(forms.ModelForm):
     class Meta:
         #model = TicketPage
         model = Ticket
-        fields = ['title', 'text', 'ctx']
+        fields = ['title', 'text' ] #, 'ctx']
         widgets = {
-            'ctx': forms.HiddenInput(),
+            # 'ctx': forms.HiddenInput(),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
                 #'ng-model': 'TicketPage.title',
@@ -45,12 +47,27 @@ class TicketForm(forms.ModelForm):
 class HomeForm(forms.ModelForm):
     class Meta:
         model = Home
-        fields = ['project_name', 'ctx']
+        fields = ['project_name' ]#, 'ctx']
         widgets = {
-            'ctx': forms.HiddenInput(),
+            # 'ctx': forms.HiddenInput(),
             'project_name': forms.TextInput(attrs={
                 'class': 'form-control',
                 'ng-model': 'Home.project_name',
             })
         }
 
+class CommentForm(forms.ModelForm):
+    
+    class Meta:
+        model = Comment
+        # fields = ('author', 'text',)
+        fields = ['text',]
+
+        widgets = {
+            # 'ctx': forms.HiddenInput(),
+            'text': forms.TextInput(attrs={
+                'class': 'form-control',
+                'ng-model': 'Comment.text',
+            })
+        }
+        
