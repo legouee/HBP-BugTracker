@@ -8,12 +8,10 @@ from .models import Comment
 from .models import Project
 
 
-#class TicketPageForm(forms.ModelForm): 
 class TicketForm(forms.ModelForm):           
     """Ticket edition form"""
 
     class Meta:
-        #model = TicketPage
         model = Ticket
         fields = ['title', 'text' ] #, 'ctx']
         widgets = {

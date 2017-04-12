@@ -68,7 +68,11 @@ class Ticket(models.Model):
 
 class Comment(models.Model):
     # ticket = models.ForeignKey('blog.Post', related_name='comments', on_delete=models.CASCADE)
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, default = 0)
+
+    # ticket = models.IntegerField(default = 0)
+
+
     author = models.CharField(max_length=200)
     text = models.TextField()
     # null=True
