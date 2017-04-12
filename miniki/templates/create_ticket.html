@@ -9,29 +9,46 @@
         </form>
         <br/>
     </div>
+<br/>
+<br/>
 
 <form action="" class="ticket-form" method="POST">
-    
-    <!--ng-controller="ticketCreationPageForm" ng-init='create_ticket_Page = {{form.instance.as_json|jsonify}}'>-->
-    <div class="ticket-form-fields">
-
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-        {{ form.ctx }}
-        <div class="form-group">
-            {{ form.title.label_tag }}
-            {{ form.title }}
-            <p class="help-text">{{ form.title.errors }}</p>
-        </div>
-        <div class="form-group form-group-editor">
-            {{form.text.label_tag}}
-            {{form.text}}
-            <p class="help-text">{{ form.text.errors }}</p>
-        </div>
+    <ng-controller="ticketCreationForm" ng-init='create_ticket = {{form.instance.as_json|jsonify}}'>
+    <div class="panel ticket-form-fields">
+        <table class="table table-striped table-condensed" >
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="panel-heading"> 
+                <h3 class="panel-title" id="title-ticket">New Ticket </h3>
+            </div>
+         <tbody>
+            <tr  id="table-create-ticket-content">
+                <td width= 70 >
+                    {{ form.title.label_tag }}
+                </td>  
+                <td>
+                        {{ form.title }}
+                        <p class="help-text">{{ form.title.errors }}</p>
+                </td>
+                
+            </tr>
+            <tr id="table-create-ticket-content">
+                <td width= 70>
+                    {{ form.text.label_tag }}
+                </td>  
+                <td>
+                        {{form.text}}
+                        <p class="help-text">{{ form.text.errors }}</p>
+                </td>
+            </tr>
+         </tbody>
+        </table>
     </div>
+<br/>
 
     <div class="navbar navbar-form">
-            <button type="submit" class="btn btn-primary">Save</button>    
+            <!--<button type="submit" class="btn btn-primary" >Save</button>    #on-submit=view.redirect()-->
+            <button type="submit" class="btn btn-primary" >Save</button>
     </div>
 </form>
 {% endblock %}

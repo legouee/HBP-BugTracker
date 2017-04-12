@@ -187,29 +187,61 @@ def Test_Menu_deroulant(request):
     
 #     return '%s?ctx=%s' % (reverse(view_name)  , context_uuid)
 
-@login_required(login_url='/login/hbp')
-def create_ticket(request):
-    '''Render the wiki create form'''
+# @login_required(login_url='/login/hbp')
+# def create_ticket(request):
+#     '''Render the wiki create form'''
 
-    try:
-        ticket_creation = Ticket.objects.get()
-        content = markdown(ticket_creation.text) 
-    except Ticket.DoesNotExist:                     
-        ticket_creation = Ticket(ctx=context)
+#     try:
+#         t = Ticket.objects.get()
+#         content = markdown(t.text) 
+#     except Ticket.DoesNotExist:                     
+#         t = Ticket(ctx=context)
         
-    if request.method == 'POST':
+#     if request.method == 'POST':
 
-        form = TicketForm(request.POST, instance=ticket_creation)
-        print (form)
+#         form = TicketForm(request.POST, instance=t)
+#         print (form)
 
+#         if form.is_valid():
+#             t = form.save(commit=False)
+#             t.created_by = 1
+#             t.save()
+
+#     form = TicketForm(instance=t)
+
+#     return render(request, 'create_ticket.html', {'form': form })
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
+class CreateTicketView(TemplateView):
+    # context = UUID(request.GET.get('ctx'))
+    template_name = "create_ticket.html"
+    model = Ticket
+    form_class = TicketForm
+
+    def get(self, request, *args, **kwargs):
+        # try:
+        #     print("try")
+        #     h = self.model.objects.get()
+        #     print (h)
+        # except self.model.DoesNotExist:
+        h = Ticket()
+        form = self.form_class(instance = h)
+
+        return render(request, self.template_name, {'form': form})
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
         if form.is_valid():
-            ticket_creation = form.save(commit=False)
-            ticket_creation.created_by = 1
-            ticket_creation.save()
+            form = form.save(commit=False)
+            form.created_by = 1
+                 # Clean up user input
+            form.save()
+            return self.redirect(request)
+        return render(request, self.template_name, {'form': form})
 
-    form = TicketForm(instance=ticket_creation)
-
-    return render(request, 'create_ticket.html', {'form': form })
+    @classmethod    
+    def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
+        url = reverse('ticket-list')
+        return HttpResponseRedirect(url)
 
 
 def _is_collaborator(request):
@@ -243,7 +275,7 @@ def _is_collaborator(request):
 def config(request):
     '''Render the config file'''
 
-    res = requests.get(self_projects.HBP_ENV_URL)
+    res = requests.get(settings.HBP_ENV_URL)
     config = res.json()
 
     # Use this app client ID
