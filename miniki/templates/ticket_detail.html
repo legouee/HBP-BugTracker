@@ -22,13 +22,13 @@
             <tbody>
                 <tr  id="table-ticket-detail">
                     <td width=200 >
-                    Ticket # {{object.pk}}
+                    Ticket # {{object.1.pk}}
                     </td>  
                     <td width=1050>
-                        {{ object.title }}
+                        {{ object.1.title }}
                     </td>
                     <td width=100 >
-                        {{ object.status }}
+                        {{ object.1.status }}
                     </td>
                 </tr>
                 <tr id="table-ticket-detail-content">
@@ -37,29 +37,17 @@
                     </td>  
                     <td overflow=scroll>
                            <br/>
-                        {{ object.text }}
+                        {{ object.1.text }}
                     </td>
                 </tr>
              </tbody>
         </table>
     </form>
 
-
-    <p id="current_url"></p>
-<h1>{{ object.1.title }}</h1>
-<br/>
-<div style="border: 2px solid #1c75c8; padding: 3px; background-color: #c5ddf6; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; -moz-border-radius-bottomright: 5px; -moz-border-radius-bottomleft: 5px;">
-<p>
-<strong>Text</strong>: {{ object.1.text }}
-</p>
-</div>
-<br/><br/><br/>
-
     <p id="current_url"></p>
     <script>
     document.getElementById("current_url").innerHTML = window.location.href;
     </script>
-
 
 {% for comment in object.0.all %}
     <div class="comment">
