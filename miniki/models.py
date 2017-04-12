@@ -37,8 +37,9 @@ class Ticket(models.Model):
     # ctx = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
     # ctx = models.UUIDField(unique=True)
     creation_date = models.DateTimeField(auto_now_add=True)
-    # id_project = models.ForeignKey(Project)#, on_delete=models.CASCADE())
-    id_project = models.IntegerField(default = 0)
+    id_project =   models.IntegerField(default=0)  #models.ForeignKey('Project', default=1)#, on_delete=models.CASCADE())
+    status = models.CharField(max_length=12, default="")
+
     # created_by = models.IntegerField()
 
     def __unicode__(self):
@@ -49,8 +50,8 @@ class Ticket(models.Model):
         return {
             'title': self.title,
             'text': self.text,
+            'status': self.status,
             # 'ctx': str(self.ctx),
-
             'id_project': self.id_project
 
             #'created_by': self.created_by
@@ -58,8 +59,10 @@ class Ticket(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return reverse('ticket_show' )#, args=[str(self.ctx)])
-
+        return reverse('ticket_list' )#, args=[str(self.ctx)])
+    @models.permalink
+    def get_absolute_url():
+        return reverse('ticket_list' )
 
 
 

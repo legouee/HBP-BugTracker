@@ -13,42 +13,54 @@
         </form>
         <br/>
     </div>
-
-<h1>{{ object.1.title }}</h1>
-<br/>
-<div style="border: 2px solid #1c75c8; padding: 3px; background-color: #c5ddf6; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; -moz-border-radius-bottomright: 5px; -moz-border-radius-bottomleft: 5px;">
-<p>
-<strong>Text</strong>: {{ object.1.text }}
-</p>
-</div>
-<br/><br/><br/>
-
-
+    <form action="" class="ticket-form" method="POST" >    
+        <table class="table table-striped table-condensed" >
+            {% csrf_token %}
+            <div class="panel-heading"> 
+                <h3 class="panel-title" id="title-ticket"> Ticket detail </h3>
+            </div>
+            <tbody>
+                <tr  id="table-ticket-detail">
+                    <td width=200 >
+                    Ticket # {{object.1.pk}}
+                    </td>  
+                    <td width=1050>
+                        {{ object.1.title }}
+                    </td>
+                    <td width=100 >
+                        {{ object.1.status }}
+                    </td>
+                </tr>
+                <tr id="table-ticket-detail-content">
+                    <td>
+                        <br/>
+                    </td>  
+                    <td overflow=scroll>
+                           <br/>
+                        {{ object.1.text }}
+                    </td>
+                </tr>
+             </tbody>
+        </table>
+    </form>
 
     <p id="current_url"></p>
     <script>
     document.getElementById("current_url").innerHTML = window.location.href;
     </script>
 
-
-
 {% for comment in object.0.all %}
     <div class="comment">
         <div class="date">{{ comment.created_date }}</div>
-        <!--<strong>{{ comment.author }}</strong>-->
+        <strong>{{ comment.author }}</strong>
         <p>{{ comment.text|linebreaks }}</p>
     </div>
 {% empty %}
     <p>No comments here yet, but yours can be the first one</p>
 {% endfor %}
+</main>
 
-
-
-  
-       
-
-
-<main action="" class="commentForm" method="POST" ng-controller="CommentForm" >  <!--ng-init='home = {{form.instance.as_json|jsonify}}'> -->
+<main action="" class="commentForm" method="POST" ng-controller="CommentForm" >
         
         
         
@@ -86,33 +98,11 @@
     
                 <form action="" class="comment-form" method="POST">
 
-                    {%comment%}
-                        <div class="comment-form-fields" ng-show='create'>
-                    
-                                <p>Ok c'est parti !</p>
-                                {% csrf_token %}
-                                {{ form.non_field_errors }}
-                                {# {{ form.ctx }} #}
-                    
-                                <!--<div class="form-group">-->
-                                    <!--{# {{ form.author.label_tag }} #}
-                                    {# {{ form.author }} #}-->
+             
 
-                               <div class="form-group form-group-editor">
-                                        <p>Heu lalalala</p>
-                                        {{form.text.label_tag}}
-                                        {{form.text}}
-                                        <p class="help-text">{{ form.text.errors }}</p>
-                                </div>
-
-                            <!--<p class="help-text">{{ form.project_name.errors }}</p>-->
-                        <!--</div>-->
-                        </div>
-                        {%endcomment%}
-
-                        <!--<div class="navbar navbar-form" ng-show='create'>
+                        <div class="navbar navbar-form" ng-show='create'>
                                 <button type="submit" class="btn btn-primary"  >Save your project</button>
-                        </div>-->
+                        </div>
               
                         <div class="comment-form-non-fields" ng-show='!create'>  
                                 <header class="page-header">
@@ -126,11 +116,6 @@
                         </div>
                 </form>
         </block>
-</main>
-   
-
-
-
 </main>
 
 {% endblock %}

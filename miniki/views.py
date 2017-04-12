@@ -1,6 +1,19 @@
 
 '''Views'''
 
+from django.conf import settings
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirect 
+
+from hbp_app_python_auth.auth import get_access_token, get_token_type, get_auth_header
+import hbp_app_python_auth.settings as auth_settings
+
+import requests
+
+from django.views.generic.list import ListView
+from django.views.generic.base import  TemplateView, View
+from django.views.generic.detail import DetailView
+
+
 from django.shortcuts import render_to_response 
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -16,34 +29,14 @@ from django.utils.decorators import method_decorator
 import bleach
 
 from markdown import markdown
-
-#from .forms import TicketPageForm
 from .forms import TicketForm
 from .forms import HomeForm
-
 from .forms import CommentForm
 from .forms import ProjectForm
-#from .models import TicketPage
 from .models import Ticket
 from .models import Home
 from .models import Project
 from .models import Comment
-
-
-
-
-from django.conf import settings
-from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirect 
-
-from hbp_app_python_auth.auth import get_access_token, get_token_type, get_auth_header
-import hbp_app_python_auth.settings as auth_settings
-
-import requests
-
-from django.views.generic.list import ListView
-from django.views.generic.base import  TemplateView, View
-from django.views.generic.detail import DetailView
-
 # def form_valid(self, form):
 
 #     self.object = form.save()
@@ -54,7 +47,6 @@ from django.views.generic.detail import DetailView
 
 #     return HttpResponseRedirect(self.get_success_url())
 
- 
 class ProjectListView(ListView): 
     model = Project
     template_name = "project_list.html"
@@ -70,15 +62,11 @@ class ProjectListView(ListView):
 def create_project(request):
     '''Render the wiki create form'''
 
-    # import uuid
-    # context = uuid.uuid4()
-    # print (context)
-
     try:
-        p = Project.objects.get()#ctx=context)
+        p = Project.objects.get()
         content = markdown(p.text) 
     except Project.DoesNotExist:                     
-        p = Project()#ctx=context)
+        p = Project()
         
     if request.method == 'POST':
         form = ProjectForm(request.POST, instance=p)
@@ -89,7 +77,9 @@ def create_project(request):
 
     form = ProjectForm(instance=p)
 
-    return render(request, 'create_project.html', {'form': form })#, 'ctx': str(context)})
+    return render(request, 'create_project.html', {'form': form})
+
+
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class HomeView(TemplateView):
@@ -102,49 +92,24 @@ class HomeView(TemplateView):
         return Home.objects.get()
 
     def get(self, request, *args, **kwargs):
-        # import uuid
-        # context = uuid.uuid4()
-        # print ("request method",request.method)
         try:
-            h = Home.objects.get()#ctx=context)
+            print("try")
+            h = Home.objects.get()
+            print (h)
         except Home.DoesNotExist:
-            h = Home()#ctx=context)
-
+            print("Home doesn't exist")
+            h = Home()
         form = self.form_class(instance = h)
 
-        return render(request, self.template_name, {'form': form }) #, 'ctx': str(context)})
+        return render(request, self.template_name, {'form': form})
     
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         if form.is_valid():
-            print("is valid")
             form = form.save(commit=False)
                  # Clean up user input
-
-            p.save()
-            return HttpResponseRedirect('home.html')
-        return render(request, 'home.html', {'form': p  }) #, 'ctx': str(context)})
-
-    # @classmethod
-    # def create_Project(self, **kwargs):
-    #     print("in crea#}te project")
-        
-    #     if request.method == 'POST':
-    #         form = HomeForm(request.POST, instance=p)
-    #     if form.is_valid():
-    #         p = form.save(commit=False)
-    #              # Clean up user input
-    #         p.save()
-    #     else:
-    #         form = HomeForm(instance=p)
-
-    #     return render(request,'home.html', {'new_project': new_project, 'content': content})
-       
-        form.save()
-        return render(request, self.template_name, {'form': form, 'ctx': str(context)})
-
-
-
+            form.save()
+        return render(request, self.template_name, {'form': form})
 
 
 
@@ -152,11 +117,11 @@ class HomeView(TemplateView):
 def Test_Menu_deroulant(request):
     '''Render the wiki page using the provided context query parameter'''
     print ("###############################################")
-    # print (request.GET.get('ctx'))
+    print (request.GET.get('ctx'))
     print ("###############################################")
     
     try:
-        ticket = Ticket.objects.get()#ctx=context)
+        ticket = Ticket.objects.get(ctx=context)
         content = markdown(ticket.text)  
     except Ticket.DoesNotExist:                  
         ticket = None
@@ -210,49 +175,65 @@ def Test_Menu_deroulant(request):
 
 #     return render(request, 'edit.html', {'form': form, 'ctx': str(context)})
 
-def _reverse_url(view_name, context_uuid):
-    """generate an URL for a view including the ctx query param"""
-    print ("Passing by view edit_ticket _reverse_url ?")
+# def _reverse_url(view_name, context_uuid):
+#     """generate an URL for a view including the ctx query param"""
+#     print ("Passing by view edit_ticket _reverse_url ?")
     
-    return '%s?ctx=%s' % (reverse(view_name)  , context_uuid)
+#     return '%s?ctx=%s' % (reverse(view_name)  , context_uuid)
 
-@login_required(login_url='/login/hbp')
-def create_ticket(request):
-    '''Render the wiki create form'''
+# @login_required(login_url='/login/hbp')
+# def create_ticket(request):
+#     '''Render the wiki create form'''
 
-    # if not _is_collaborator(request):
-    #     return HttpResponseForbidden()
-
-    # context = UUID(request.GET.get('ctx'))
-
-
-    # get or build the wiki page
-    try:#}
-        #ticket_creation_page = TicketPage.objects.get(ctx=context)
-        ticket_creation = Ticket.objects.get()#ctx=context)
-        #content = markdown(ticket_creation_page.text)
-        content = markdown(ticket_creation.text)
-        print ("In create_ticket view : Try is ok")
-    #except TicketPage.DoesNotExist: 
-    except Ticket.DoesNotExist:                     
-        #ticket_creation_page = TicketPage(ctx=context)
-        ticket_creation = Ticket()#ctx=context)
-        print ("In create_ticket view : Try not ok")
-
+#     try:
+#         t = Ticket.objects.get()
+#         content = markdown(t.text) 
+#     except Ticket.DoesNotExist:                     
+#         t = Ticket(ctx=context)
         
-    if request.method == 'POST':
+#     if request.method == 'POST':
 
-        form = TicketForm(request.POST, instance=ticket_creation)
-        print (form)
+#         form = TicketForm(request.POST, instance=t)
+#         print (form)
 
+#         if form.is_valid():
+#             t = form.save(commit=False)
+#             t.created_by = 1
+#             t.save()
+#     return render(request, 'create_ticket.html', {'form': form })
+
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
+class CreateTicketView(TemplateView):
+    # context = UUID(request.GET.get('ctx'))
+    template_name = "create_ticket.html"
+    model = Ticket
+    form_class = TicketForm
+
+    def get(self, request, *args, **kwargs):
+        # try:
+        #     print("try")
+        #     h = self.model.objects.get()
+        #     print (h)
+        # except self.model.DoesNotExist:
+        h = Ticket()
+        form = self.form_class(instance = h)
+
+        return render(request, self.template_name, {'form': form})
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
         if form.is_valid():
-            ticket_creation = form.save(commit=False)
-            ticket_creation.created_by = 1
-            ticket_creation.save()
+            form = form.save(commit=False)
+            form.created_by = 1
+                 # Clean up user input
+            form.save()
+            return self.redirect(request)
+        return render(request, self.template_name, {'form': form})
 
-    form = TicketForm(instance=ticket_creation)
-
-    return render(request, 'create_ticket.html', {'form': form })#, 'ctx': str(context)})
+    @classmethod    
+    def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
+        url = reverse('ticket-list')
+        return HttpResponseRedirect(url)
 
 
 def _is_collaborator(request):
@@ -291,7 +272,7 @@ def config(request):
 
     # Use this app client ID
     config['auth']['clientId'] = auth_settings.SOCIAL_AUTH_HBP_KEY
-    form_class = HomeForm
+
     # Add user token informations
     request.user.social_auth.get().extra_data
     config['auth']['token'] = {
@@ -306,8 +287,6 @@ class TicketListView(ListView):   #DetailView):   #ListView):
     
     model = Ticket
     template_name = "ticket_list.html"
-
-
 
 class TicketDetailView(DetailView):
     # model = Ticket

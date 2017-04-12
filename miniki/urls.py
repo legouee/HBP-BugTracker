@@ -20,7 +20,7 @@ from django.conf.urls import include
 from miniki.views import config
 from miniki.views import HomeView
 # from miniki.views import edit_ticket
-from miniki.views import create_ticket
+from miniki.views import CreateTicketView#create_ticket
 from miniki.views import create_project
 from miniki.views import TicketListView
 
@@ -45,15 +45,14 @@ urlpatterns = [
     # url(r'^show_ticket/$', show_ticket, name='ticket_show'),
     #url(r'^edit_ticket/$', edit_ticket, name='ticket_page_edit'),
     # url(r'^edit_ticket/$', edit_ticket, name='ticket_edit'),
-    #url(r'^create_ticket$', create_ticket, name='ticket_page_create'), #create_ticket/
-    url(r'^create_ticket$', create_ticket, name='ticket-create'), #create_ticket/
-
+    #url(r'^create_ticket/$', create_ticket, name='ticket-create'), #create_ticket/
+    url(r'^create_ticket/$', CreateTicketView.as_view(), name='ticket-create'), #create_ticket/
     url(r'^Menu_deroulant$', Test_Menu_deroulant, name='Menu_deroulant'), 
     url(r'^$', HomeView.as_view(), name='home'),
 
     url(r'^project_list/$',ProjectListView.as_view(), name='project-list'),
     url(r'^create_project/$', create_project, name='project-create'),
-    url(r'^ticket_list/(?P<pk>\d+)/$',TicketListView.as_view(), name='ticket-list2'),
+    #url(r'^ticket_list/(?P<pk>\d+)/$',TicketListView.as_view(), name='ticket-list2'),
     url(r'^ticket_list/$',TicketListView.as_view(), name='ticket-list'),
 
 
