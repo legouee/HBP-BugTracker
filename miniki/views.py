@@ -293,16 +293,12 @@ class TicketDetailView(DetailView):
     model = Comment
     template_name = "ticket_detail.html"
 
-
-    context_object_name = 'context_object_name' #just in case
     form_class = CommentForm
-    #just for now
-    # queryset = Ticket.objects.all()
 
-    # ticket_id = None
 
     def get_object(self):
-        return [Comment.objects.all(), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]  #ici objects.all but need to refine that
+        return [Comment.objects.filter(ticket_id = self.kwargs['pk']), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]
+        
 
     def get_queryset (self):
         return get_object_or_404(Ticket, pk=self.kwargs['pk'])
@@ -316,10 +312,11 @@ class TicketDetailView(DetailView):
         cmt = Comment()
         form = self.form_class(instance = cmt)
 
-        return render(request, self.template_name, {'form': form, 'object': self.get_object() })
+        return render(request, self.template_name, {'form': form, 'object': self.get_object() })        
 
     def post(self, request, *args, **kwargs):
-        comment_creation = Comment()        
+        comment_creation = Comment()
+        comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
        
         if request.method == 'POST':
             print ("request.method == 'POST'")
