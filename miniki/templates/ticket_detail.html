@@ -14,30 +14,14 @@
         <br/>
     </div>
 
-<h1>{{ object.title }}</h1>
+<h1>{{ object.1.title }}</h1>
 <br/>
 <div style="border: 2px solid #1c75c8; padding: 3px; background-color: #c5ddf6; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; -moz-border-radius-bottomright: 5px; -moz-border-radius-bottomleft: 5px;">
 <p>
-<strong>Text</strong>: {{ object.text }}
+<strong>Text</strong>: {{ object.1.text }}
 </p>
 </div>
 <br/><br/><br/>
-
-
-
-<!--WTF is this ?-->
-<p>tatata</p>
-    <form action="" class="ticket-form" method="POST" >
-        {% csrf_token %}
-
-        <header class="page-header">
-          <h1>{{ticket_page.title}}</h1>
-        </header>
-
-        <section role="content">
-            {{content|safe}}
-        </section>  
-    </form>
 
 
 
@@ -47,11 +31,8 @@
     </script>
 
 
-<!--Tests for the comments !-->
 
-<hr>
-
-{% for comment in object.comments.all %}
+{% for comment in object.0.all %}
     <div class="comment">
         <div class="date">{{ comment.created_date }}</div>
         <!--<strong>{{ comment.author }}</strong>-->
@@ -104,18 +85,21 @@
         <block>
     
                 <form action="" class="comment-form" method="POST">
+
+                    {%comment%}
                         <div class="comment-form-fields" ng-show='create'>
                     
                                 <p>Ok c'est parti !</p>
                                 {% csrf_token %}
                                 {{ form.non_field_errors }}
-                                {{ form.ctx }}
+                                {# {{ form.ctx }} #}
                     
                                 <!--<div class="form-group">-->
                                     <!--{# {{ form.author.label_tag }} #}
                                     {# {{ form.author }} #}-->
 
                                <div class="form-group form-group-editor">
+                                        <p>Heu lalalala</p>
                                         {{form.text.label_tag}}
                                         {{form.text}}
                                         <p class="help-text">{{ form.text.errors }}</p>
@@ -124,6 +108,7 @@
                             <!--<p class="help-text">{{ form.project_name.errors }}</p>-->
                         <!--</div>-->
                         </div>
+                        {%endcomment%}
 
                         <!--<div class="navbar navbar-form" ng-show='create'>
                                 <button type="submit" class="btn btn-primary"  >Save your project</button>

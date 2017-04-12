@@ -21,7 +21,6 @@ app.controller('CommentForm', function($scope) {
    $scope.create = false
    $scope.createComment = function () {
      $scope.create = !$scope.create;
-     console.log("create comment")
    };
 });
 

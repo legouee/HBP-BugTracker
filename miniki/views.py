@@ -155,12 +155,6 @@ def Test_Menu_deroulant(request):
     # print (request.GET.get('ctx'))
     print ("###############################################")
     
-    # context = UUID(request.GET.get('ctx'))
-
-    # import uuid
-    # context = uuid.uuid4()
-    # print (context)
-
     try:
         ticket = Ticket.objects.get()#ctx=context)
         content = markdown(ticket.text)  
@@ -231,9 +225,6 @@ def create_ticket(request):
 
     # context = UUID(request.GET.get('ctx'))
 
-    # import uuid
-    # context = uuid.uuid4()
-    # print (context)
 
     # get or build the wiki page
     try:#}
@@ -315,156 +306,64 @@ class TicketListView(ListView):   #DetailView):   #ListView):
     
     model = Ticket
     template_name = "ticket_list.html"
-    #context = UUID(request.GET.get('ctx'))
-    
-    
-    # def get_context_data(self, **kwargs):
-    #     # context = super(TicketListView, self).get_context_data(**kwargs)
-    #     #context['now'] = timezone.now()
-    #     return context
 
-    # def get_queryset(self):
-    #     """Return the last five published questions."""
-    #     return Ticket.objects.order_by('-pub_date')[:5]
 
 
 class TicketDetailView(DetailView):
     # model = Ticket
     model = Comment
     template_name = "ticket_detail.html"
-    # slug_field = 'ticket_slug'
 
-    # slug_url_kwarg = 'ticket_id' #need to acces to ticket id  #may be not usefull....
 
     context_object_name = 'context_object_name' #just in case
     form_class = CommentForm
     #just for now
     # queryset = Ticket.objects.all()
 
-    ticket_id = None
+    # ticket_id = None
 
     def get_object(self):
+        return [Comment.objects.all(), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]  #ici objects.all but need to refine that
 
+    def get_queryset (self):
         return get_object_or_404(Ticket, pk=self.kwargs['pk'])
-        # return get_object_or_404(Ticket, pk=1)
-
-
-    # def get_object(self):
-    #        object = get_object_or_404(TicketPage,title=self.kwargs['title'])
-    #        return object
 
     def get_context_data(self, **kwargs):
         context = super(TicketDetailView, self).get_context_data(**kwargs)
         # context['now'] = timezone.now()
         return context
 
-    def get_queryset(self):
-        pass 
-        #this should just return one to test
+    def get(self, request, *args, **kwargs):
+        cmt = Comment()
+        form = self.form_class(instance = cmt)
 
-    # if request.method == "POST":
-    #     form = CommentForm(request.POST)
-    #     if form.is_valid():
-    #         comment = form.save(commit=False)
-    #         comment.post = post
-    #         comment.save()
-    #         return redirect('post_detail', pk=post.pk)
+        return render(request, self.template_name, {'form': form, 'object': self.get_object() })
 
-    # def get(self, request, *args, **kwargs):
-    #     import uuid
-    #     context = uuid.uuid4()
-    #     print ("request method",request.method)
-    #     try:
-    #         cmt = Comment.objects.get(ctx=context)
-    #         print('comment exist')
-    #     except Comment.DoesNotExist:
-    #         print('comment does not exist')
-    #         cmt = Comment(ctx=context)
-
-    #     form = self.form_class(instance = cmt)
-
-    #     return render(request, self.template_name, {'form': form, 'ctx': str(context)})
-    
-    # def post(self, request, *args, **kwargs):
-    #     # print("in post")
-
-    #     # form = CommentForm(request.POST, instance=ticket_creation)
-    #     # print (form)
-    #     # # form = self.form_class(request.POST)
-    #     # # self.object = self.get_object() 
-    #     # # form = self.get_form()
-
-    #     import uuid
-    #     context = uuid.uuid4()
-
-
-    #     try:#}
-    #         #ticket_creation_page = TicketPage.objects.get(ctx=context)
-    #         comment_creation = Comment.objects.get(ctx=context)
-    #         #content = markdown(ticket_creation_page.text)
-    #         content = markdown(comment_creation.text)
-    #         print ("In create_ticket view : Try is ok")
-    #         #except TicketPage.DoesNotExist: 
-    #     except Comment.DoesNotExist:                     
-    #         #ticket_creation_page = TicketPage(ctx=context)
-    #         comment_creation = Comment(ctx=context)
-    #         print ("In create_comment view : Try not ok")
-        
+    def post(self, request, *args, **kwargs):
+        comment_creation = Comment()        
        
+        if request.method == 'POST':
+            print ("request.method == 'POST'")
+            form = CommentForm(request.POST, instance=comment_creation)
 
-    #     if request.method == 'POST':
-    #         print ("request.method == 'POST'")
+        if form.is_valid():
+            p = form.save(commit=False)
+            p.save()
+        else :
+            pass
+            #faire passer un message...
 
-    #         form = CommentForm(request.POST, instance=comment_creation)
-    #         print (form)
+        return render(request, 'home.html', {'form': p}) #need to change that       
 
+    def form_valid(self, form):
+        """
+        If the form is valid, redirect to the supplied URL
+        """
+        model_instance = form.save(commit=False)
+        model_instance.ticket = self.object
+        # model_instance.author = self.request.user
+        # model_instance.pub_date = datetime.now()
+        # model_instance.publish = True
 
-    #     if form.is_valid():
-    #         p = form.save(commit=False)
-    #              # Clean up user input
-    #         p.save()
-    #         # return HttpResponseRedirect('home.html') 
-    #         return get_object_or_404(Ticket, pk=self.kwargs['pk'])
-    #     return render(request, 'home.html', {'form': p, 'ctx': str(context)}) #let that for now
-
-       
-        
-
-    # def form_valid(self, form):
-    #     """
-    #     If the form is valid, redirect to the supplied URL
-    #     """
-    #     model_instance = form.save(commit=False)
-    #     model_instance.ticket = self.object
-    #     # model_instance.author = self.request.user
-    #     # model_instance.pub_date = datetime.now()
-    #     # model_instance.publish = True
-
-    #     model_instance.save()
-    #     return HttpResponseRedirect(self.get_success_url())
-
-
-
-
-    # try:#}
-    #     #ticket_creation_page = TicketPage.objects.get(ctx=context)
-    #     comment_creation = Comment.objects.get(ctx=context)
-    #     #content = markdown(ticket_creation_page.text)
-    #     content = markdown(comment_creation.text)
-    #     print ("In create_ticket view : Try is ok")
-    # #except TicketPage.DoesNotExist: 
-    # except Comment.DoesNotExist:                     
-    #     #ticket_creation_page = TicketPage(ctx=context)
-    #     comment_creation = Comment(ctx=context)
-    #     print ("In create_comment view : Try not ok")
-        
-       
-
-    # if request.method == 'POST':
-    #     print ("request.method == 'POST'")
-
-    #     form = CommentForm(request.POST, instance=comment_creation)
-    #     print (form)
-
-
-    #     if form.is_valid():
+        model_instance.save()
+        return HttpResponseRedirect(self.get_success_url())
