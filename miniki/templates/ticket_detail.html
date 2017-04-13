@@ -3,7 +3,9 @@
 
 
 {% load jsonify %}
->>>>>>> upstream/master
+
+{% load markdown_deux_tags %}
+
 {% block content %}
 
 <script ="text/javascript">
@@ -13,11 +15,16 @@
 
     <div class="navbar navbar-form">
 
+
         <form action="home">
 
         <form action= "{% url 'home' %}">
 
             <input type="submit" value="Home" />
+
+        <form action= "{% url 'ticket-list' %}">
+            <input type="submit" value="ticket-list" />
+
         </form>
         <br/>
     </div>
@@ -62,11 +69,20 @@
                     <td width=200 >
                     Ticket # {{object.1.pk}}
                     </td>  
-                    <td width=1050>
+                    <td width=950>
                         {{ object.1.title }}
                     </td>
                     <td width=100 >
                         {{ object.1.status }}
+                    </td>
+                </tr>
+                <tr  id="table-ticket-detail">
+                    <td >
+                        by {{ object.1.author }}
+                    </td>
+                    <td >
+                    </td>
+                    <td >
                     </td>
                 </tr>
                 <tr id="table-ticket-detail-content">
@@ -75,7 +91,8 @@
                     </td>  
                     <td overflow=scroll>
                            <br/>
-                        {{ object.1.text|linebreaks }}
+                        {{ object.1.text|markdown}}
+
                     </td>
                 </tr>
              </tbody>
@@ -105,7 +122,7 @@
                         <tr  id="table-ticket-detail-comment-content">
                             <td>
                                 <br/>
-                                {{ comment.text|linebreaks }}
+                                {{ comment.text|markdown }}
                             </td>  
                     </tbody>
                 </div>

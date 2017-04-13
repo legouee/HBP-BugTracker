@@ -6,7 +6,6 @@ from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirec
 
 from hbp_app_python_auth.auth import get_access_token, get_token_type, get_auth_header
 import hbp_app_python_auth.settings as auth_settings
-
 import requests
 
 from django.views.generic.list import ListView
@@ -37,6 +36,9 @@ from .models import Ticket
 from .models import Home
 from .models import Project
 from .models import Comment
+
+
+
 # def form_valid(self, form):
 
 #     self.object = form.save()
@@ -65,7 +67,7 @@ def create_project(request):
     try:
         p = Project.objects.get()
         content = markdown(p.text) 
-    except Project.DoesNotExist:                     
+    except Project.DoesNotExist:                
         p = Project()
         
     if request.method == 'POST':
@@ -87,11 +89,14 @@ class HomeView(TemplateView):
     template_name = "home.html"
     model = Home
     form_class = HomeForm
+    
 
     def projects(self):
         return Home.objects.get()
 
     def get(self, request, *args, **kwargs):
+        if not _is_collaborator(request):
+            return HttpResponseForbidden()
         try:
             print("try")
             h = Home.objects.get()
@@ -101,7 +106,7 @@ class HomeView(TemplateView):
             h = Home()
         form = self.form_class(instance = h)
 
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'ctx': request.META['QUERY_STRING']})
     
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -110,6 +115,7 @@ class HomeView(TemplateView):
                  # Clean up user input
             form.save()
         return render(request, self.template_name, {'form': form})
+
 
 
 
@@ -164,7 +170,7 @@ def Test_Menu_deroulant(request):
 #         if form.is_valid():
 #             #ticket_page = form.save(commit=False)
 #             ticket = form.save(commit=False)
-#             # Clean up user input
+#             # Clean up user inputm
 #             #ticket_page.text = bleach.clean(ticket_page.text)
 #             ticket.text = bleach.clean(ticket.text)
 #             #ticket_page.save()
@@ -205,6 +211,7 @@ def Test_Menu_deroulant(request):
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class CreateTicketView(TemplateView):
     # context = UUID(request.GET.get('ctx'))
+
     template_name = "create_ticket.html"
     model = Ticket
     form_class = TicketForm
@@ -224,7 +231,7 @@ class CreateTicketView(TemplateView):
         form = self.form_class(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            form.created_by = 1
+            form.author = request.user
                  # Clean up user input
             form.save()
             return self.redirect(request)
@@ -235,10 +242,8 @@ class CreateTicketView(TemplateView):
         url = reverse('ticket-list')
         return HttpResponseRedirect(url)
 
-
 def _is_collaborator(request):
     '''check access depending on context'''
-    print ("Passing by view edit_ticket _is_collaborator ?")
 
     svc_url = settings.HBP_COLLAB_SERVICE_URL
 
@@ -247,11 +252,7 @@ def _is_collaborator(request):
         return False
     url = '%scollab/context/%s/' % (svc_url, context)
     headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
-
-    #res = request.GET.get(url, headers=headers)
-    
     res = requests.get(url, headers=headers)
-
     if res.status_code != 200:
         return False
     collab_id = res.json()['collab']['id']
@@ -260,6 +261,7 @@ def _is_collaborator(request):
     if res.status_code != 200:
         return False
     return res.json().get('UPDATE', False)
+
 
 
 
@@ -280,7 +282,8 @@ def config(request):
         'token_type': get_token_type(request.user.social_auth.get()),
         'expires_in': request.session.get_expiry_age(),
     }
-
+ 
+    # test = requests.get
     return JsonResponse(config)
 
 class TicketListView(ListView):   #DetailView):   #ListView):
@@ -288,8 +291,12 @@ class TicketListView(ListView):   #DetailView):   #ListView):
     model = Ticket
     template_name = "ticket_list.html"
 
+    def get(self, request, *args, **kwargs):
+        #will work only the first time
+        return render(request, self.template_name, {'object': Ticket.objects.all()}) #will nedd to replace all() by filter project
+
 class TicketDetailView(DetailView):
-    # model = Ticket
+
     model = Comment
     template_name = "ticket_detail.html"
 
@@ -308,6 +315,7 @@ class TicketDetailView(DetailView):
 
     form_class = CommentForm
 
+    
 
     def get_object(self):
         return [Comment.objects.filter(ticket_id = self.kwargs['pk']), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]
@@ -342,7 +350,7 @@ class TicketDetailView(DetailView):
             pass
             #faire passer un message...
 
-        return render(request, 'home.html', {'form': p}) #need to change that       
+        return render(request, 'ticket_list.html', {'form': p}) #need to change that       
 
     def form_valid(self, form):
         """
