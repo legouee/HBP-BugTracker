@@ -26,7 +26,6 @@ from miniki.views import CreateTicketView#create_ticket
 from miniki.views import create_project
 from miniki.views import TicketListView
 from miniki.views import Test_Menu_deroulant
-from miniki.views import Test_Menu_deroulant
 from miniki.views import TicketDetailView
 from miniki.views import ProjectListView
 
@@ -44,17 +43,10 @@ urlpatterns = [
     url(r'^create_ticket/$', CreateTicketView.as_view(), name='ticket-create'), 
     url(r'^Menu_deroulant$', Test_Menu_deroulant, name='Menu_deroulant'), 
     # url(r'^$', HomeView.as_view(), name='home'),
-    # url(r'(?P<ctx>\d+)^$', HomeView2.as_view(), name='home2'),
-    
 
     url(r'^project_list/$',ProjectListView.as_view(), name='project-list'),
     url(r'^create_project/$', create_project, name='project-create'),
-    # url(r'^ticket_list/$',TicketListView.as_view(), name='ticket-list'),
     url(r'^$',TicketListView.as_view(), name='ticket-list'),
-
-    
-    
-    
 
 
     url(r'^ticket/(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
