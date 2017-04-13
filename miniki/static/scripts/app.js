@@ -1,12 +1,28 @@
 (function() {
 // Define the miniki application, currently doing nothing.
-angular.module('miniki', ['hbpCommon'])
-//.controller('TicketCreationPageForm', function($scope) {
-  
-  // The form controller that manage the displays of preview.
+var app = angular.module('miniki', ['hbpCommon']);
 
-  
-//});
+// app.controller('HomeForm', function($scope) {
+//    // The form controller that manage the displays of preview
+//    $scope.create = false
+//    $scope.createProject = function () {
+//      $scope.create = !$scope.create;
+//      console.log("create")
+//    };
+//    $scope.saveProject = function () {
+//      $scope.create = !$scope.create;
+//      console.log("save")
+//    };
+// });
+
+
+app.controller('CommentForm', function($scope) {
+   // The form controller that manage the displays of preview
+   $scope.create = false
+   $scope.createComment = function () {
+     $scope.create = !$scope.create;
+   };
+});
 
 // Bootstrap function
 angular.bootstrap().invoke(function($http, $log) {

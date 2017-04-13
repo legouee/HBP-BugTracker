@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+
+{% load jsonify %}
+
+{% block content %}
+<div class="navbar navbar-form">
+        <form action= {% url 'home' %}>
+            <input type="submit" value="Home" />
+        </form>
+        <br/>
+    </div>
+
+<form action="" class="project-form" method="POST">
+
+    <div class="project-form-fields">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.ctx }}
+        <div class="form-group">
+            {{ form.title.label_tag }}
+            {{ form.title }}
+            <p class="help-text">{{ form.title.errors }}</p>
+        </div>
+    </div>
+
+ <div class="navbar navbar-form">
+
+        <button type="submit"  class="btn btn-primary" >Save</button>
+        
+    </div>
+</form>
+<div class="navbar navbar-form">
+    <form action="project_list">
+            <button class="btn btn-primary" href="{% url 'project-list' %}">Back to project list</button>
+    </form>      
+</div>
+{% endblock %}

@@ -3,8 +3,9 @@
 {% block content %}
 
 
-<h1>Ticket</h1>
-<ul>
+
+<h1>Tickets</h1>
+<!--<ul>
 {% for ticket in object_list %}
     <li>{{ ticket.title }} </li>
     
@@ -13,5 +14,80 @@
 {% endfor %}
 </ul>
 
+<br/><br/><br/><br/><br/><br/>
+-->
+
+    <div class="navbar navbar-form">
+        <form action= "{% url 'home' %}">
+            <input type="submit" value="Home" />
+        </form>
+        <br/>
+    </div>
+
+
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <h3 class="panel-title">La jolie liste :</h3>
+  </div>
+
+    {% for ticket in object_list %}
+        <div class="list-group">
+
+        <a href="{% url 'ticket-detail' pk=ticket.pk %}" class="list-group-item"> {#Le pk ici ne sert qu'a l'affichage de l'url dans le navigateur#}
+           {# >Comments: {{ post.comments.count }} #} 
+
+            
+            <span class="badge">120</span>
+            {{ ticket.title }} 
+            <br/> 
+            {{ ticket.text }} 
+
+        </a>
+        </div>
+    {% endfor %}
+
+    <div class="navbar navbar-form">
+      <form action="{% url 'ticket-create' %}">
+            <button class="btn btn-primary" >Create new ticket</button>
+      </form>      
+    </div>
+
+</div>
+
+<!--<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Titre</h3>
+    </div>
+    <div class="panel-body">Contenu</div>
+</div>
+
+<div class="panel panel-success">
+  <div class="panel-heading">
+    <h3 class="panel-title">Titre</h3>
+  </div>
+  <div class="panel-body">Contenu</div>
+</div>
+
+<div class="panel panel-warning">
+  <div class="panel-heading">
+    <h3 class="panel-title">Titre</h3>
+  </div>
+  <div class="panel-body">Contenu</div>
+</div>
+
+<div class="panel panel-danger">
+  <div class="panel-heading">
+    <h3 class="panel-title">Titre</h3>
+  </div>
+  <div class="panel-body">Contenu</div>
+</div>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <h3 class="panel-title">Titre</h3>
+  </div>
+  <div class="panel-body">Contenu</div>
+</div>-->
 
 {% endblock %}

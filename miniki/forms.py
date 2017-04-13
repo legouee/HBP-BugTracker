@@ -3,17 +3,22 @@ from django import forms
 from .models import Ticket
 from .models import Home
 
+from .models import Comment
 
-#class TicketPageForm(forms.ModelForm): 
+from .models import Project
+
+
 class TicketForm(forms.ModelForm):           
     """Ticket edition form"""
 
     class Meta:
-        #model = TicketPage
         model = Ticket
-        fields = ['title', 'text', 'ctx']
+        fields = ['title', 'text' ] #, 'ctx']
         widgets = {
-            'ctx': forms.HiddenInput(),
+
+            # 'ctx': forms.HiddenInput(),
+
+            'id_projet': forms.HiddenInput(),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
                 #'ng-model': 'TicketPage.title',
@@ -24,18 +29,48 @@ class TicketForm(forms.ModelForm):
                 #'ng-model': 'TicketPage.text',
                 'ng-model': 'Ticket.text',
             }),
+
             #'created_by': forms.HiddenInput(),
+        }  
+
+class ProjectForm(forms.ModelForm):
+    """Ticket Page edition form"""
+
+    class Meta:
+        model = Project
+        fields = ['title' ] #, 'ctx']
+        widgets = {
+            # 'ctx': forms.HiddenInput(),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'ng-model': 'Project.title',
+            }),
         }  
 
 class HomeForm(forms.ModelForm):
     class Meta:
         model = Home
-        fields = ['title', 'ctx']
+        fields = ['project_name' ]#, 'ctx']
         widgets = {
-            'ctx': forms.HiddenInput(),
-            'title': forms.TextInput(attrs={
+            # 'ctx': forms.HiddenInput(),
+            'project_name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'ng-model': 'Home.title',
-            })
+                'ng-model': 'Home.project_name',
+            }),
         }
 
+class CommentForm(forms.ModelForm):
+    
+    class Meta:
+        model = Comment
+        # fields = ('author', 'text',)
+        fields = ['text',]
+
+        widgets = {
+            # 'ctx': forms.HiddenInput(),
+            'text': forms.TextInput(attrs={
+                'class': 'form-control',
+                'ng-model': 'Comment.text',
+            })
+        }
+        
