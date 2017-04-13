@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% load jsonify %}
+{% load markdown_deux_tags %}
 {% block content %}
 
 <script ="text/javascript">
@@ -24,12 +25,20 @@
                     <td width=200 >
                     Ticket # {{object.1.pk}}
                     </td>  
-                    <td width=1050>
+                    <td width=950>
                         {{ object.1.title }}
                     </td>
                     <td width=100 >
                         {{ object.1.status }}
                     </td>
+                </tr>
+                <tr  id="table-ticket-detail">
+                    <td >
+                        by {{ object.1.author }}
+                    </td>
+                    <td >
+                    </td>
+                
                 </tr>
                 <tr id="table-ticket-detail-content">
                     <td>
@@ -37,7 +46,7 @@
                     </td>  
                     <td overflow=scroll>
                            <br/>
-                        {{ object.1.text }}
+                        {{ object.1.text|markdown}}
                     </td>
                 </tr>
              </tbody>
@@ -53,10 +62,10 @@
     <div class="comment">
         <div class="date">{{ comment.created_date }}</div>
         <strong>{{ comment.author }}</strong>
-        <p>{{ comment.text|linebreaks }}</p>
+        <p>{{ comment.text|markdown }}</p>
     </div>
 {% empty %}
-    <p>No comments here yet, but yours can be the first one</p>
+    <p>No comments here yet, but yours can be the first ones</p>
 {% endfor %}
 </main>
 
