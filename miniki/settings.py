@@ -120,7 +120,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'miniki.wsgi.application'
 
-
+CTX = ''
 
 
 

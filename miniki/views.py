@@ -37,6 +37,10 @@ from .models import Ticket
 from .models import Home
 from .models import Project
 from .models import Comment
+
+from miniki.settings import CTX
+
+
 # def form_valid(self, form):
 
 #     self.object = form.save()
@@ -65,7 +69,7 @@ def create_project(request):
     try:
         p = Project.objects.get()
         content = markdown(p.text) 
-    except Project.DoesNotExist:                     
+    except Project.DoesNotExist:                
         p = Project()
         
     if request.method == 'POST':
@@ -101,7 +105,7 @@ class HomeView(TemplateView):
             h = Home()
         form = self.form_class(instance = h)
 
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'ctx': request.META['QUERY_STRING']})
     
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -110,6 +114,7 @@ class HomeView(TemplateView):
                  # Clean up user input
             form.save()
         return render(request, self.template_name, {'form': form})
+
 
 
 
@@ -164,7 +169,7 @@ def Test_Menu_deroulant(request):
 #         if form.is_valid():
 #             #ticket_page = form.save(commit=False)
 #             ticket = form.save(commit=False)
-#             # Clean up user input
+#             # Clean up user inputm
 #             #ticket_page.text = bleach.clean(ticket_page.text)
 #             ticket.text = bleach.clean(ticket.text)
 #             #ticket_page.save()
@@ -288,13 +293,21 @@ class TicketListView(ListView):   #DetailView):   #ListView):
     model = Ticket
     template_name = "ticket_list.html"
 
+    def get(self, request, *args, **kwargs):
+        #will work only the first time
+        if CTX == "":
+            global CTX
+            CTX = request.META['QUERY_STRING']
+        return render(request, self.template_name, {'object': Ticket.objects.all()}) #will nedd to replace all() by filter project
+
 class TicketDetailView(DetailView):
-    # model = Ticket
+
     model = Comment
     template_name = "ticket_detail.html"
 
     form_class = CommentForm
 
+    
 
     def get_object(self):
         return [Comment.objects.filter(ticket_id = self.kwargs['pk']), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]
