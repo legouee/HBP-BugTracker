@@ -37,7 +37,6 @@ from .models import Home
 from .models import Project
 from .models import Comment
 
-from miniki.settings import CTX
 
 
 # def form_valid(self, form):
@@ -294,9 +293,6 @@ class TicketListView(ListView):   #DetailView):   #ListView):
 
     def get(self, request, *args, **kwargs):
         #will work only the first time
-        if CTX == "":
-            global CTX
-            CTX = request.META['QUERY_STRING']
         return render(request, self.template_name, {'object': Ticket.objects.all()}) #will nedd to replace all() by filter project
 
 class TicketDetailView(DetailView):
@@ -341,7 +337,7 @@ class TicketDetailView(DetailView):
             pass
             #faire passer un message...
 
-        return render(request, 'home.html', {'form': p}) #need to change that       
+        return render(request, 'ticket_list.html', {'form': p}) #need to change that       
 
     def form_valid(self, form):
         """
