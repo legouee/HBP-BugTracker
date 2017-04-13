@@ -6,7 +6,6 @@ from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirec
 
 from hbp_app_python_auth.auth import get_access_token, get_token_type, get_auth_header
 import hbp_app_python_auth.settings as auth_settings
-
 import requests
 
 from django.views.generic.list import ListView
@@ -91,11 +90,14 @@ class HomeView(TemplateView):
     template_name = "home.html"
     model = Home
     form_class = HomeForm
+    
 
     def projects(self):
         return Home.objects.get()
 
     def get(self, request, *args, **kwargs):
+        if not _is_collaborator(request):
+            return HttpResponseForbidden()
         try:
             print("try")
             h = Home.objects.get()
@@ -210,6 +212,7 @@ def Test_Menu_deroulant(request):
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class CreateTicketView(TemplateView):
     # context = UUID(request.GET.get('ctx'))
+
     template_name = "create_ticket.html"
     model = Ticket
     form_class = TicketForm
@@ -229,7 +232,7 @@ class CreateTicketView(TemplateView):
         form = self.form_class(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            form.created_by = 1
+            form.author = request.user
                  # Clean up user input
             form.save()
             return self.redirect(request)
@@ -240,10 +243,8 @@ class CreateTicketView(TemplateView):
         url = reverse('ticket-list')
         return HttpResponseRedirect(url)
 
-
 def _is_collaborator(request):
     '''check access depending on context'''
-    print ("Passing by view edit_ticket _is_collaborator ?")
 
     svc_url = settings.HBP_COLLAB_SERVICE_URL
 
@@ -252,11 +253,7 @@ def _is_collaborator(request):
         return False
     url = '%scollab/context/%s/' % (svc_url, context)
     headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
-
-    #res = request.GET.get(url, headers=headers)
-    
     res = requests.get(url, headers=headers)
-
     if res.status_code != 200:
         return False
     collab_id = res.json()['collab']['id']
@@ -265,6 +262,7 @@ def _is_collaborator(request):
     if res.status_code != 200:
         return False
     return res.json().get('UPDATE', False)
+
 
 
 
@@ -285,7 +283,8 @@ def config(request):
         'token_type': get_token_type(request.user.social_auth.get()),
         'expires_in': request.session.get_expiry_age(),
     }
-
+ 
+    # test = requests.get
     return JsonResponse(config)
 
 class TicketListView(ListView):   #DetailView):   #ListView):
