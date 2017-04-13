@@ -307,11 +307,13 @@ class TicketDetailView(DetailView):
     context_object_name = 'context_object_name' #just in case
 
     #just for now
-    queryset = TicketPage.objects.all()
+    #queryset = TicketPage.objects.all()
+    queryset = Ticket.objects.all()
 
 
     def get_object(self):
-        return get_object_or_404(TicketPage, pk=1)
+        #return get_object_or_404(TicketPage, pk=1)
+        return get_object_or_404(Ticket, pk=1)
 
     # def get_object(self):
     #        object = get_object_or_404(TicketPage,title=self.kwargs['title'])

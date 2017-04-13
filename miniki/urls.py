@@ -22,12 +22,8 @@ from miniki.views import home
 from miniki.views import edit_ticket
 from miniki.views import create_ticket
 from miniki.views import TicketListView
-<<<<<<< HEAD
 from miniki.views import Test_Menu_deroulant
-=======
 from miniki.views import TicketDetailView
-
->>>>>>> upstream/master
 
 
 
