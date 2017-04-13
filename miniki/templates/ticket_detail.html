@@ -9,7 +9,7 @@
 <main class="page">
 
     <div class="navbar navbar-form">
-        <form action= "{% url 'home' %}">
+        <form action= "{% url 'ticket-list' %}">
             <input type="submit" value="Home" />
         </form>
         <br/>
@@ -47,34 +47,49 @@
                     <td overflow=scroll>
                            <br/>
                         {{ object.1.text|markdown}}
+
                     </td>
                 </tr>
              </tbody>
         </table>
     </form>
-
-    <p id="current_url"></p>
-    <script>
-    document.getElementById("current_url").innerHTML = window.location.href;
-    </script>
-
-{% for comment in object.0.all %}
-    <div class="comment">
-        <div class="date">{{ comment.created_date }}</div>
-        <strong>{{ comment.author }}</strong>
-        <p>{{ comment.text|markdown }}</p>
-    </div>
-{% empty %}
-    <p>No comments here yet, but yours can be the first ones</p>
-{% endfor %}
 </main>
 
+
+<main class="comment">
+
+    <div class="panel-heading"> 
+        <h3 class="panel-title" id="title-commment"> Comments </h3>
+    </div>
+
+    {% for comment in object.0.all %}
+        <table class="table table-striped table-condensed" >
+                <div class="comment">
+                    <tbody>
+                        <tr  id="table-ticket-detail-comment">
+                            <td width=200 >
+                                <p>Name and date</p>
+                            </td> 
+                            <td width=2000 >
+                            </td>
+                        </tr>
+
+                        <tr  id="table-ticket-detail-comment-content">
+                            <td>
+                                <br/>
+                                {{ comment.text|markdown }}
+                            </td>  
+                    </tbody>
+                </div>
+        </table>
+    {% empty %}
+        <p>No comments here yet, but yours can be the first one</p>
+    {% endfor %}
+</main>
+
+
+
 <main action="" class="commentForm" method="POST" ng-controller="CommentForm" >
-        
-        
-        
-        <block>
-        </block>
             <form action="" class="ticket-form" method="POST">
                 <div class="ticket-form-fields">
 
@@ -93,38 +108,10 @@
                     </div>
                 </div>
 
-    <div class="navbar navbar-form">
-            <button type="submit" class="btn btn-primary">Save</button> 
-
-
-
+                <div class="navbar navbar-form">
+                    <button type="submit" class="btn btn-primary">Save</button> 
                 </div>
             </form>
-
-        </br></br></br>
-        
-        <block>
-    
-                <form action="" class="comment-form" method="POST">
-
-             
-
-                        <div class="navbar navbar-form" ng-show='create'>
-                                <button type="submit" class="btn btn-primary"  >Save your project</button>
-                        </div>
-              
-                        <div class="comment-form-non-fields" ng-show='!create'>  
-                                <header class="page-header">
-  
-                                </header>
-
-                                <section role="content">
-                                        <a class="btn btn-primary"  ng-click="createComment()">New comment</a>
-                                </section>
-                    
-                        </div>
-                </form>
-        </block>
 </main>
 
 {% endblock %}
