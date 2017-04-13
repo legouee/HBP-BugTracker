@@ -17,9 +17,15 @@
 <br/><br/><br/><br/><br/><br/>
 -->
 
+
+    <div class="navbar navbar-form" id="navbar-style">
+        <form action= "{% url 'home' %}">
+            <input type="submit" value="Home" />
+
     <div class="navbar navbar-form">
         <form action= "{% url 'ticket-list' %}">
             <input type="submit" value="Ticket-list" />
+
         </form>
         <br/>
     </div>
@@ -35,8 +41,13 @@ document.getElementById("current_url").innerHTML = window.location.href;
     <h3 class="panel-title" id="panel-title-ticket">La jolie liste :</h3>
   </div>
 
+
+    {% for ticket in object_list %}
+        <div class="list-group" id="list-group-style">
+
     {% for ticket in object %}
         <div class="list-group" id="list-group-style">
+
 
         <a href="{% url 'ticket-detail' pk=ticket.pk %}" class="list-group-item"> {#Le pk ici ne sert qu'a l'affichage de l'url dans le navigateur#}
            {# >Comments: {{ post.comments.count }} #} 

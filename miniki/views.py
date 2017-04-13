@@ -300,6 +300,19 @@ class TicketDetailView(DetailView):
     model = Comment
     template_name = "ticket_detail.html"
 
+    # slug_url_kwarg = 'ticket_id' #need to acces to ticket id  #may be not usefull....
+
+    context_object_name = 'context_object_name' #just in case
+
+    #just for now
+    #queryset = TicketPage.objects.all()
+    queryset = Ticket.objects.all()
+
+
+    def get_object(self):
+        #return get_object_or_404(TicketPage, pk=1)
+        return get_object_or_404(Ticket, pk=1)
+
     form_class = CommentForm
 
     
