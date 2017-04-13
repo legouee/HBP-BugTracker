@@ -25,12 +25,10 @@ from miniki.views import HomeView
 from miniki.views import CreateTicketView#create_ticket
 from miniki.views import create_project
 from miniki.views import TicketListView
-
 from miniki.views import Test_Menu_deroulant
-
+from miniki.views import Test_Menu_deroulant
 from miniki.views import TicketDetailView
 from miniki.views import ProjectListView
-
 
 
 
