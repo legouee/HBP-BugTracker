@@ -263,6 +263,8 @@ def _is_collaborator(request):
     return res.json().get('UPDATE', False)
 
 
+def _get_access_token(request):
+    return request.user.social_auth.get().extra_data['access_token']
 
 
 @login_required(login_url='/login/hbp')
@@ -274,11 +276,10 @@ def config(request):
 
     # Use this app client ID
     config['auth']['clientId'] = auth_settings.SOCIAL_AUTH_HBP_KEY
-
     # Add user token informations
     # request.user.social_auth.get().extra_data
     config['auth']['token'] = {
-        'access_token': get_access_token(request.user.social_auth.get()),
+        'access_token': _get_access_token(request), #.user.social_auth.get()),
         'token_type': get_token_type(request.user.social_auth.get()),
         'expires_in': request.session.get_expiry_age(),
     }
