@@ -300,7 +300,6 @@ class TicketDetailView(DetailView):
 
     model = Comment
     template_name = "ticket_detail.html"
-
     form_class = CommentForm
 
     
