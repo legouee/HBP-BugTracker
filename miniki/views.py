@@ -33,13 +33,13 @@ from .forms import TicketForm
 from .forms import HomeForm
 from .forms import CommentForm
 from .forms import ProjectForm
+
 from .models import Ticket
 from .models import Home
 from .models import Project
 from .models import Comment
 
-from miniki.settings import CTX
-
+from utils.ctx_handler import post_temp_user_ctx, get_temp_user_ctx
 
 # def form_valid(self, form):
 
@@ -267,7 +267,6 @@ def _is_collaborator(request):
     return res.json().get('UPDATE', False)
 
 
-
 @login_required(login_url='/login/hbp')
 def config(request):
     '''Render the config file'''
@@ -288,17 +287,28 @@ def config(request):
 
     return JsonResponse(config)
 
-class TicketListView(ListView):   #DetailView):   #ListView):
-    
+
+class TicketListView(ListView):  
     model = Ticket
     template_name = "ticket_list.html"
 
     def get(self, request, *args, **kwargs):
-        #will work only the first time
-        if CTX == "":
-            global CTX
-            CTX = request.META['QUERY_STRING']
-        return render(request, self.template_name, {'object': Ticket.objects.all()}) #will nedd to replace all() by filter project
+        #we do this here to make sure to catch the ctx
+        post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
+
+        return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': request.META['QUERY_STRING']}) #will nedd to replace all() by filter project
+
+class TicketListView2(ListView):  
+    model = Ticket
+    template_name = "ticket_list.html"
+
+    def get(self, request, *args, **kwargs):
+        #we do this here to make sure to catch the ctx
+        post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
+
+        return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': self.kwargs['ctx']}) #will nedd to replace all() by filter project
+
+
 
 class TicketDetailView(DetailView):
 
@@ -306,8 +316,6 @@ class TicketDetailView(DetailView):
     template_name = "ticket_detail.html"
 
     form_class = CommentForm
-
-    
 
     def get_object(self):
         return [Comment.objects.filter(ticket_id = self.kwargs['pk']), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]
@@ -342,7 +350,7 @@ class TicketDetailView(DetailView):
             pass
             #faire passer un message...
 
-        return render(request, 'home.html', {'form': p}) #need to change that       
+        return render(request, 'ticket_list.html') #need to change that       
 
     def form_valid(self, form):
         """

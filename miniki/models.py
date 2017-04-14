@@ -117,3 +117,14 @@ class Home(models.Model):
     def get_absolute_url(self):
         return reverse('home') #, args=[str(self.ctx)])
     
+
+
+class Ctx (models.Model):
+    user_name = models.CharField(max_length=1024) 
+    ctx = models.CharField(max_length=1024) 
+
+    def as_json(self):
+        return {
+            'user_name': self.user_name,
+            'ctx': self.ctx
+        }
