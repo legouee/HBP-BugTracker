@@ -181,7 +181,8 @@ def Test_Menu_deroulant(request):
 #         #form = TicketPageForm(instance=ticket_page)
 #         form = TicketForm(instance=ticket)
 
-#     return render(request, 'edit.html', {'form': form, 'ctx': str(context)})
+#     return render(request, 'edit.html', {'form': form, 'ctx': str(context)})<<<<<<< HEAD
+
 
 # def _reverse_url(view_name, context_uuid):
 #     """generate an URL for a view including the ctx query param"""
@@ -312,19 +313,6 @@ class TicketDetailView(DetailView):
 
     model = Comment
     template_name = "ticket_detail.html"
-
-    # slug_url_kwarg = 'ticket_id' #need to acces to ticket id  #may be not usefull....
-
-    context_object_name = 'context_object_name' #just in case
-
-    #just for now
-    #queryset = TicketPage.objects.all()
-    queryset = Ticket.objects.all()
-
-
-    def get_object(self):
-        #return get_object_or_404(TicketPage, pk=1)
-        return get_object_or_404(Ticket, pk=1)
 
     form_class = CommentForm
 

@@ -25,21 +25,12 @@ from miniki.views import HomeView
 from miniki.views import CreateTicketView#create_ticket
 from miniki.views import create_project
 from miniki.views import TicketListView
-<<<<<<< HEAD
 from miniki.views import TicketListView2
 
-
-=======
->>>>>>> 1456e6fbd33747814c3d992e2b31fafa1517cd7f
 from miniki.views import Test_Menu_deroulant
 from miniki.views import TicketDetailView
 from miniki.views import ProjectListView
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 1456e6fbd33747814c3d992e2b31fafa1517cd7f
 from django.contrib import admin
 
 
