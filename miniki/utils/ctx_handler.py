@@ -24,7 +24,7 @@ def post_temp_user_ctx (ctx=None, user_name=None):
             obj.ctx = "was " +str(get_temp_user_ctx(user_name)[0].ctx) + " now : "+ str(ctx)
             obj.save()
 
-            obj = get_temp_user_ctx(user_name)
+            obj = get_temp_user_ctx(user_name)[0]
             obj.ctx = ctx
             obj.save()
 

@@ -19,7 +19,7 @@
 
 
     <div class="navbar navbar-form" id="navbar-style">
-        <form action= "{% url 'ticket-list2' ctx %}">
+        <form action= "{% url 'ticket-list'  %}">
             <input type="submit" value="Ticket-list" />
 
         </form>
@@ -36,10 +36,6 @@ document.getElementById("current_url").innerHTML = window.location.href;
   <div class="panel-heading" id="panel-heading-style">
     <h3 class="panel-title" id="panel-title-ticket">La jolie liste :</h3>
   </div>
-
-
-    {% for ticket in object_list %}
-        <div class="list-group" id="list-group-style">
 
     {% for ticket in object %}
         <div class="list-group" id="list-group-style">
