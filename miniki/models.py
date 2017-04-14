@@ -39,8 +39,7 @@ class Ticket(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     id_project =   models.IntegerField(default=0)  #models.ForeignKey('Project', default=1)#, on_delete=models.CASCADE())
     status = models.CharField(max_length=12, default="")
-
-    # created_by = models.IntegerField()
+    author = models.CharField(max_length=200,default="")
 
     def __unicode__(self):
         return self.title
@@ -51,9 +50,9 @@ class Ticket(models.Model):
             'title': self.title,
             'text': self.text,
             'status': self.status,
+            'author': self.author,
             # 'ctx': str(self.ctx),
             'id_project': self.id_project
-
             #'created_by': self.created_by
         }
 
@@ -69,11 +68,8 @@ class Ticket(models.Model):
 class Comment(models.Model):
     # ticket = models.ForeignKey('blog.Post', related_name='comments', on_delete=models.CASCADE)
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, default = 0)
-
     # ticket = models.IntegerField(default = 0)
-
-
-    author = models.CharField(max_length=200)
+    author = models.CharField(max_length=200, default="")
     text = models.TextField()
     # null=True
     # pub_date = models.DateTimeField(default=timezone.now)
@@ -90,7 +86,7 @@ class Comment(models.Model):
         return {
             'text': self.text,
             #'ctx': str(self.ctx),
-            #'created_by': self.created_by
+            'author': self.author
         }
 
 

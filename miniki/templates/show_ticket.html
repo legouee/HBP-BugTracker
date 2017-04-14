@@ -16,11 +16,11 @@
         <br/>
     </div>
 
-    <form action="" class="ticket-form" method="POST" >
+    <form action="" class="ticket-form" id="style-ticket-form" method="POST" >
         {% csrf_token %}
         <!--{% if ticket_page %}-->
         {% if ticket %}
-        <header class="page-header">
+        <header class="page-header" id="page-header-style">
           <!--<h1>{{ticket_page.title}}</h1>-->
           <h1>{{ticket.title}}</h1>
         </header>

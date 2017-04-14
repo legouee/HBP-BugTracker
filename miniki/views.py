@@ -6,7 +6,6 @@ from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirec
 
 from hbp_app_python_auth.auth import get_access_token, get_token_type, get_auth_header
 import hbp_app_python_auth.settings as auth_settings
-
 import requests
 
 from django.views.generic.list import ListView
@@ -40,6 +39,7 @@ from .models import Project
 from .models import Comment
 
 from utils.ctx_handler import post_temp_user_ctx, get_temp_user_ctx
+
 
 # def form_valid(self, form):
 
@@ -91,11 +91,14 @@ class HomeView(TemplateView):
     template_name = "home.html"
     model = Home
     form_class = HomeForm
+    
 
     def projects(self):
         return Home.objects.get()
 
     def get(self, request, *args, **kwargs):
+        if not _is_collaborator(request):
+            return HttpResponseForbidden()
         try:
             print("try")
             h = Home.objects.get()
@@ -210,6 +213,7 @@ def Test_Menu_deroulant(request):
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class CreateTicketView(TemplateView):
     # context = UUID(request.GET.get('ctx'))
+
     template_name = "create_ticket.html"
     model = Ticket
     form_class = TicketForm
@@ -229,7 +233,7 @@ class CreateTicketView(TemplateView):
         form = self.form_class(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
-            form.created_by = 1
+            form.author = request.user
                  # Clean up user input
             form.save()
             return self.redirect(request)
@@ -240,10 +244,8 @@ class CreateTicketView(TemplateView):
         url = reverse('ticket-list')
         return HttpResponseRedirect(url)
 
-
 def _is_collaborator(request):
     '''check access depending on context'''
-    print ("Passing by view edit_ticket _is_collaborator ?")
 
     svc_url = settings.HBP_COLLAB_SERVICE_URL
 
@@ -252,11 +254,7 @@ def _is_collaborator(request):
         return False
     url = '%scollab/context/%s/' % (svc_url, context)
     headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
-
-    #res = request.GET.get(url, headers=headers)
-    
     res = requests.get(url, headers=headers)
-
     if res.status_code != 200:
         return False
     collab_id = res.json()['collab']['id']
@@ -278,13 +276,14 @@ def config(request):
     config['auth']['clientId'] = auth_settings.SOCIAL_AUTH_HBP_KEY
 
     # Add user token informations
-    request.user.social_auth.get().extra_data
+    # request.user.social_auth.get().extra_data
     config['auth']['token'] = {
         'access_token': get_access_token(request.user.social_auth.get()),
         'token_type': get_token_type(request.user.social_auth.get()),
         'expires_in': request.session.get_expiry_age(),
     }
-
+    
+    # test = requests.get
     return JsonResponse(config)
 
 
@@ -309,11 +308,23 @@ class TicketListView2(ListView):
         return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': self.kwargs['ctx']}) #will nedd to replace all() by filter project
 
 
-
 class TicketDetailView(DetailView):
 
     model = Comment
     template_name = "ticket_detail.html"
+
+    # slug_url_kwarg = 'ticket_id' #need to acces to ticket id  #may be not usefull....
+
+    context_object_name = 'context_object_name' #just in case
+
+    #just for now
+    #queryset = TicketPage.objects.all()
+    queryset = Ticket.objects.all()
+
+
+    def get_object(self):
+        #return get_object_or_404(TicketPage, pk=1)
+        return get_object_or_404(Ticket, pk=1)
 
     form_class = CommentForm
 
@@ -350,7 +361,7 @@ class TicketDetailView(DetailView):
             pass
             #faire passer un message...
 
-        return render(request, 'ticket_list.html') #need to change that       
+        return render(request, 'ticket_list.html', {'form': p}) #need to change that       
 
     def form_valid(self, form):
         """

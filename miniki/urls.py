@@ -25,14 +25,21 @@ from miniki.views import HomeView
 from miniki.views import CreateTicketView#create_ticket
 from miniki.views import create_project
 from miniki.views import TicketListView
+<<<<<<< HEAD
 from miniki.views import TicketListView2
 
 
+=======
+>>>>>>> 1456e6fbd33747814c3d992e2b31fafa1517cd7f
 from miniki.views import Test_Menu_deroulant
-
 from miniki.views import TicketDetailView
 from miniki.views import ProjectListView
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 1456e6fbd33747814c3d992e2b31fafa1517cd7f
 from django.contrib import admin
 
 
@@ -46,20 +53,12 @@ urlpatterns = [
     url(r'^Menu_deroulant$', Test_Menu_deroulant, name='Menu_deroulant'), 
     # url(r'^$', HomeView.as_view(), name='home'),
 
-    
-
     url(r'^project_list/$',ProjectListView.as_view(), name='project-list'),
     url(r'^create_project/$', create_project, name='project-create'),
-    # url(r'^ticket_list/$',TicketListView.as_view(), name='ticket-list'),
     url(r'^$',TicketListView.as_view(), name='ticket-list'),
 
     url(r'^(?P<ctx>\w+)$',TicketListView2.as_view(), name='ticket-list2'),
     
-
-    
-    
-    
-
 
     url(r'^ticket/(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
 
