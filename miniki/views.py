@@ -233,6 +233,10 @@ class CreateTicketView(TemplateView):
         return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx']})
     
     def post(self, request, *args, **kwargs):
+        print('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+        for key, value in request.__dict__.items():
+            print(key, value)
+            print ("")
         form = self.form_class(request.POST)
         if form.is_valid():
             form = form.save(commit=False)
@@ -346,11 +350,11 @@ class TicketDetailView(DetailView):
 
     @classmethod    
     def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
-        url = reverse('ticket-list2', kwargs = {'ctx': args})
+        url = reverse('ticket-detail', kwargs = { 'pk':kwargs['pk'],'ctx': kwargs['ctx']})
         return HttpResponseRedirect(url)
-        
+
     def post(self, request, *args, **kwargs):
-        
+        print(request.META['QUERY_STRING'])
         comment_creation = Comment()
         comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
        
@@ -362,7 +366,7 @@ class TicketDetailView(DetailView):
             p = form.save(commit=False)
             p.author = request.user
             p.save()
-            return self.redirect(request)
+            return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
         else :
             pass
             #faire passer un message...
