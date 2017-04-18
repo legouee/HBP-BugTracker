@@ -72,7 +72,7 @@ class Comment(models.Model):
     author = models.CharField(max_length=200, default="")
     text = models.TextField()
     # null=True
-    # pub_date = models.DateTimeField(default=timezone.now)
+    creation_date = models.DateTimeField(auto_now_add=True)
     approved_comment = models.BooleanField(default=False)
 
     def approve(self):
