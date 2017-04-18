@@ -32,11 +32,13 @@ from .forms import TicketForm
 from .forms import HomeForm
 from .forms import CommentForm
 from .forms import ProjectForm
+
 from .models import Ticket
 from .models import Home
 from .models import Project
 from .models import Comment
 
+from utils.ctx_handler import post_temp_user_ctx, get_temp_user_ctx
 
 
 # def form_valid(self, form):
@@ -179,7 +181,8 @@ def Test_Menu_deroulant(request):
 #         #form = TicketPageForm(instance=ticket_page)
 #         form = TicketForm(instance=ticket)
 
-#     return render(request, 'edit.html', {'form': form, 'ctx': str(context)})
+#     return render(request, 'edit.html', {'form': form, 'ctx': str(context)})<<<<<<< HEAD
+
 
 # def _reverse_url(view_name, context_uuid):
 #     """generate an URL for a view including the ctx query param"""
@@ -263,21 +266,16 @@ def _is_collaborator(request):
     return res.json().get('UPDATE', False)
 
 
-def _get_access_token(request):
-    return request.user.social_auth.get().extra_data['access_token']
-
-
 @login_required(login_url='/login/hbp')
 def config(request):
     '''Render the config file'''
-
     res = requests.get(settings.HBP_ENV_URL)
     config = res.json()
 
     # Use this app client ID
     config['auth']['clientId'] = auth_settings.SOCIAL_AUTH_HBP_KEY
+
     # Add user token informations
-    # request.user.social_auth.get().extra_data
     config['auth']['token'] = {
         'access_token': _get_access_token(request), #.user.social_auth.get()),
         'token_type': get_token_type(request.user.social_auth.get()),
@@ -287,22 +285,35 @@ def config(request):
     # test = requests.get
     return JsonResponse(config)
 
-class TicketListView(ListView):   #DetailView):   #ListView):
-    
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
+class TicketListView(ListView):   #DetailView):   #ListView):  
     model = Ticket
     template_name = "ticket_list.html"
 
     def get(self, request, *args, **kwargs):
-        #will work only the first time
-        return render(request, self.template_name, {'object': Ticket.objects.all()}) #will nedd to replace all() by filter project
+        #we do this here to make sure to catch the ctx
+        post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
 
+        return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': request.META['QUERY_STRING']}) #will nedd to replace all() by filter project
+
+class TicketListView2(ListView):  
+    model = Ticket
+    template_name = "ticket_list.html"
+
+    def get(self, request, *args, **kwargs):
+
+        #we do this here to make sure to catch the ctx
+        post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
+
+        return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': self.kwargs['ctx']}) #will nedd to replace all() by filter project
+
+
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketDetailView(DetailView):
 
     model = Comment
     template_name = "ticket_detail.html"
     form_class = CommentForm
-
-    
 
     def get_object(self):
         return [Comment.objects.filter(ticket_id = self.kwargs['pk']), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]

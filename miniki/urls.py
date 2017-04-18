@@ -25,11 +25,11 @@ from miniki.views import HomeView
 from miniki.views import CreateTicketView#create_ticket
 from miniki.views import create_project
 from miniki.views import TicketListView
+from miniki.views import TicketListView2
+
 from miniki.views import Test_Menu_deroulant
 from miniki.views import TicketDetailView
 from miniki.views import ProjectListView
-
-
 
 from django.contrib import admin
 
@@ -48,6 +48,8 @@ urlpatterns = [
     url(r'^create_project/$', create_project, name='project-create'),
     url(r'^$',TicketListView.as_view(), name='ticket-list'),
 
+    url(r'^(?P<ctx>\w+)$',TicketListView2.as_view(), name='ticket-list2'),
+    
 
     url(r'^ticket/(?P<pk>\d+)/$', TicketDetailView.as_view(), name='ticket-detail'),
 
