@@ -38,7 +38,7 @@ from .models import Home
 from .models import Project
 from .models import Comment
 
-from utils.ctx_handler import post_temp_user_ctx, get_temp_user_ctx
+from .utils.ctx_handler import post_temp_user_ctx, get_temp_user_ctx
 
 
 # def form_valid(self, form):
@@ -265,6 +265,8 @@ def _is_collaborator(request):
         return False
     return res.json().get('UPDATE', False)
 
+def _get_access_token(request):
+    return request.user.social_auth.get().extra_data['access_token']
 
 @login_required(login_url='/login/hbp')
 def config(request):
@@ -277,7 +279,7 @@ def config(request):
 
     # Add user token informations
     config['auth']['token'] = {
-        'access_token': _get_access_token(request), #.user.social_auth.get()),
+        'access_token': _get_access_token(request),
         'token_type': get_token_type(request.user.social_auth.get()),
         'expires_in': request.session.get_expiry_age(),
     }
