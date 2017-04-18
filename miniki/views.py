@@ -269,7 +269,6 @@ def _is_collaborator(request):
 @login_required(login_url='/login/hbp')
 def config(request):
     '''Render the config file'''
-
     res = requests.get(settings.HBP_ENV_URL)
     config = res.json()
 
@@ -277,9 +276,8 @@ def config(request):
     config['auth']['clientId'] = auth_settings.SOCIAL_AUTH_HBP_KEY
 
     # Add user token informations
-    # request.user.social_auth.get().extra_data
     config['auth']['token'] = {
-        'access_token': get_access_token(request.user.social_auth.get()),
+        'access_token': _get_access_token(request), #.user.social_auth.get()),
         'token_type': get_token_type(request.user.social_auth.get()),
         'expires_in': request.session.get_expiry_age(),
     }
@@ -289,6 +287,7 @@ def config(request):
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketListView(ListView):  
+
     model = Ticket
     template_name = "ticket_list.html"
 
@@ -305,6 +304,7 @@ class TicketListView2(ListView):
 
     def get(self, request, *args, **kwargs):
         print ("In TicketListView2")
+
         #we do this here to make sure to catch the ctx
         # post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
 
@@ -315,7 +315,6 @@ class TicketDetailView(DetailView):
 
     model = Comment
     template_name = "ticket_detail.html"
-
     form_class = CommentForm
 
     def get_object(self):

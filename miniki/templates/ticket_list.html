@@ -1,57 +1,72 @@
 {% extends "layout.html" %}
-
+{% load markdown_deux_tags %}
 {% block content %}
 
 
-
-<h1>Tickets</h1>
-<!--<ul>
-{% for ticket in object_list %}
-    <li>{{ ticket.title }} </li>
-    
-{% empty %}
-    <li>No articles yet.</li>
-{% endfor %}
-</ul>
-
-<br/><br/><br/><br/><br/><br/>
--->
-
-
-    <div class="navbar navbar-form" id="navbar-style">
-        <form action= "{% url 'ticket-list'  %}">
+    <div class="navbar navbar-form navbar-fixed-top">
+        <form action= "{% url 'ticket-list' %}">
             <input type="submit" value="Ticket-list" />
-
         </form>
         <br/>
     </div>
+<br/> <br/> <br/>
+<h1 align=center>Tickets</h1>
 
-<p id="current_url"></p>
+<!--<p id="current_url"></p>
 <script>
 document.getElementById("current_url").innerHTML = window.location.href;
-</script>
+</script>-->
 
-
-<div class="panel panel-info">
+<!--<div class="panel panel-info">
   <div class="panel-heading" id="panel-heading-style">
     <h3 class="panel-title" id="panel-title-ticket">La jolie liste :</h3>
-  </div>
+  </div>-->
 
     {% for ticket in object %}
-        <div class="list-group" id="list-group-style">
+        <a href="{% url 'ticket-detail' pk=ticket.pk %}" class="list-group-item">
+        <table class="table table-striped table-condensed"  >
+                <div class="list-group" id="list-group-style" >
+                  <!--<a href="{% url 'ticket-detail' pk=ticket.pk %}" class="list-group-item"> {#Le pk ici ne sert qu'a l'affichage de l'url dans le navigateur#}-->
+                    <tbody>
+                        <tr id=table-ticket-list>
+                            <td width=200 >
+                                Ticket #{{ticket.pk}} <br/>
+                                {{ticket.author}}
+                            </td> 
+                            <td width=1600>
+                                {{ ticket.title }} 
+                            </td>
+                            <td width=400>
+                              {{ticket.creation_date}}
+                            
+                            </td>
+                        </tr>
 
+                        <tr id=table-ticket-list-content >
+                            <td>
+                            </td>
+                            <td id=cut-text>
+                                <br/>
+                                {{ ticket.text|markdown }}
+                            </td> 
+                            <td align=center>
+                              <span class="badge" id="badge-style" > 
+                                    
+                                
+                                 </span>
+                            </td>
+                        </tr> 
+                        <!--<script src="jquery.js"></script>-->
+                        <!--<script>
+                            function get_nb_com(pk) {
+                                    Comment.objects.filter(pk).innerHTML()
+                            };
+                        </script>-->
+                    </tbody>
+                    </a>
+                </div>
+        </table>
 
-        <a href="{% url 'ticket-detail' pk=ticket.pk  %}" class="list-group-item"> 
-           {# >Comments: {{ post.comments.count }} #} 
-
-            
-            <span class="badge" id="badge-style">120</span>
-            {{ ticket.title }} 
-            <br/> 
-            {{ ticket.text }} 
-
-        </a>
-        </div>
     {% endfor %}
 
     <div class="navbar navbar-form">

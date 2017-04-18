@@ -33,9 +33,12 @@ DATABASES = {
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = 'i!$a2gcap*w^a_@87k-520n@3b9qnozog7lghmenc+g+&(wyn5'
-#'4u4@h_7y7i3$kkvei_lv&3++=5k*^l0+8)#@!0@mryu5@++z7a'
-#'i!$a2gcap*w^a_@87k-520n@3b9qnozog7lghmenc+g+&(wyn5' #joffrey
+
+#joffrey stuffs
+#'i!$a2gcap*w^a_@87k-520n@3b9qnozog7lghmenc+g+&(wyn5' 
+
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -123,6 +126,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'miniki.wsgi.application'
+
+
 
 
 
