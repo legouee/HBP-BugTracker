@@ -81,7 +81,7 @@ def create_project(request):
 
     form = ProjectForm(instance=p)
 
-    return render(request, 'create_project.html', {'form': form})
+    return render(request, 'create_project.html', {'form': form, 'ctx': self.kwargs['ctx']})
 
 
 
@@ -116,7 +116,7 @@ class HomeView(TemplateView):
             form = form.save(commit=False)
                  # Clean up user input
             form.save()
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx']})
 
 
 
@@ -219,6 +219,8 @@ class CreateTicketView(TemplateView):
     model = Ticket
     form_class = TicketForm
 
+    # kwargs
+
     def get(self, request, *args, **kwargs):
         # try:
         #     print("try")
@@ -228,7 +230,7 @@ class CreateTicketView(TemplateView):
         h = Ticket()
         form = self.form_class(instance = h)
 
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx']})
     
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -237,12 +239,12 @@ class CreateTicketView(TemplateView):
             form.author = request.user
                  # Clean up user input
             form.save()
-            return self.redirect(request)
-        return render(request, self.template_name, {'form': form})
+            return self.redirect(request, self.kwargs['ctx'] )
+        return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx']})
 
     @classmethod    
     def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
-        url = reverse('ticket-list')
+        url = reverse('ticket-list2', kwargs = {'ctx': args})
         return HttpResponseRedirect(url)
 
 def _is_collaborator(request):
@@ -288,7 +290,8 @@ def config(request):
     return JsonResponse(config)
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
-class TicketListView(ListView):   #DetailView):   #ListView):  
+class TicketListView(ListView):  
+
     model = Ticket
     template_name = "ticket_list.html"
 
@@ -298,17 +301,18 @@ class TicketListView(ListView):   #DetailView):   #ListView):
 
         return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': request.META['QUERY_STRING']}) #will nedd to replace all() by filter project
 
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketListView2(ListView):  
     model = Ticket
     template_name = "ticket_list.html"
 
     def get(self, request, *args, **kwargs):
+        print ("In TicketListView2")
 
         #we do this here to make sure to catch the ctx
-        post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
+        # post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
 
         return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': self.kwargs['ctx']}) #will nedd to replace all() by filter project
-
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketDetailView(DetailView):
@@ -318,13 +322,18 @@ class TicketDetailView(DetailView):
     form_class = CommentForm
 
     def get_object(self):
+        print ("Yes I go to get_object in detail !")
+        
         return [Comment.objects.filter(ticket_id = self.kwargs['pk']), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]
         
 
     def get_queryset (self):
+        print ("Yes I go to get_queryset in detail !")
+        
         return get_object_or_404(Ticket, pk=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
+        
         context = super(TicketDetailView, self).get_context_data(**kwargs)
         # context['now'] = timezone.now()
         return context
@@ -333,14 +342,15 @@ class TicketDetailView(DetailView):
         cmt = Comment()
         form = self.form_class(instance = cmt)
 
-        return render(request, self.template_name, {'form': form, 'object': self.get_object() })    
+        return render(request, self.template_name, {'form': form, 'object': self.get_object(), 'ctx': self.kwargs['ctx'] })    
 
     @classmethod    
     def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
-        url = reverse('ticket-list')
+        url = reverse('ticket-list2', kwargs = {'ctx': args})
         return HttpResponseRedirect(url)
-
+        
     def post(self, request, *args, **kwargs):
+        
         comment_creation = Comment()
         comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
        
@@ -357,7 +367,7 @@ class TicketDetailView(DetailView):
             pass
             #faire passer un message...
 
-        return render(request, 'ticket_list.html', {'form': p}) #need to change that       
+        return render(request, 'ticket_list.html', {'form': p, 'ctx': self.kwargs['ctx']}) #need to change that       
 
 
     def form_valid(self, form):

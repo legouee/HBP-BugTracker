@@ -3,14 +3,22 @@
 {% load jsonify %}
 
 {% block content %}
+
+
+
 <div class="navbar navbar-form">
-        <form action= "{% url 'ticket-list' %}">
+        <form action= "{% url 'ticket-list2' ctx=ctx %}">
             <input type="submit" value="Ticket-list" />
         </form>
         <br/>
     </div>
 <br/>
 <br/>
+
+<p id="current_url"></p>
+<script>
+document.getElementById("current_url").innerHTML = window.location.href;
+</script>
 
 <form action="" class="ticket-form" method="POST">
     <ng-controller="ticketCreationForm" ng-init='create_ticket = {{form.instance.as_json|jsonify}}'>
