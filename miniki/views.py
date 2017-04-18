@@ -287,7 +287,7 @@ def config(request):
     # test = requests.get
     return JsonResponse(config)
 
-
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketListView(ListView):  
     model = Ticket
     template_name = "ticket_list.html"
@@ -298,17 +298,19 @@ class TicketListView(ListView):
 
         return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': request.META['QUERY_STRING']}) #will nedd to replace all() by filter project
 
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketListView2(ListView):  
     model = Ticket
     template_name = "ticket_list.html"
 
     def get(self, request, *args, **kwargs):
+        print ("In TicketListView2")
         #we do this here to make sure to catch the ctx
-        post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
+        # post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
 
         return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': self.kwargs['ctx']}) #will nedd to replace all() by filter project
 
-
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketDetailView(DetailView):
 
     model = Comment
@@ -317,13 +319,19 @@ class TicketDetailView(DetailView):
     form_class = CommentForm
 
     def get_object(self):
+        print ("Yes I go to get_object in detail !")
+        
         return [Comment.objects.filter(ticket_id = self.kwargs['pk']), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]
         
 
     def get_queryset (self):
+        print ("Yes I go to get_queryset in detail !")
+        
         return get_object_or_404(Ticket, pk=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
+        print ("Yes I go to get_context_data in detail !")
+        
         context = super(TicketDetailView, self).get_context_data(**kwargs)
         # context['now'] = timezone.now()
         return context
@@ -331,10 +339,12 @@ class TicketDetailView(DetailView):
     def get(self, request, *args, **kwargs):
         cmt = Comment()
         form = self.form_class(instance = cmt)
-
-        return render(request, self.template_name, {'form': form, 'object': self.get_object() })        
+        print ("Yes I go to get in detail !")
+        return render(request, self.template_name, {'form': form, 'object': self.get_object() })# , 'ctx': self.kwargs['ctx'] })        
 
     def post(self, request, *args, **kwargs):
+        print ("Yes I go to post in detail !")
+        
         comment_creation = Comment()
         comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
        
