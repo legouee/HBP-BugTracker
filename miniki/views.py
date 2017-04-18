@@ -333,7 +333,12 @@ class TicketDetailView(DetailView):
         cmt = Comment()
         form = self.form_class(instance = cmt)
 
-        return render(request, self.template_name, {'form': form, 'object': self.get_object() })        
+        return render(request, self.template_name, {'form': form, 'object': self.get_object() })    
+
+    @classmethod    
+    def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
+        url = reverse('ticket-list')
+        return HttpResponseRedirect(url)
 
     def post(self, request, *args, **kwargs):
         comment_creation = Comment()
@@ -345,12 +350,15 @@ class TicketDetailView(DetailView):
 
         if form.is_valid():
             p = form.save(commit=False)
+            p.author = request.user
             p.save()
+            return self.redirect(request)
         else :
             pass
             #faire passer un message...
 
         return render(request, 'ticket_list.html', {'form': p}) #need to change that       
+
 
     def form_valid(self, form):
         """

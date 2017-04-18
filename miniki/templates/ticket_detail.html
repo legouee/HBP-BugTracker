@@ -24,23 +24,14 @@
                         Ticket #{{object.1.pk}} <br/>
                         by {{ object.1.author }}
                     </td>  
-                    <td width=950>
+                    <td width=850>
                         {{ object.1.title }}
                     </td>
-                    <td width=100 >
-                        {{ object.1.date}}
+                    <td width=200 >
+                        {{ object.1.creation_date}}
                         {{ object.1.status }}
                     </td>
                 </tr>
-                <!--<tr  id="table-ticket-detail">
-                    <td >
-                        
-                    </td>
-                    <td >
-                    </td>
-                    <td >
-                    </td>
-                </tr>-->
                 <tr id="table-ticket-detail-content">
                     <td>
                         <br/>
@@ -68,9 +59,12 @@
                     <tbody>
                         <tr  id="table-ticket-detail-comment">
                             <td width=200 >
-                                <p>Name and date</p>
+                                 by {{ comment.author }}
                             </td> 
                             <td width=2000 >
+                            </td>
+                            <td width=200 >
+                                {{ comment.creation_date}}
                             </td>
                         </tr>
 
