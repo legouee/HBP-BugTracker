@@ -74,3 +74,7 @@ class CommentForm(forms.ModelForm):
             })
         }
         
+# class Temp_ctxForm(forms.ModelForm):
+#     class Meta:
+#         model = Temp_ctx
+#         fields = ['user_name', 'ctx']
