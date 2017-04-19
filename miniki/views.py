@@ -40,7 +40,11 @@ from .models import Comment
 from .models import Ctx
 
 
+
 from .utils.ctx_handler import post_app_ctx, get_app_ctx
+import json
+from django.core import serializers
+
 
 
 # def form_valid(self, form):
@@ -101,12 +105,9 @@ class HomeView(TemplateView):
     def get(self, request, *args, **kwargs):
         if not _is_collaborator(request):
             return HttpResponseForbidden()
-        try:
-            print("try")
+        try:)
             h = Home.objects.get()
-            print (h)
         except Home.DoesNotExist:
-            print("Home doesn't exist")
             h = Home()
         form = self.form_class(instance = h)
 
@@ -125,11 +126,7 @@ class HomeView(TemplateView):
 
 @login_required(login_url='/login/hbp')
 def Test_Menu_deroulant(request):
-    '''Render the wiki page using the provided context query parameter'''
-    print ("###############################################")
-    print (request.GET.get('ctx'))
-    print ("###############################################")
-    
+    '''Render the wiki page using the provided context query parameter''' 
     try:
         ticket = Ticket.objects.get(ctx=context)
         content = markdown(ticket.text)  
@@ -302,6 +299,7 @@ class TicketListView(ListView):
     model = Ticket
     template_name = "ticket_list.html"
 
+
     def get(self, request, *args, **kwargs):
         for key, value in request.__dict__.items():
             print (key, value)
@@ -309,9 +307,19 @@ class TicketListView(ListView):
         # print (request.__dict__)
 
         #we do this here to make sure to catch the ctx
-        post_app_ctx (ctx=request.META['QUERY_STRING'], app_name="app_name not supported yet")
 
-        return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': request.META['QUERY_STRING']}) #will nedd to replace all() by filter project
+        post_app_ctx (ctx=request.META['QUERY_STRING'], app_name="app_name not supported yet")
+        
+        tickets = Ticket.objects.filter(id_project=0) ##need to change to get project id with collab
+        ## add number of comments
+        for ticket in tickets:
+            ticket.nb_coms = self.get_nb_com(ticket.pk)                     
+            
+        return render(request, self.template_name, {'object': tickets, 'ctx': request.META['QUERY_STRING']}) #will nedd to replace all() by filter project
+    @classmethod  
+    def get_nb_com(self, pk):
+        return Comment.objects.filter(ticket_id= pk).count()
+
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketListView2(ListView):  
@@ -319,7 +327,6 @@ class TicketListView2(ListView):
     template_name = "ticket_list.html"
 
     def get(self, request, *args, **kwargs):
-        print ("In TicketListView2")
 
         #we do this here to make sure to catch the ctx
         # post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
@@ -369,25 +376,32 @@ class TicketDetailView(DetailView):
     def get(self, request, *args, **kwargs):
         cmt = Comment()
         form = self.form_class(instance = cmt)
-        return render(request, self.template_name, {'form': form, 'object': self.get_object(), 'ctx': self.kwargs['ctx'] })        
+
+        return render(request, self.template_name, {'form': form, 'object': self.get_object(), 'ctx': self.kwargs['ctx'] })    
+
+    @classmethod    
+    def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
+        url = reverse('ticket-detail', kwargs = { 'pk':kwargs['pk'],'ctx': kwargs['ctx']})
+        return HttpResponseRedirect(url)
 
     def post(self, request, *args, **kwargs):
-        
         comment_creation = Comment()
         comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
        
         if request.method == 'POST':
-            print ("request.method == 'POST'")
             form = CommentForm(request.POST, instance=comment_creation)
 
         if form.is_valid():
             p = form.save(commit=False)
+            p.author = request.user
             p.save()
+            return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
         else :
             pass
             #faire passer un message...
 
         return render(request, 'ticket_list.html', {'form': p, 'ctx': self.kwargs['ctx']}) #need to change that       
+
 
     def form_valid(self, form):
         """
