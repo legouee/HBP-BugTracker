@@ -4,12 +4,12 @@ from django.core.urlresolvers import reverse
 import uuid
 
 class Ctx (models.Model):
-    app_name = models.CharField(max_length=1024) 
+    collab = models.CharField(max_length=1024) 
     ctx = models.CharField(max_length=1024) 
 
     def as_json(self):
         return {
-            'app_name': self.app_name,
+            'collabe': self.collab,
             'ctx': self.ctx
         }
 

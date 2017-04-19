@@ -130,6 +130,7 @@ def _is_collaborator(request):
     if not context:
         return False
     url = '%scollab/context/%s/' % (svc_url, context)
+    print (url)
     headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
     res = requests.get(url, headers=headers)
     if res.status_code != 200:
@@ -177,7 +178,7 @@ class TicketListView(ListView):
 
         ctx = request.META['QUERY_STRING']
         # ctx= "fake-ctx"
-        post_app_ctx (ctx=ctx, app_name="app_name not supported yet")
+        post_collab_ctx (ctx=ctx, collab="app_name not supported yet")
         current_base_ctx = Ctx.objects.filter(ctx=ctx)
         tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id) 
         ## add number of comments

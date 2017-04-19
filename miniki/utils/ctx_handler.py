@@ -10,13 +10,13 @@ from ..models import Ctx
 
 #we could welcome here all the function to handle future data of ctx tab
 
-def get_app_ctx (ctx=None):
+def get_collab_ctx (ctx=None):
     return Ctx.objects.filter(ctx=ctx)
 
-def post_app_ctx (ctx=None, app_name=None):
+def post_collab_ctx (ctx=None, collab=None):
     if len(get_app_ctx (ctx)) == 0 :
         obj = Ctx()
-        obj.app_name = app_name
+        obj.collab = collab
         obj.ctx = ctx
         obj.save()
     
