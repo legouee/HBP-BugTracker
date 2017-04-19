@@ -95,7 +95,7 @@ class CreateTicketView(TemplateView):
 
     def get(self, request, *args, **kwargs):
 
-        if not _is_collaborator(request):
+        if not _is_collaborator(request, self.kwargs['ctx']):
             return HttpResponseForbidden()
 
         h = Ticket()
@@ -121,19 +121,22 @@ class CreateTicketView(TemplateView):
 
         return HttpResponseRedirect(url)
 
-def _is_collaborator(request):
+def _is_collaborator(request, context):
     '''check access depending on context'''
-    
+    print(context)
     svc_url = settings.HBP_COLLAB_SERVICE_URL
-
-    context = request.GET.get('ctx')
     if not context:
         return False
+    print("1")
     url = '%scollab/context/%s/' % (svc_url, context)
+    print("2")
     headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
+    print("3", url)
     res = requests.get(url, headers=headers)
+    print(res)
     if res.status_code != 200:
         return False
+    print("4")
     collab_id = res.json()['collab']['id']
     url = '%scollab/%s/permissions/' % (svc_url, collab_id)
     res = requests.get(url, headers=headers)
@@ -172,10 +175,11 @@ class TicketListView(ListView):
 
     def get(self, request, *args, **kwargs):
 
-        if not _is_collaborator(request):
+        ctx = request.META['QUERY_STRING'][4:]
+        
+        if not _is_collaborator(request, ctx):
             return HttpResponseForbidden()
 
-        ctx = request.META['QUERY_STRING']
         # ctx= "fake-ctx"
         post_app_ctx (ctx=ctx, app_name="app_name not supported yet")
         current_base_ctx = Ctx.objects.filter(ctx=ctx)
@@ -197,7 +201,7 @@ class TicketListView2(ListView):
 
     def get(self, request, *args, **kwargs):
 
-        if not _is_collaborator(request):
+        if not _is_collaborator(request, self.kwargs['ctx']):
             return HttpResponseForbidden()
 
         current_base_ctx = Ctx.objects.filter(ctx=self.kwargs['ctx']) 
@@ -233,7 +237,7 @@ class TicketDetailView(DetailView):
 
     def get(self, request, *args, **kwargs):
 
-        if not _is_collaborator(request):
+        if not _is_collaborator(request, self.kwargs['ctx']):
             return HttpResponseForbidden()
             
         cmt = Comment()
