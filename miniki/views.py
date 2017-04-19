@@ -94,6 +94,10 @@ class CreateTicketView(TemplateView):
     form_class = TicketForm
 
     def get(self, request, *args, **kwargs):
+
+        if not _is_collaborator(request):
+            return HttpResponseForbidden()
+
         h = Ticket()
         form = self.form_class(instance = h)
 
@@ -119,7 +123,7 @@ class CreateTicketView(TemplateView):
 
 def _is_collaborator(request):
     '''check access depending on context'''
-
+    
     svc_url = settings.HBP_COLLAB_SERVICE_URL
 
     context = request.GET.get('ctx')
@@ -167,6 +171,10 @@ class TicketListView(ListView):
 
 
     def get(self, request, *args, **kwargs):
+
+        if not _is_collaborator(request):
+            return HttpResponseForbidden()
+
         ctx = request.META['QUERY_STRING']
         # ctx= "fake-ctx"
         post_app_ctx (ctx=ctx, app_name="app_name not supported yet")
@@ -188,6 +196,10 @@ class TicketListView2(ListView):
     template_name = "ticket_list.html"
 
     def get(self, request, *args, **kwargs):
+
+        if not _is_collaborator(request):
+            return HttpResponseForbidden()
+
         current_base_ctx = Ctx.objects.filter(ctx=self.kwargs['ctx']) 
         tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id)
 
@@ -220,6 +232,10 @@ class TicketDetailView(DetailView):
         return context
 
     def get(self, request, *args, **kwargs):
+
+        if not _is_collaborator(request):
+            return HttpResponseForbidden()
+            
         cmt = Comment()
         form = self.form_class(instance = cmt)
 
