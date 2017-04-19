@@ -3,24 +3,27 @@
 {% load jsonify %}
 
 {% block content %}
+
+
+
 <div class="navbar navbar-form">
-        <form action= "{% url 'ticket-list' %}">
+        <form action= "{% url 'ticket-list2' ctx=ctx %}">
             <input type="submit" value="Ticket-list" />
         </form>
         <br/>
     </div>
-<br/>
-<br/>
+<br/> <br/> <br/>
+<h3 id="title-ticket" align=center>New Ticket </h3>
+<p id="current_url"></p>
+<script>
+document.getElementById("current_url").innerHTML = window.location.href;
+</script>
 
 <form action="" class="ticket-form" method="POST">
     <ng-controller="ticketCreationForm" ng-init='create_ticket = {{form.instance.as_json|jsonify}}'>
-    <div class="panel ticket-form-fields">
         <table class="table table-striped table-condensed" >
             {% csrf_token %}
             {{ form.non_field_errors }}
-           <div class="panel-heading">
-                <h3 class="panel-title" id="title-ticket">New Ticket </h3>
-            </div>
          <tbody>
             <tr  id="table-create-ticket-content">
                 <td width= 70 >
@@ -43,7 +46,6 @@
             </tr>
          </tbody>
         </table>
-    </div>
 <br/>
 
     <div class="navbar navbar-form">
