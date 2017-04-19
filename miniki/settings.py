@@ -34,7 +34,7 @@ DATABASES = {
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = '4u4@h_7y7i3$kkvei_lv&3++=5k*^l0+8)#@!0@mryu5@++z7a'
+SECRET_KEY = 'i!$a2gcap*w^a_@87k-520n@3b9qnozog7lghmenc+g+&(wyn5'
 
 #joffrey stuffs
 #'i!$a2gcap*w^a_@87k-520n@3b9qnozog7lghmenc+g+&(wyn5' 

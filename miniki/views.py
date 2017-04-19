@@ -12,7 +12,6 @@ from django.views.generic.list import ListView
 from django.views.generic.base import  TemplateView, View
 from django.views.generic.detail import DetailView
 
-
 from django.shortcuts import render_to_response 
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -29,33 +28,19 @@ import bleach
 
 from markdown import markdown
 from .forms import TicketForm
-from .forms import HomeForm
+
 from .forms import CommentForm
 from .forms import ProjectForm
 
 from .models import Ticket
-from .models import Home
+
 from .models import Project
 from .models import Comment
 from .models import Ctx
 
-
-
 from .utils.ctx_handler import post_app_ctx, get_app_ctx
 import json
 from django.core import serializers
-
-
-
-# def form_valid(self, form):
-
-#     self.object = form.save()
-#     print('blav')
-#     # Envoi d'un message a l'utilisateur
-
-#     messages.success(self.request, "Votre profil a ete mis a jour avec succes.")
-
-#     return HttpResponseRedirect(self.get_success_url())
 
 class ProjectListView(ListView): 
     model = Project
@@ -90,40 +75,6 @@ def create_project(request):
     return render(request, 'create_project.html', {'form': form, 'ctx': self.kwargs['ctx']})
 
 
-
-@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
-class HomeView(TemplateView):
-    # context = UUID(request.GET.get('ctx'))
-    template_name = "home.html"
-    model = Home
-    form_class = HomeForm
-    
-
-    def projects(self):
-        return Home.objects.get()
-
-    def get(self, request, *args, **kwargs):
-        if not _is_collaborator(request):
-            return HttpResponseForbidden()
-        try:)
-            h = Home.objects.get()
-        except Home.DoesNotExist:
-            h = Home()
-        form = self.form_class(instance = h)
-
-        return render(request, self.template_name, {'form': form, 'ctx': request.META['QUERY_STRING']})
-    
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            form = form.save(commit=False)
-                 # Clean up user input
-            form.save()
-        return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx']})
-
-
-
-
 @login_required(login_url='/login/hbp')
 def Test_Menu_deroulant(request):
     '''Render the wiki page using the provided context query parameter''' 
@@ -135,97 +86,14 @@ def Test_Menu_deroulant(request):
         content = ''
     return render(request,'Test_Menu_deroulant.html', {'ticket': ticket, 'content': content})
 
-
-
-
-
-
-
-# @login_required(login_url='/login/hbp')
-# def edit_ticket(request):
-#     '''Render the wiki edit form using the provided cofrom django.conf import settings
-# from django.http import HttpResponseForbidden
-
-# from hbp_app_python_auth.auth import get_access_token, get_token_type, get_auth_header
-# import hbp_app_python_auth.settings as auth_settings
-# ntext query parameter'''
-
-#     if not _is_collaborator(request):
-#         return HttpResponseForbidden()
-
-#     context = UUID(request.GET.get('ctx'))
-#     # get or build the wiki page
-#     try:
-#         #ticket_page = TicketPage.objects.get(ctx=context)
-#         ticket = Ticket.objects.get(ctx=context)
-#     #except TicketPage.DoesNotExist:
-#     except Ticket.DoesNotExist:                    
-#         #ticket_page = TicketPage(ctx=context)
-#         ticket = Ticket(ctx=context)
-
-#     if request.method == 'POST':
-#         #form = TicketPageForm(request.POST, instance=ticket_page)
-#         #form = TicketForm(request.POST, instance=ticket_page)
-#         form = TicketForm(request.POST, instance=ticket)
-
-#         if form.is_valid():
-#             #ticket_page = form.save(commit=False)
-#             ticket = form.save(commit=False)
-#             # Clean up user inputm
-#             #ticket_page.text = bleach.clean(ticket_page.text)
-#             ticket.text = bleach.clean(ticket.text)
-#             #ticket_page.save()
-#             ticket.save()
-#     else:
-#         #form = TicketPageForm(instance=ticket_page)
-#         form = TicketForm(instance=ticket)
-
-#     return render(request, 'edit.html', {'form': form, 'ctx': str(context)})<<<<<<< HEAD
-
-
-# def _reverse_url(view_name, context_uuid):
-#     """generate an URL for a view including the ctx query param"""
-#     print ("Passing by view edit_ticket _reverse_url ?")
-    
-#     return '%s?ctx=%s' % (reverse(view_name)  , context_uuid)
-
-# @login_required(login_url='/login/hbp')
-# def create_ticket(request):
-#     '''Render the wiki create form'''
-
-#     try:
-#         t = Ticket.objects.get()
-#         content = markdown(t.text) 
-#     except Ticket.DoesNotExist:                     
-#         t = Ticket(ctx=context)
-        
-#     if request.method == 'POST':
-
-#         form = TicketForm(request.POST, instance=t)
-#         print (form)
-
-#         if form.is_valid():
-#             t = form.save(commit=False)
-#             t.created_by = 1
-#             t.save()
-#     return render(request, 'create_ticket.html', {'form': form })
-
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class CreateTicketView(TemplateView):
-    # context = UUID(request.GET.get('ctx'))
 
     template_name = "create_ticket.html"
     model = Ticket
     form_class = TicketForm
 
-    # kwargs
-
     def get(self, request, *args, **kwargs):
-        # try:
-        #     print("try")
-        #     h = self.model.objects.get()
-        #     print (h)
-        # except self.model.DoesNotExist:
         h = Ticket()
         form = self.form_class(instance = h)
 
@@ -233,14 +101,12 @@ class CreateTicketView(TemplateView):
     
     def post(self, request, *args, **kwargs):
         ticket_creation = Ticket()
-
         ticket_creation.ctx = get_object_or_404(Ctx, ctx=self.kwargs['ctx'])
-
         form = self.form_class(request.POST, instance=ticket_creation)
+
         if form.is_valid():
             form = form.save(commit=False)
             form.author = request.user
-                 # Clean up user input
             form.save()
             return self.redirect(request, ctx = self.kwargs['ctx'])
         return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx']})
@@ -301,21 +167,16 @@ class TicketListView(ListView):
 
 
     def get(self, request, *args, **kwargs):
-        for key, value in request.__dict__.items():
-            print (key, value)
-            print ("")
-        # print (request.__dict__)
-
-        #we do this here to make sure to catch the ctx
-
-        post_app_ctx (ctx=request.META['QUERY_STRING'], app_name="app_name not supported yet")
-        
-        tickets = Ticket.objects.filter(id_project=0) ##need to change to get project id with collab
+        ctx = request.META['QUERY_STRING']
+        # ctx= "fake-ctx"
+        post_app_ctx (ctx=ctx, app_name="app_name not supported yet")
+        current_base_ctx = Ctx.objects.filter(ctx=ctx)
+        tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id) 
         ## add number of comments
         for ticket in tickets:
             ticket.nb_coms = self.get_nb_com(ticket.pk)                     
             
-        return render(request, self.template_name, {'object': tickets, 'ctx': request.META['QUERY_STRING']}) #will nedd to replace all() by filter project
+        return render(request, self.template_name, {'object': tickets, 'ctx': ctx}) #will nedd to replace all() by filter project
     @classmethod  
     def get_nb_com(self, pk):
         return Comment.objects.filter(ticket_id= pk).count()
@@ -327,27 +188,19 @@ class TicketListView2(ListView):
     template_name = "ticket_list.html"
 
     def get(self, request, *args, **kwargs):
+        current_base_ctx = Ctx.objects.filter(ctx=self.kwargs['ctx']) 
+        tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id)
 
-        #we do this here to make sure to catch the ctx
-        # post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
-        print (self.kwargs['ctx'])
-        print (self.kwargs['ctx'][0])
-        print (type(self.kwargs['ctx']))
-        print (self.kwargs['ctx'].decode('utf-8'))
-        print (self.kwargs['ctx'].decode('utf8'))
-        print (self.kwargs['ctx'].decode())
-        print (self.kwargs['ctx'].encode())
+        ## add number of comments
+        for ticket in tickets:
+            ticket.nb_coms = self.get_nb_com(ticket.pk) 
         
+        return render(request, self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx']}) #will nedd to replace all() by filter project
 
-        print ("did")
-        current_base_ctx = Ctx.objects.filter(ctx=self.kwargs['ctx'])  #vide quand revient de creation ticket ?
-        print ("Current_base_ctx")
-        print (current_base_ctx)
-        print (current_base_ctx[0].id)
-        
-        
 
-        return render(request, self.template_name, {'object': Ticket.objects.filter(ctx_id=current_base_ctx[0].id), 'ctx': self.kwargs['ctx']}) #will nedd to replace all() by filter project
+    @classmethod  
+    def get_nb_com(self, pk):
+        return Comment.objects.filter(ticket_id= pk).count()
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketDetailView(DetailView):
@@ -357,20 +210,13 @@ class TicketDetailView(DetailView):
     form_class = CommentForm
 
     def get_object(self):
-        print ("Yes I go to get_object in detail !")
-        
         return [Comment.objects.filter(ticket_id = self.kwargs['pk']), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]
         
-
-    def get_queryset (self):
-        print ("Yes I go to get_queryset in detail !")
-        
+    def get_queryset (self):        
         return get_object_or_404(Ticket, pk=self.kwargs['pk'])
 
-    def get_context_data(self, **kwargs):
-        
+    def get_context_data(self, **kwargs):   
         context = super(TicketDetailView, self).get_context_data(**kwargs)
-        # context['now'] = timezone.now()
         return context
 
     def get(self, request, *args, **kwargs):
@@ -409,9 +255,5 @@ class TicketDetailView(DetailView):
         """
         model_instance = form.save(commit=False)
         model_instance.ticket = self.object
-        # model_instance.author = self.request.user
-        # model_instance.pub_date = datetime.now()
-        # model_instance.publish = True
-
         model_instance.save()
         return HttpResponseRedirect(self.get_success_url())

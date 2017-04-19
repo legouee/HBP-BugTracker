@@ -3,7 +3,6 @@ from django.core.urlresolvers import reverse
 
 import uuid
 
-
 class Ctx (models.Model):
     app_name = models.CharField(max_length=1024) 
     ctx = models.CharField(max_length=1024) 
@@ -42,11 +41,7 @@ class Ticket(models.Model):
     ctx = models.ForeignKey(Ctx, on_delete=models.CASCADE, default = 0)
     title = models.CharField(max_length=1024)
     text = models.TextField(help_text="formatted using ReST")
-    # This field stores the UUID added as an argument by the Collaboratory.
-    # ctx = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
-    # ctx = models.UUIDField(unique=True)
     creation_date = models.DateTimeField(auto_now_add=True)
-    id_project =   models.IntegerField(default=0)  #models.ForeignKey('Project', default=1)#, on_delete=models.CASCADE())
     status = models.CharField(max_length=12, default="")
     author = models.CharField(max_length=200,default="")
 
@@ -60,9 +55,7 @@ class Ticket(models.Model):
             'text': self.text,
             'status': self.status,
             'author': self.author,
-            # 'ctx': str(self.ctx),
-            'id_project': self.id_project
-            #'created_by': self.created_by
+            'ctx': self.ctx,
         }
 
     @models.permalink
@@ -73,14 +66,10 @@ class Ticket(models.Model):
         return reverse('ticket_list' )
 
 
-
 class Comment(models.Model):
-    # ticket = models.ForeignKey('blog.Post', related_name='comments', on_delete=models.CASCADE)
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, default = 0)
-    # ticket = models.IntegerField(default = 0)
     author = models.CharField(max_length=200, default="")
     text = models.TextField()
-    # null=True
     creation_date = models.DateTimeField(auto_now_add=True)
     approved_comment = models.BooleanField(default=False)
 
@@ -97,30 +86,5 @@ class Comment(models.Model):
             #'ctx': str(self.ctx),
             'author': self.author
         }
-
-
-
-class Home(models.Model):
-    # ctx = models.UUIDField(unique=True, default=uuid.uuid4, editable=True ) #, unique=True was at primary_key=True spot,   # editable=False)
-    #id = models.UUIDField(unique=True, primary_key=True, default=uuid.uuid4(), editable=True ) #bytes="abcdefghijklmno"
-    # print ("Home ctx : ")
-    # print (ctx) # ok probleme ici..... peut etre pour ca que ctx = None .....
-
-    project_name = models.CharField(max_length=1024) 
-    # ctx = models.UUIDField(unique=True)
-
-    def __unicode__(self):
-        return self.project_name
-
-    def as_json(self):
-        return {
-            'project_name': self.project_name,
-            # 'ctx': str(self.ctx),
-        }
-
-    @models.permalink
-    def get_absolute_url(self):
-        return reverse('home') #, args=[str(self.ctx)])
-    
 
 
