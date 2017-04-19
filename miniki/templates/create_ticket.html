@@ -14,10 +14,7 @@
     </div>
 <br/> <br/> <br/>
 <h3 id="title-ticket" align=center>New Ticket </h3>
-<p id="current_url"></p>
-<script>
-document.getElementById("current_url").innerHTML = window.location.href;
-</script>
+
 
 <form action="" class="ticket-form" method="POST">
     <ng-controller="ticketCreationForm" ng-init='create_ticket = {{form.instance.as_json|jsonify}}'>

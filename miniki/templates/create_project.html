@@ -5,10 +5,7 @@
 
 {% block content %}
 
-<p id="current_url"></p>
-<script>
-document.getElementById("current_url").innerHTML = window.location.href;
-</script>
+
 
 <div class="navbar navbar-form">
         <form action= "{% url 'ticket-list2' ctx=ctx %}">

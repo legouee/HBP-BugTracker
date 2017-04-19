@@ -38,7 +38,7 @@ from .models import Project
 from .models import Comment
 from .models import Ctx
 
-from .utils.ctx_handler import post_app_ctx, get_app_ctx
+from .utils.ctx_handler import post_collab_ctx, get_collab_ctx
 import json
 from django.core import serializers
 
@@ -180,8 +180,7 @@ class TicketListView(ListView):
         if not _is_collaborator(request, ctx):
             return HttpResponseForbidden()
 
-        # ctx= "fake-ctx"
-        post_collab_ctx (ctx=ctx, collab="app_name not supported yet")
+        post_collab_ctx (request=request,ctx=ctx)
         current_base_ctx = Ctx.objects.filter(ctx=ctx)
         tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id) 
         ## add number of comments
