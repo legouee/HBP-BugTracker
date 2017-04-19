@@ -39,6 +39,8 @@ from .models import Project
 from .models import Comment
 
 from .utils.ctx_handler import post_temp_user_ctx, get_temp_user_ctx
+import json
+from django.core import serializers
 
 
 # def form_valid(self, form):
@@ -299,11 +301,20 @@ class TicketListView(ListView):
     model = Ticket
     template_name = "ticket_list.html"
 
+
     def get(self, request, *args, **kwargs):
         #we do this here to make sure to catch the ctx
         post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
-
-        return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': request.META['QUERY_STRING']}) #will nedd to replace all() by filter project
+        
+        tickets = Ticket.objects.filter(id_project=0) ##need to change to get project id with collab
+        ## add number of comments
+        for ticket in tickets:
+            ticket.nb_coms = self.get_nb_com(ticket.pk)                     
+            
+        return render(request, self.template_name, {'object': tickets, 'ctx': request.META['QUERY_STRING']}) #will nedd to replace all() by filter project
+    @classmethod  
+    def get_nb_com(self, pk):
+        return Comment.objects.filter(ticket_id= pk).count()
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketListView2(ListView):  
