@@ -8,23 +8,23 @@
 from ..models import Ctx
 
 
-def get_temp_user_ctx (user_name=None):
-    return Ctx.objects.filter(user_name=user_name)
+def get_app_ctx (app_name=None):
+    return Ctx.objects.filter(app_name=app_name)
     
-def post_temp_user_ctx (ctx=None, user_name=None): 
-    if len(get_temp_user_ctx (user_name)) == 0 :
+def post_app_ctx (ctx=None, app_name=None): 
+    if len(get_app_ctx (app_name)) == 0 :
         obj = Ctx()
-        obj.user_name = user_name
+        obj.app_name = app_name
         obj.ctx = ctx
         obj.save()
     else :
-        if get_temp_user_ctx(user_name)[0].ctx != ctx :
+        if get_app_ctx(app_name)[0].ctx != ctx :
             obj = Ctx()
-            obj.user_name = "error_ctx"
-            obj.ctx = "was " +str(get_temp_user_ctx(user_name)[0].ctx) + " now : "+ str(ctx)
+            obj.app_name = "error_ctx"
+            obj.ctx = "was " +str(get_app_ctx(app_name)[0].ctx) + " now : "+ str(ctx)
             obj.save()
 
-            obj = get_temp_user_ctx(user_name)[0]
+            obj = get_app_ctx(app_name)[0]
             obj.ctx = ctx
             obj.save()
 

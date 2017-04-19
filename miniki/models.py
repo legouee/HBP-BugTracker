@@ -4,6 +4,15 @@ from django.core.urlresolvers import reverse
 import uuid
 
 
+class Ctx (models.Model):
+    app_name = models.CharField(max_length=1024) 
+    ctx = models.CharField(max_length=1024) 
+
+    def as_json(self):
+        return {
+            'app_name': self.app_name,
+            'ctx': self.ctx
+        }
 
 class Project(models.Model):                   
     """A Project"""
@@ -30,7 +39,7 @@ class Project(models.Model):
 
 class Ticket(models.Model):                   
     """A Ticket"""
-    # comments = models.ForeignKey(Comment)
+    ctx = models.ForeignKey(Ctx, on_delete=models.CASCADE, default = 0)
     title = models.CharField(max_length=1024)
     text = models.TextField(help_text="formatted using ReST")
     # This field stores the UUID added as an argument by the Collaboratory.
@@ -115,12 +124,3 @@ class Home(models.Model):
     
 
 
-class Ctx (models.Model):
-    user_name = models.CharField(max_length=1024) 
-    ctx = models.CharField(max_length=1024) 
-
-    def as_json(self):
-        return {
-            'user_name': self.user_name,
-            'ctx': self.ctx
-        }

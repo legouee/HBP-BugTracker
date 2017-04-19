@@ -37,8 +37,10 @@ from .models import Ticket
 from .models import Home
 from .models import Project
 from .models import Comment
+from .models import Ctx
 
-from .utils.ctx_handler import post_temp_user_ctx, get_temp_user_ctx
+
+from .utils.ctx_handler import post_app_ctx, get_app_ctx
 
 
 # def form_valid(self, form):
@@ -233,18 +235,23 @@ class CreateTicketView(TemplateView):
         return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx']})
     
     def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
+        ticket_creation = Ticket()
+
+        ticket_creation.ctx = get_object_or_404(Ctx, ctx=self.kwargs['ctx'])
+
+        form = self.form_class(request.POST, instance=ticket_creation)
         if form.is_valid():
             form = form.save(commit=False)
             form.author = request.user
                  # Clean up user input
             form.save()
-            return self.redirect(request, self.kwargs['ctx'] )
+            return self.redirect(request, ctx = self.kwargs['ctx'])
         return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx']})
 
     @classmethod    
     def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
-        url = reverse('ticket-list2', kwargs = {'ctx': args})
+        url = reverse('ticket-list2', kwargs = {'ctx': kwargs['ctx']})
+
         return HttpResponseRedirect(url)
 
 def _is_collaborator(request):
@@ -296,8 +303,13 @@ class TicketListView(ListView):
     template_name = "ticket_list.html"
 
     def get(self, request, *args, **kwargs):
+        for key, value in request.__dict__.items():
+            print (key, value)
+            print ("")
+        # print (request.__dict__)
+
         #we do this here to make sure to catch the ctx
-        post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
+        post_app_ctx (ctx=request.META['QUERY_STRING'], app_name="app_name not supported yet")
 
         return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': request.META['QUERY_STRING']}) #will nedd to replace all() by filter project
 
@@ -311,8 +323,24 @@ class TicketListView2(ListView):
 
         #we do this here to make sure to catch the ctx
         # post_temp_user_ctx (ctx=request.META['QUERY_STRING'], user_name=request.user)
+        print (self.kwargs['ctx'])
+        print (self.kwargs['ctx'][0])
+        print (type(self.kwargs['ctx']))
+        print (self.kwargs['ctx'].decode('utf-8'))
+        print (self.kwargs['ctx'].decode('utf8'))
+        print (self.kwargs['ctx'].decode())
+        print (self.kwargs['ctx'].encode())
+        
 
-        return render(request, self.template_name, {'object': Ticket.objects.all(), 'ctx': self.kwargs['ctx']}) #will nedd to replace all() by filter project
+        print ("did")
+        current_base_ctx = Ctx.objects.filter(ctx=self.kwargs['ctx'])  #vide quand revient de creation ticket ?
+        print ("Current_base_ctx")
+        print (current_base_ctx)
+        print (current_base_ctx[0].id)
+        
+        
+
+        return render(request, self.template_name, {'object': Ticket.objects.filter(ctx_id=current_base_ctx[0].id), 'ctx': self.kwargs['ctx']}) #will nedd to replace all() by filter project
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketDetailView(DetailView):
