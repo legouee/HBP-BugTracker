@@ -51,7 +51,7 @@ document.getElementById("current_url").innerHTML = window.location.href;
                             </td>
                             <td id=cut-text>
                                 <br/>
-                                {{ ticket.text|markdown |truncatewords_html:60}}
+                                {{ ticket.text|markdown|truncatewords_html:60}}
                             </td> 
                             <td align=center>
                               <span class="badge" id="badge-style" > 
