@@ -72,16 +72,20 @@ document.getElementById("current_url").innerHTML = window.location.href;
                             </td> 
                             <td width=2000 >
                             </td>
-                            <td width=200 >
+                            <td width=400 >
                                 {{ comment.creation_date}}
                             </td>
                         </tr>
 
                         <tr  id="table-ticket-detail-comment-content">
-                            <td>
+                            <td width=200 >
+                            </td> 
+                            <td width=2000>
                                 <br/>
                                 {{ comment.text|markdown }}
-                            </td>  
+                            </td> 
+                            <td width=400 >
+                            </td> 
                     </tbody>
                 </div>
         </table>
