@@ -18,30 +18,34 @@
 <h1 align=center>Ticket #{{object.1.pk}} detailed</h1>
 <br/>
 
-
-
-    <form action="" class="ticket-form" method="POST" >    
+<div  class=ng-cloak id=TicketToEdit >
+    <style>  .ng-cloak { display: none !important; } </style>
+    
+    <form action="" class="ticket-form" onsubmit="return false" ng-controller="TicketEditSave" > 
+         
         <table class="table table-striped table-condensed" >
-            {% csrf_token %}
             <tbody>
+                {% csrf_token %} 
                 <tr  id="table-ticket-detail">
                     <td width=200 >
                         Ticket #{{object.1.pk}} <br/>
-                        by {{ object.1.author }}
+                        <span class="glyphicon glyphicon-user"></span> {{ object.1.author }}
                     </td>  
-                    <td width=850>
+                    <td class=title width=850 contenteditable="true">
                         {{ object.1.title }}
                     </td>
                     <td width=200 >
-                        {{ object.1.creation_date}}
+                        {{ object.1.creation_date}} 
                         {{ object.1.status }}
+                    </td>
+                    <td width=50> 
                     </td>
                 </tr>
                 <tr id="table-ticket-detail-content">
                     <td>
                         <br/>
                     </td>  
-                    <td overflow=scroll>
+                    <td class=text overflow=scroll contenteditable="true">
                            <br/>
                         {{ object.1.text|markdown}}
 
@@ -49,7 +53,52 @@
                 </tr>
              </tbody>
         </table>
+        
+          <div class="navbar navbar-form">
+                    <button type="submit" class="btn btn-primary" ng-click="saveEditedTicket()" >Save</button> 
+                </div>
     </form>
+ </div>
+
+
+        <div    id=TicketToShow>
+        <table class="table table-striped table-condensed">
+            
+            <tbody>
+                <tr  id="table-ticket-detail">
+                    <td width=200 >
+                        Ticket #{{object.1.pk}} <br/>
+                        <span class="glyphicon glyphicon-user"></span> {{ object.1.author }}
+                    </td>  
+                    <td class=title width=850>
+                        {{ object.1.title }}
+                    </td>
+                    <td width=200 >
+                        {{ object.1.creation_date}} 
+                        {{ object.1.status }}
+                    </td>
+                    <td width=50>
+                    <form action="" class="ticket-form" ng-controller="TicketForm" onsubmit="return false"> 
+                        <button type="active" class="glyphicon glyphicon-pencil" align=right ng-click="editTicket()"></button>
+                    </form>   
+                    </td>
+                </tr>
+             
+                <tr id="table-ticket-detail-content">
+                    <td>
+                        <br/>
+                    </td>  
+                    <td class=text overflow=scroll>
+                           <br/>
+                        {{ object.1.text|markdown}}
+
+                    </td>
+                </tr>
+             </tbody>
+             
+        </table>
+        </div>
+        <!--</span>-->  
 </main>
 
 <main class="comment">
@@ -64,12 +113,15 @@
                     <tbody>
                         <tr  id="table-ticket-detail-comment">
                             <td width=200 >
-                                 by {{ comment.author }}
+                                <span class="glyphicon glyphicon-user"></span> {{ comment.author }}
                             </td> 
                             <td width=2000 >
                             </td>
                             <td width=400 >
                                 {{ comment.creation_date}}
+                            </td>
+                            <td width=50>
+                                <button type=button class="glyphicon glyphicon-pencil" align=right ng-click=editComment() ></button>
                             </td>
                         </tr>
 

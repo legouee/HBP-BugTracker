@@ -23,7 +23,7 @@ from uuid import UUID
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-
+from django.views.decorators.csrf import csrf_exempt
 import bleach
 
 from markdown import markdown
@@ -123,7 +123,7 @@ class CreateTicketView(TemplateView):
 
 def _is_collaborator(request, context):
     '''check access depending on context'''
-    print(context)
+    print("context", context)
     svc_url = settings.HBP_COLLAB_SERVICE_URL
     if not context:
         return False
@@ -131,9 +131,9 @@ def _is_collaborator(request, context):
     url = '%scollab/context/%s/' % (svc_url, context)
 
     headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
-
+    print("request:", request)
     res = requests.get(url, headers=headers)
-    print(res)
+    print("here ",res)
     if res.status_code != 200:
         return False
 
@@ -235,7 +235,9 @@ class TicketDetailView(DetailView):
         return context
 
     def get(self, request, *args, **kwargs):
-
+        print("in get")
+        print ("request", request)
+        print("ctx: ",self.kwargs['ctx'])
         if not _is_collaborator(request, self.kwargs['ctx']):
             return HttpResponseForbidden()
             
@@ -257,16 +259,33 @@ class TicketDetailView(DetailView):
             form = CommentForm(request.POST, instance=comment_creation)
 
         if form.is_valid():
-            p = form.save(commit=False)
-            p.author = request.user
-            p.save()
+            form = form.save(commit=False)
+            form.author = request.user
+            form.save()
             return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
         else :
-            pass
+            form = CommentForm(instance=comment_creation)
             #faire passer un message...
+   
+        return render(request, 'ticket-detail.html', {'form': form, 'ctx': self.kwargs['ctx']}) #need to change that       
 
-        return render(request, 'ticket_list.html', {'form': p, 'ctx': self.kwargs['ctx']}) #need to change that       
-
+    # def get_ticket_form_to_edit(request):
+    #     print("in get ticket form to edit")
+    #     ticket_id = request.POST.get('pk', None)
+    #     print("ticket_id: ", ticket_id)
+    #     queryset = Ticket.objects.filter(pk = ticket_id)
+    #     print("queryset:", queryset)
+    #     if request.is_ajax():
+    #         print("in request.POST")
+    #         form = TicketForm(request.POST, instance=queryset)
+    #         if form.is_valid():
+    #             print("form is valid")
+    #             form.save()
+    #     else:
+    #         print("in else")
+    #         form = TicketForm( instance=queryset)
+        
+    #     return render_to_response('.html', {'form':form})
 
     def form_valid(self, form):
         """
@@ -276,3 +295,22 @@ class TicketDetailView(DetailView):
         model_instance.ticket = self.object
         model_instance.save()
         return HttpResponseRedirect(self.get_success_url())
+
+    @csrf_exempt
+    def edit_ticket(self,request):
+        print("in get ticket form to edit")
+        ticket_id = request.POST.get('pk', None)
+        print("ticket_id: ", ticket_id)
+        queryset = Ticket.objects.filter(pk = ticket_id)
+        print("queryset:", queryset)
+        if request.is_ajax():
+            print("in request.POST")
+            form = TicketForm(request.POST, instance=queryset)
+            if form.is_valid():
+                print("form is valid")
+                form.save()
+        else:
+            print("in else")
+            form = TicketForm( instance=queryset)
+        
+        return render(request, 'ticket-detail.html', {'form': form, 'ctx': self.kwargs['ctx']})

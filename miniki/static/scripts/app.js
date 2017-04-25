@@ -2,26 +2,39 @@
 // Define the miniki application, currently doing nothing.
 var app = angular.module('miniki', ['hbpCommon']);
 
-// app.controller('HomeForm', function($scope) {
-//    // The form controller that manage the displays of preview
-//    $scope.create = false
-//    $scope.createProject = function () {
-//      $scope.create = !$scope.create;
-//      console.log("create")
-//    };
-//    $scope.saveProject = function () {
-//      $scope.create = !$scope.create;
-//      console.log("save")
-//    };
-// });
 
-
-app.controller('CommentForm', function($scope) {
+app.controller('TicketForm', function($scope) {
    // The form controller that manage the displays of preview
-   $scope.create = false
-   $scope.createComment = function () {
-     $scope.create = !$scope.create;
-   };
+    $("#TicketToEdit").hide();
+    // $scope.t=false
+    $scope.editTicket = function(ticket){
+      $("#TicketToEdit").show();
+      $("#TicketToShow").hide();
+    };
+});
+
+app.controller('TicketEditSave', function($scope) {
+    $scope.saveEditedTicket = function(){
+      // get ticket form
+      $.ajax({
+        url:"",
+        type:"POST",
+        data: {title: $("#title").text() ,text:$("#text").text() }, 
+
+       success : function(json) {
+            console.log(json); // another sanity check
+            //On success show the data posted to server as a message
+            alert('Hi ' );
+       },
+      error : function(xhr,errmsg,err) {
+            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+      }
+      });
+
+      $("#TicketToEdit").hide();
+      $("#TicketToShow").show();
+     };
+
 });
 
 // Bootstrap function
@@ -35,5 +48,4 @@ angular.bootstrap().invoke(function($http, $log) {
     $log.error('Cannot boot miniki application');
   });
 });
-
 }());
