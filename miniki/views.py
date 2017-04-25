@@ -38,9 +38,15 @@ from .models import Project
 from .models import Comment
 from .models import Ctx
 
-from .utils.ctx_handler import post_collab_ctx, get_collab_ctx
+from .utils.ctx_handler import post_collab_ctx, get_collab_ctx, remove_ticket, close_ticket,open_ticket
 import json
 from django.core import serializers
+
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+
+from django.http import HttpResponse
+
+from django.template import RequestContext
 
 class ProjectListView(ListView): 
     model = Project
@@ -123,7 +129,6 @@ class CreateTicketView(TemplateView):
 
 def _is_collaborator(request, context):
     '''check access depending on context'''
-    print(context)
     svc_url = settings.HBP_COLLAB_SERVICE_URL
     if not context:
         return False
@@ -143,6 +148,24 @@ def _is_collaborator(request, context):
     if res.status_code != 200:
         return False
     return res.json().get('UPDATE', False)
+
+def _get_collab_extension(request, context):
+    svc_url = settings.HBP_COLLAB_SERVICE_URL
+    url = '%scollab/context/%s/' % (svc_url, context)
+
+    headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
+
+    res = requests.get(url, headers=headers)
+    print ("RES 1 ")
+    print(res.__dict__)
+    for key, value in res.__dict__.items():
+        print (key)
+        print (value)
+
+    print (json.loads(res._content)['collab']['title'])
+
+
+
 
 def _get_access_token(request):
     return request.user.social_auth.get().extra_data['access_token']
@@ -179,6 +202,8 @@ class TicketListView(ListView):
         
         if not _is_collaborator(request, ctx):
             return HttpResponseForbidden()
+
+        _get_collab_extension(request, ctx) #need to change the name
 
         post_collab_ctx (request=request,ctx=ctx)
         current_base_ctx = Ctx.objects.filter(ctx=ctx)
@@ -276,3 +301,92 @@ class TicketDetailView(DetailView):
         model_instance.ticket = self.object
         model_instance.save()
         return HttpResponseRedirect(self.get_success_url())
+
+# @login_required(login_url='/login/hbp')
+# def edit(request):
+#     # return render(request, 'edit.html', {'form': form, 'ctx': str(context)})
+#     return render(request, 'ticket_list.html', {})
+    
+
+
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
+class AdminTicketListView(ListView):  
+    model = Ticket
+    template_name = "admin_ticket_list.html"
+
+    def get(self, request, *args, **kwargs):
+        
+        ctx = request.META['QUERY_STRING'][4:]
+        print ("ctx : V1 : "+ str(ctx))
+
+        post_collab_ctx (request=request,ctx=ctx) #just to check
+
+        if not _is_collaborator(request, ctx):
+            return HttpResponseForbidden()
+
+        current_base_ctx = Ctx.objects.filter(ctx=ctx) 
+        tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id)
+
+        ## add number of comments
+        for ticket in tickets:
+            ticket.nb_coms = self.get_nb_com(ticket.pk) 
+        
+        return render(request, self.template_name, {'object': tickets, 'ctx': ctx})
+
+
+
+    @classmethod  
+    def get_nb_com(self, pk):
+        return Comment.objects.filter(ticket_id= pk).count()
+
+
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
+class AdminTicketListView2(ListView):  
+    model = Ticket
+    template_name = "admin_ticket_list.html"
+
+    def get(self, request, *args, **kwargs):
+        print ("ctx : V2 : " +str(self.kwargs['ctx']) )
+        post_collab_ctx (request=request,ctx=self.kwargs['ctx']) #just to check
+
+        if not _is_collaborator(request, self.kwargs['ctx']):
+            return HttpResponseForbidden()
+
+        current_base_ctx = Ctx.objects.filter(ctx=self.kwargs['ctx']) 
+        tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id)
+
+        ## add number of comments
+        for ticket in tickets:
+            ticket.nb_coms = self.get_nb_com(ticket.pk) 
+        
+
+        return render(request, self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx']})
+        # return render_to_response (self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx']}, context_instance=RequestContext(request))
+
+    @classmethod  
+    def get_nb_com(self, pk):
+        return Comment.objects.filter(ticket_id= pk).count()
+
+    @classmethod    
+    def redirect(self, request, *args, **kwargs): 
+        url = reverse('ticket-admin2', kwargs = { 'ctx': kwargs['ctx']})
+        print ("dddddd")
+        return HttpResponseRedirect(url)
+
+    # @csrf_exempt
+    def post(self, request, *args, **kwargs):
+
+        if json.loads(request.POST.get('action', None)) == 'close':
+            close_ticket (request)
+
+        elif json.loads(request.POST.get('action', None)) == 'open':
+            open_ticket (request)
+      
+        
+        return self.redirect(request, ctx=self.kwargs['ctx'])
+        # return render_to_response( self.template_name, { 'ctx': self.kwargs['ctx']} )
+        # return render(request, self.template_name, {'ctx': self.kwargs['ctx']})
+        
+     
+
+        

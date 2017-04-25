@@ -26,14 +26,20 @@ from miniki.views import TicketListView2
 from miniki.views import Test_Menu_deroulant
 from miniki.views import TicketDetailView
 from miniki.views import ProjectListView
+from miniki.views import AdminTicketListView
+from miniki.views import AdminTicketListView2
+
+
 
 from django.contrib import admin
 
+from miniki.utils.ctx_handler import remove_ticket, close_ticket
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url('', include('social.apps.django_app.urls', namespace='social')),
     url('', include('hbp_app_python_auth.urls', namespace='hbp-social')),
+
     url(r'^create_ticket/(?P<ctx>.+)$', CreateTicketView.as_view(), name='ticket-create'), 
     url(r'^Menu_deroulant$', Test_Menu_deroulant, name='Menu_deroulant'), 
     url(r'^project_list/(?P<ctx>.+)$',ProjectListView.as_view(), name='project-list'),
@@ -42,5 +48,23 @@ urlpatterns = [
     url(r'^list(?P<ctx>.+)$',TicketListView2.as_view(), name='ticket-list2'),
     url(r'^ticket/(?P<pk>\d+)/(?P<ctx>.+)$', TicketDetailView.as_view(), name='ticket-detail'),
     url(r'^config.json$', config, name='config'),
+
+
+    #admin
+
+    url(r'^edit/$', AdminTicketListView.as_view(), name='ticket-admin'),
+    url(r'^edit/(?P<ctx>.+)$', AdminTicketListView2.as_view(), name='ticket-admin2'),
+    
+    
+
+    # url(r'^edit/remove_ticket/$', remove_ticket , name='remove_ticket'),
+    # url(r'^edit/close_ticket/$', close_ticket , name='close_ticket'),
+
+    # url(r'^edit/remove_ticket/(?P<ctx>.+)$', remove_ticket , name='remove_ticket2'),
+    # url(r'^edit/close_ticket/(?P<ctx>.+)$', close_ticket , name='close_ticket2'),
+    
+    
+    
+    
     
 ]

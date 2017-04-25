@@ -6,11 +6,13 @@ import uuid
 class Ctx (models.Model):
     collab = models.CharField(max_length=1024) 
     ctx = models.CharField(max_length=1024) 
+    app_name = models.CharField(max_length=1024, default ="no_name")
 
     def as_json(self):
         return {
             'collabe': self.collab,
-            'ctx': self.ctx
+            'ctx': self.ctx,
+            'app_name': self.app_name,
         }
 
 class Project(models.Model):                   
@@ -56,6 +58,7 @@ class Ticket(models.Model):
             'status': self.status,
             'author': self.author,
             'ctx': self.ctx,
+            'creation_date' : self.creation_date,
         }
 
     @models.permalink
@@ -82,9 +85,11 @@ class Comment(models.Model):
 
     def as_json(self):
         return {
-            'text': self.text,
-            #'ctx': str(self.ctx),
-            'author': self.author
+        'ticket' : self.ticket,
+        'author' : self.author,
+        'text' : self.text,
+        'creation_date' : self.creation_date,
+        'approved_comment' : self.approved_comment,
         }
 
 
