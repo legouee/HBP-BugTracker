@@ -28,6 +28,7 @@ from miniki.views import TicketDetailView
 from miniki.views import ProjectListView
 from miniki.views import AdminTicketListView
 from miniki.views import AdminTicketListView2
+from miniki.views import AdminTicketDetailView
 
 
 
@@ -51,9 +52,10 @@ urlpatterns = [
 
 
     #admin
-
     url(r'^edit/$', AdminTicketListView.as_view(), name='ticket-admin'),
     url(r'^edit/(?P<ctx>.+)$', AdminTicketListView2.as_view(), name='ticket-admin2'),
+    url(r'^admin_ticket/(?P<pk>\d+)/(?P<ctx>.+)$', AdminTicketDetailView.as_view(), name='ticket-detail-admin'),
+    
     
     
 
