@@ -14,27 +14,29 @@ app.controller('TicketForm', function($scope) {
 });
 
 app.controller('TicketEditSave', function($scope) {
-    $scope.saveEditedTicket = function(){
+    
+    $scope.saveEditedTicket = function(pk){
       // get ticket form
+      var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+      var title = $("#title").text()
+      var text = $("#text").text()
       $.ajax({
-        url:"",
-        type:"POST",
-        data: {title: $("#title").text() ,text:$("#text").text() }, 
+         url:"",
+         type:"POST",
+         data: {'pk':JSON.stringify(pk) ,'title':title  ,'text':text, 'action':"edit_ticket", 'csrfmiddlewaretoken': csrftoken}, 
 
-       success : function(json) {
-            console.log(json); // another sanity check
-            //On success show the data posted to server as a message
-            alert('Hi ' );
-       },
-      error : function(xhr,errmsg,err) {
+         success : function(json) {
+            alert('Your ticket have been edited!' );
+            },
+         error : function(xhr,errmsg,err) {
             console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-      }
-      });
-
+            },
+        });
+      $("#ticket-title").replaceWith('<td id="ticket-title" class=title width=850>'+ title +'</td>');
+      $("#ticket-text").replaceWith('<td id="ticket-text" class=text width=850>'+ text +'</td>');
       $("#TicketToEdit").hide();
       $("#TicketToShow").show();
-     };
-
+      };
 });
 
 // Bootstrap function

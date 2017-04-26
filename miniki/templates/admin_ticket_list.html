@@ -1,0 +1,177 @@
+{% extends "layout.html" %}
+{% load markdown_deux_tags %}
+{% block content %}
+
+
+<!--je ne sais pas .........-->
+{#{% csrf_token %} #}
+{% csrf_token %}
+
+<!--je ne sais pas .........-->
+
+
+
+
+    <div class="navbar navbar-form navbar-fixed-top">
+        <form action= "{% url 'ticket-admin2' ctx=ctx %}">
+            <input type="submit" value="Ticket-list" />
+        </form>
+        <br/>
+    </div>
+<br/> <br/> <br/>
+<h1 align=center>Tickets</h1>
+
+
+<p id="current_url"></p>
+<script>
+document.getElementById("current_url").innerHTML = window.location.href;
+</script>
+
+
+<table class="table table-striped table-condensed" >
+    <tbody>
+        <tr  id="table-ticket-detail">
+            <td width=200 >
+                <input style="float: right" type="button" onclick="myFunction2();" value="Apply" />
+                <table style="float: right" width=100>
+                    <tr>
+                        <td>
+                        <select id="action_select">
+                            <option value="nothing">Action</option>
+                            <option value="open">Open</option>
+                            <option value="close">Close</option>
+                        </select>
+                        </td>
+                    </tr>
+                </table>
+            </td>                
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+    {% for ticket in object %}
+    <input type="checkbox" name="name_box" id="myCheck" value="{{ ticket.pk }}"  >
+        <a href="{% url 'ticket-detail' pk=ticket.pk ctx=ctx %}" class="list-group-item"  >
+            <table class="table table-striped table-condensed"  >
+                        <tbody>
+                            
+
+                            <!--style="float: right"-->
+                            <!--style="margin-left: 200px;"-->
+                            <tr id=table-ticket-list>
+                                
+                                <td width=200 >
+                                    
+                                    Ticket #{{ticket.pk}} <br/>
+                                    {{ticket.author}}
+                                    
+                                </td> 
+                                <td width=1600>
+                                    
+                                    {{ ticket.title }} 
+                                    
+                                </td>
+                                <td width=400>
+                                {{ticket.creation_date}}
+                                {{ ticket.status }}
+                                
+                                </td>
+                            </tr>
+                            
+                            <tr id=table-ticket-list-content >
+                                <td>
+                                </td>
+                                <td id=cut-text>
+                                    <br/>
+                                    {{ ticket.text|markdown|truncatewords_html:60}}
+                                </td> 
+                                <td align=center>
+                                <span class="badge" id="badge-style" > 
+                                        {{ticket.nb_coms}}
+                                    
+                                    </span>
+                                </td>
+                            </tr>                             
+                        </tbody>
+            </table>
+        </a>
+    {% endfor %}
+
+    <div class="navbar navbar-form">
+      <form action="{% url 'ticket-create' ctx=ctx%}">
+            <button class="btn btn-primary" id="btn-style">Create new ticket</button>
+      </form>      
+    </div>
+
+</div>
+
+
+<!--<button type=button onclick="myFunction()">X1</button>-->
+<!--<p id="demo"></p>
+
+ <button type=button onclick="myFunction2()">X2</button>-->
+
+<!--<script>
+function myFunction() {
+    document.getElementById("demo").innerHTML = "Hello World";
+}
+</script>-->
+
+ <!--</script>
+ <button type=button onclick="check()">check ?</button>
+
+<script>
+function check() {
+    if (document.getElementById("myCheck").checked )
+        alert('checked!')
+}
+</script>-->
+
+
+
+
+
+
+
+<script>
+function myFunction2() {
+    var pk_list = getCheckedCheckboxesFor('name_box')
+    var action_selected = document.getElementById("action_select").value
+    $.ajax({
+//    url: "close_ticket/",
+   url: "{{ctx}}",
+
+   type: "POST",
+//    type: "GET",
+
+   data: {
+       'pk': JSON.stringify(pk_list),
+       'action': JSON.stringify(action_selected),
+       'csrfmiddlewaretoken': '{{ csrf_token }}',
+       
+       },
+//    success: function(response){
+    //    $('#blurg').html(response).fadeIn(1500);
+    success: function(){alert('DONE!');},
+    error:function(){alert('ERROR!');},
+//    }
+});
+}
+</script>
+
+<script type="text/javascript">
+    function getCheckedCheckboxesFor(checkboxName) {
+        var checkboxes = document.querySelectorAll('input[name="' + checkboxName + '"]:checked'), values = [];
+        Array.prototype.forEach.call(checkboxes, function(el) {
+            values.push(el.value);
+        });
+        return values;
+    }
+</script>
+
+
+{% endblock %}
+

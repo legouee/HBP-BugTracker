@@ -22,16 +22,16 @@
     <style>  .ng-cloak { display: none !important; } </style>
     
     <form action="" class="ticket-form" onsubmit="return false" ng-controller="TicketEditSave" > 
-         
+         {% csrf_token %}
         <table class="table table-striped table-condensed" >
             <tbody>
-                {% csrf_token %} 
+                 
                 <tr  id="table-ticket-detail">
                     <td width=200 >
                         Ticket #{{object.1.pk}} <br/>
                         <span class="glyphicon glyphicon-user"></span> {{ object.1.author }}
                     </td>  
-                    <td class=title width=850 contenteditable="true">
+                    <td class=title id="title" width=850 contenteditable="true">
                         {{ object.1.title }}
                     </td>
                     <td width=200 >
@@ -45,7 +45,7 @@
                     <td>
                         <br/>
                     </td>  
-                    <td class=text overflow=scroll contenteditable="true">
+                    <td class=text id="text" overflow=scroll contenteditable="true">
                            <br/>
                         {{ object.1.text|markdown}}
 
@@ -53,9 +53,9 @@
                 </tr>
              </tbody>
         </table>
-        
+
           <div class="navbar navbar-form">
-                    <button type="submit" class="btn btn-primary" ng-click="saveEditedTicket()" >Save</button> 
+                    <button type="submit" class="btn btn-primary" ng-click="saveEditedTicket({{object.1.pk}})" >Save</button> 
                 </div>
     </form>
  </div>
@@ -70,7 +70,7 @@
                         Ticket #{{object.1.pk}} <br/>
                         <span class="glyphicon glyphicon-user"></span> {{ object.1.author }}
                     </td>  
-                    <td class=title width=850>
+                    <td id='ticket-title' class=title width=850>
                         {{ object.1.title }}
                     </td>
                     <td width=200 >
@@ -79,7 +79,9 @@
                     </td>
                     <td width=50>
                     <form action="" class="ticket-form" ng-controller="TicketForm" onsubmit="return false"> 
+                        {% if object.1.is_author %}
                         <button type="active" class="glyphicon glyphicon-pencil" align=right ng-click="editTicket()"></button>
+                        {% endif %}
                     </form>   
                     </td>
                 </tr>
@@ -88,7 +90,7 @@
                     <td>
                         <br/>
                     </td>  
-                    <td class=text overflow=scroll>
+                    <td id='ticket-text' class=text overflow=scroll>
                            <br/>
                         {{ object.1.text|markdown}}
 
@@ -108,6 +110,7 @@
     </div>
 
     {% for comment in object.0.all %}
+        <div    id=CommentToShow{{comment.pk}}>
         <table class="table table-striped table-condensed" >
                 <div class="comment">
                     <tbody>
@@ -121,7 +124,11 @@
                                 {{ comment.creation_date}}
                             </td>
                             <td width=50>
-                                <button type=button class="glyphicon glyphicon-pencil" align=right ng-click=editComment() ></button>
+                                <form action="" class="comment-form" ng-controller="CommentForm" onsubmit="return false"> 
+                                {% if comment.is_author %}
+                                <button type=button class="glyphicon glyphicon-pencil" align=right ng-click="editComment({{comment.pk}})"></button>
+                                {% endif%}
+                                </form>
                             </td>
                         </tr>
 
@@ -137,10 +144,11 @@
                     </tbody>
                 </div>
         </table>
+        </div>
         {% endfor%}
 </main>
 
-<main action="" class="commentForm" method="POST" ng-controller="CommentForm" >
+<main action="" class="commentForm" method="POST" >
             <form action="" class="ticket-form" method="POST">
                 <div class="ticket-form-fields">
 

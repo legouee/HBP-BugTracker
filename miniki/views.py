@@ -38,9 +38,15 @@ from .models import Project
 from .models import Comment
 from .models import Ctx
 
-from .utils.ctx_handler import post_collab_ctx, get_collab_ctx
+from .utils.ctx_handler import post_collab_ctx, get_collab_ctx, remove_ticket, close_ticket,open_ticket
 import json
 from django.core import serializers
+
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+
+from django.http import HttpResponse
+
+from django.template import RequestContext
 
 class ProjectListView(ListView): 
     model = Project
@@ -144,6 +150,24 @@ def _is_collaborator(request, context):
         return False
     return res.json().get('UPDATE', False)
 
+def _get_collab_extension(request, context):
+    svc_url = settings.HBP_COLLAB_SERVICE_URL
+    url = '%scollab/context/%s/' % (svc_url, context)
+
+    headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
+
+    res = requests.get(url, headers=headers)
+    print ("RES 1 ")
+    print(res.__dict__)
+    for key, value in res.__dict__.items():
+        print (key)
+        print (value)
+
+    print (json.loads(res._content)['collab']['title'])
+
+
+
+
 def _get_access_token(request):
     return request.user.social_auth.get().extra_data['access_token']
 
@@ -179,6 +203,8 @@ class TicketListView(ListView):
         
         if not _is_collaborator(request, ctx):
             return HttpResponseForbidden()
+
+        _get_collab_extension(request, ctx) #need to change the name
 
         post_collab_ctx (request=request,ctx=ctx)
         current_base_ctx = Ctx.objects.filter(ctx=ctx)
@@ -224,8 +250,15 @@ class TicketDetailView(DetailView):
     template_name = "ticket_detail.html"
     form_class = CommentForm
 
-    def get_object(self):
-        return [Comment.objects.filter(ticket_id = self.kwargs['pk']), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]
+    def get_object(self,request):
+        comments=Comment.objects.filter(ticket_id = self.kwargs['pk'])
+        for comment in comments:
+            comment.is_author = self.check_user_is_author(request,comment)
+            print(comment.is_author)
+        ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])
+        ticket.is_author = self.check_user_is_author(request,ticket)
+        
+        return [comments, ticket ]
         
     def get_queryset (self):        
         return get_object_or_404(Ticket, pk=self.kwargs['pk'])
@@ -244,48 +277,35 @@ class TicketDetailView(DetailView):
         cmt = Comment()
         form = self.form_class(instance = cmt)
 
-        return render(request, self.template_name, {'form': form, 'object': self.get_object(), 'ctx': self.kwargs['ctx'] })    
+        return render(request, self.template_name, {'form': form, 'object': self.get_object(request), 'ctx': self.kwargs['ctx'] })    
 
     @classmethod    
     def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
         url = reverse('ticket-detail', kwargs = { 'pk':kwargs['pk'],'ctx': kwargs['ctx']})
         return HttpResponseRedirect(url)
-
+    
+    #@csrf_exempt
     def post(self, request, *args, **kwargs):
-        comment_creation = Comment()
-        comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
+
+        if request.POST.get('action', None) == 'edit_ticket':
+           form=self.edit_ticket(request)
+        else:
+            comment_creation = Comment()
+            comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
        
-        if request.method == 'POST':
-            form = CommentForm(request.POST, instance=comment_creation)
+            if request.method == 'POST':
+                form = CommentForm(request.POST, instance=comment_creation)
 
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.author = request.user
-            form.save()
-            return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
-        else :
-            form = CommentForm(instance=comment_creation)
-            #faire passer un message...
+            if form.is_valid():
+                form = form.save(commit=False)
+                form.author = request.user
+                form.save()
+                return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
+            else :
+                form = CommentForm(instance=comment_creation)
+                #faire passer un message...
    
-        return render(request, 'ticket-detail.html', {'form': form, 'ctx': self.kwargs['ctx']}) #need to change that       
-
-    # def get_ticket_form_to_edit(request):
-    #     print("in get ticket form to edit")
-    #     ticket_id = request.POST.get('pk', None)
-    #     print("ticket_id: ", ticket_id)
-    #     queryset = Ticket.objects.filter(pk = ticket_id)
-    #     print("queryset:", queryset)
-    #     if request.is_ajax():
-    #         print("in request.POST")
-    #         form = TicketForm(request.POST, instance=queryset)
-    #         if form.is_valid():
-    #             print("form is valid")
-    #             form.save()
-    #     else:
-    #         print("in else")
-    #         form = TicketForm( instance=queryset)
-        
-    #     return render_to_response('.html', {'form':form})
+        return render(request, 'ticket_detail.html', {'form': form, 'ctx': self.kwargs['ctx']}) #need to change that       
 
     def form_valid(self, form):
         """
@@ -296,21 +316,100 @@ class TicketDetailView(DetailView):
         model_instance.save()
         return HttpResponseRedirect(self.get_success_url())
 
-    @csrf_exempt
     def edit_ticket(self,request):
-        print("in get ticket form to edit")
-        ticket_id = request.POST.get('pk', None)
-        print("ticket_id: ", ticket_id)
-        queryset = Ticket.objects.filter(pk = ticket_id)
-        print("queryset:", queryset)
-        if request.is_ajax():
-            print("in request.POST")
-            form = TicketForm(request.POST, instance=queryset)
-            if form.is_valid():
-                print("form is valid")
-                form.save()
-        else:
-            print("in else")
-            form = TicketForm( instance=queryset)
+        ticket_id = request.POST.get('pk')
+        queryset = Ticket.objects.get(pk = ticket_id)
+
+        form = TicketForm(request.POST, instance=queryset)
+        form.title = request.POST.get('title')
+        form.text = request.POST.get('text')
+
+        if form.is_valid():
+            form.save()
+
+        return form
+    def check_user_is_author(self,request,_object):
+            if str(request.user) == str(_object.author):
+                return True
+            else: return False 
+
+
+
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
+class AdminTicketListView(ListView):  
+    model = Ticket
+    template_name = "admin_ticket_list.html"
+
+    def get(self, request, *args, **kwargs):
         
-        return render(request, 'ticket-detail.html', {'form': form, 'ctx': self.kwargs['ctx']})
+        ctx = request.META['QUERY_STRING'][4:]
+        print ("ctx : V1 : "+ str(ctx))
+
+        post_collab_ctx (request=request,ctx=ctx) #just to check
+
+        if not _is_collaborator(request, ctx):
+            return HttpResponseForbidden()
+
+        current_base_ctx = Ctx.objects.filter(ctx=ctx) 
+        tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id)
+
+        ## add number of comments
+        for ticket in tickets:
+            ticket.nb_coms = self.get_nb_com(ticket.pk) 
+        
+        return render(request, self.template_name, {'object': tickets, 'ctx': ctx})
+
+
+
+    @classmethod  
+    def get_nb_com(self, pk):
+        return Comment.objects.filter(ticket_id= pk).count()
+
+
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
+class AdminTicketListView2(ListView):  
+    model = Ticket
+    template_name = "admin_ticket_list.html"
+
+    def get(self, request, *args, **kwargs):
+        print ("ctx : V2 : " +str(self.kwargs['ctx']) )
+        post_collab_ctx (request=request,ctx=self.kwargs['ctx']) #just to check
+
+        if not _is_collaborator(request, self.kwargs['ctx']):
+            return HttpResponseForbidden()
+
+        current_base_ctx = Ctx.objects.filter(ctx=self.kwargs['ctx']) 
+        tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id)
+
+        ## add number of comments
+        for ticket in tickets:
+            ticket.nb_coms = self.get_nb_com(ticket.pk) 
+        
+
+        return render(request, self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx']})
+        # return render_to_response (self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx']}, context_instance=RequestContext(request))
+
+    @classmethod  
+    def get_nb_com(self, pk):
+        return Comment.objects.filter(ticket_id= pk).count()
+
+    @classmethod    
+    def redirect(self, request, *args, **kwargs): 
+        url = reverse('ticket-admin2', kwargs = { 'ctx': kwargs['ctx']})
+        print ("dddddd")
+        return HttpResponseRedirect(url)
+
+    # @csrf_exempt
+    def post(self, request, *args, **kwargs):
+
+        if json.loads(request.POST.get('action', None)) == 'close':
+            close_ticket (request)
+
+        elif json.loads(request.POST.get('action', None)) == 'open':
+            open_ticket (request)
+      
+        
+        return self.redirect(request, ctx=self.kwargs['ctx'])
+        # return render_to_response( self.template_name, { 'ctx': self.kwargs['ctx']} )
+        # return render(request, self.template_name, {'ctx': self.kwargs['ctx']})
+        

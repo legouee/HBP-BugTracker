@@ -26,8 +26,12 @@ from miniki.views import Test_Menu_deroulant
 from miniki.views import TicketDetailView
 from miniki.views import ProjectListView
 # from miniki.views import edit_ticket
+from miniki.views import AdminTicketListView
+from miniki.views import AdminTicketListView2
+
 from django.contrib import admin
 
+from miniki.utils.ctx_handler import remove_ticket, close_ticket
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
@@ -43,4 +47,14 @@ urlpatterns = [
     url(r'^config.json$', config, name='config'),
 
     #  url(r'^edit_ticket/(?P<ctx>.+)$', edit_ticket, name='edit-create'),
+
+    url(r'^edit/$', AdminTicketListView.as_view(), name='ticket-admin'),
+    url(r'^edit/(?P<ctx>.+)$', AdminTicketListView2.as_view(), name='ticket-admin2'),
+
+    # url(r'^edit/remove_ticket/$', remove_ticket , name='remove_ticket'),
+    # url(r'^edit/close_ticket/$', close_ticket , name='close_ticket'),
+
+    # url(r'^edit/remove_ticket/(?P<ctx>.+)$', remove_ticket , name='remove_ticket2'),
+    # url(r'^edit/close_ticket/(?P<ctx>.+)$', close_ticket , name='close_ticket2'),
+
 ]

@@ -6,10 +6,27 @@
 # from .forms import ProjectForm
 
 from ..models import Ctx
+from ..models import Ticket
+from ..models import Project
+from ..models import Comment
+
+
 
 from django.conf import settings
 from hbp_app_python_auth.auth import get_auth_header
 import requests
+
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.http import HttpResponse
+
+
+from django.shortcuts import get_object_or_404
+
+import json
+# from django.views.decorators.csrf import csrf_protect, csrf_exempt
+
+
+# from flask import Flask, request
 
 #we could welcome here all the function to handle future data of ctx tab
 
@@ -32,3 +49,39 @@ def get_collab_id (request=None, context=None):
     collab_id = res.json()['collab']['id']
 
     return (collab_id)
+
+
+
+# @csrf_exempt
+def remove_ticket (request):
+    ticket_id = request.POST.get('pk', None)
+    ticket_id = json.loads(ticket_id)
+    for pk in ticket_id :
+        Ticket.objects.filter(id=pk).delete()
+
+   
+
+def close_ticket (request):
+    ticket_id = request.POST.get('pk', None)
+    ticket_id = json.loads(ticket_id)
+    for pk in ticket_id :
+        # ticket = Ticket.objects.filter(id=pk)
+        ticket = get_object_or_404(Ticket, pk=pk)
+
+        ticket.status = 'close'
+        ticket.save()
+
+  
+
+def open_ticket (request):
+    ticket_id = request.POST.get('pk', None)
+    ticket_id = json.loads(ticket_id)
+    for pk in ticket_id :
+        # ticket = Ticket.objects.filter(id=pk)
+        ticket = get_object_or_404(Ticket, pk=pk)
+
+        ticket.status = 'open'
+        ticket.save()
+
+    
+
