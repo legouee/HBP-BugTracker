@@ -39,6 +39,16 @@ app.controller('TicketEditSave', function($scope) {
       };
 });
 
+app.controller('CommentForm', function($scope) {
+    $("#CommentToEdit").hide();
+    // $scope.t=false
+    $scope.editTicket = function(ticket){
+      $("#TicketToEdit").show();
+      $("#TicketToShow").hide();
+    };
+});
+
+
 // Bootstrap function
 angular.bootstrap().invoke(function($http, $log) {
   $http.get('/config.json').then(function(res) {

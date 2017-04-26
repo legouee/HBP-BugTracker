@@ -18,6 +18,7 @@
 <h1 align=center>{{ object.1.title }}</h1>
 <br/>
 
+<main>
 <div  class=ng-cloak id=TicketToEdit >
     <style>  .ng-cloak { display: none !important; } </style>
     
@@ -31,7 +32,7 @@
                         Ticket #{{object.1.pk}} <br/>
                         <span class="glyphicon glyphicon-user"></span> {{ object.1.author }}
                     </td>  
-                    <td class=title id="title" width=850 contenteditable="true">
+                    <td class=title id="title" width=1000 contenteditable="true">
                         {{ object.1.title }}
                     </td>
                     <td width=200 >
@@ -70,10 +71,10 @@
                         Ticket #{{object.1.pk}} <br/>
                         <span class="glyphicon glyphicon-user"></span> {{ object.1.author }}
                     </td>  
-                    <td id='ticket-title' class=title width=850>
-                        {{ object.1.title }}
+                    <td id='ticket-title' class=title width=1000>
+                        <!--{{ object.1.title }}-->
                     </td>
-                    <td width=200 >
+                    <td width=300 >
                         {{ object.1.creation_date}} 
                         {{ object.1.status }}
                     </td>
@@ -118,15 +119,15 @@
                             <td width=200 >
                                 <span class="glyphicon glyphicon-user"></span> {{ comment.author }}
                             </td> 
-                            <td width=2000 >
+                            <td width=1000 >
                             </td>
-                            <td width=400 >
+                            <td width=300 >
                                 {{ comment.creation_date}}
                             </td>
                             <td width=50>
                                 <form action="" class="comment-form" ng-controller="CommentForm" onsubmit="return false"> 
                                 {% if comment.is_author %}
-                                <button type=button class="glyphicon glyphicon-pencil" align=right ng-click="editComment({{comment.pk}})"></button>
+                                <button type=button class="glyphicon glyphicon-pencil" ng-click="editComment({{comment.pk}})"></button>
                                 {% endif%}
                                 </form>
                             </td>
@@ -135,12 +136,13 @@
                         <tr  id="table-ticket-detail-comment-content">
                             <td width=200 >
                             </td> 
-                            <td width=2000>
+                            <td width=1000>
                                 <br/>
                                 {{ comment.text|markdown }}
                             </td> 
-                            <td width=400 >
+                            <td width=300 >
                             </td> 
+                        </tr>
                     </tbody>
                 </div>
         </table>
@@ -149,17 +151,13 @@
 </main>
 
 <main action="" class="commentForm" method="POST" >
-            <form action="" class="ticket-form" method="POST">
-                <div class="ticket-form-fields">
+            <form action="" class="comment-form" method="POST">
+                <div class="comment-form-fields">
 
                     {% csrf_token %}
                     {{ form.non_field_errors }}
                     {{ form.ctx }}
-                    <div class="form-group">
-                        {{ form.title.label_tag }}
-                        {{ form.title }}
-                        <p class="help-text">{{ form.title.errors }}</p>
-                    </div>
+                   
                     <div class="form-group form-group-editor">
                         {{form.text.label_tag}}
                         {{form.text}}

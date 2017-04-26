@@ -56,7 +56,7 @@ class CommentForm(forms.ModelForm):
 
         widgets = {
             # 'ctx': forms.HiddenInput(),
-            'text': forms.TextInput(attrs={
+            'text': forms.Textarea(attrs={
                 'class': 'form-control',
                 'ng-model': 'Comment.text',
             })
