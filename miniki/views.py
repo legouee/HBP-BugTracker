@@ -38,7 +38,7 @@ from .models import Project
 from .models import Comment
 from .models import Ctx
 
-from .utils.ctx_handler import post_collab_ctx, get_collab_ctx, remove_ticket, close_ticket,open_ticket
+from .utils.ctx_handler import post_collab_ctx, get_collab_ctx, remove_ticket, close_ticket,open_ticket, get_collab_name
 import json
 from django.core import serializers
 
@@ -107,7 +107,7 @@ class CreateTicketView(TemplateView):
         h = Ticket()
         form = self.form_class(instance = h)
 
-        return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx']})
+        return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx'])})
     
     def post(self, request, *args, **kwargs):
         ticket_creation = Ticket()
@@ -119,7 +119,7 @@ class CreateTicketView(TemplateView):
             form.author = request.user
             form.save()
             return self.redirect(request, ctx = self.kwargs['ctx'])
-        return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx']})
+        return render(request, self.template_name, {'form': form, 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx'])})
 
     @classmethod    
     def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
@@ -129,7 +129,6 @@ class CreateTicketView(TemplateView):
 
 def _is_collaborator(request, context):
     '''check access depending on context'''
-    print("context", context)
     svc_url = settings.HBP_COLLAB_SERVICE_URL
     if not context:
         return False
@@ -157,14 +156,14 @@ def _get_collab_extension(request, context):
     headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
 
     res = requests.get(url, headers=headers)
-    print ("RES 1 ")
-    print(res.__dict__)
-    for key, value in res.__dict__.items():
-        print (key)
-        print (value)
+    # print ("RES 1 ")
+    # print(res.__dict__)
+    # for key, value in res.__dict__.items():
+    #     print (key)
+    #     print (value)
 
     print (json.loads(res._content)['collab']['title'])
-
+    return (json.loads(res._content)['collab']['title'])
 
 
 
@@ -204,16 +203,16 @@ class TicketListView(ListView):
         if not _is_collaborator(request, ctx):
             return HttpResponseForbidden()
 
-        _get_collab_extension(request, ctx) #need to change the name
+        collab_name = _get_collab_extension(request, ctx) #need to change the name
+        post_collab_ctx (request=request,ctx=ctx, collab_name=collab_name )
 
-        post_collab_ctx (request=request,ctx=ctx)
         current_base_ctx = Ctx.objects.filter(ctx=ctx)
         tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id) 
         ## add number of comments
         for ticket in tickets:
             ticket.nb_coms = self.get_nb_com(ticket.pk)                     
             
-        return render(request, self.template_name, {'object': tickets, 'ctx': ctx}) #will nedd to replace all() by filter project
+        return render(request, self.template_name, {'object': tickets, 'ctx': ctx, 'collab_name':get_collab_name(ctx)}) #will nedd to replace all() by filter project
     @classmethod  
     def get_nb_com(self, pk):
         return Comment.objects.filter(ticket_id= pk).count()
@@ -225,7 +224,6 @@ class TicketListView2(ListView):
     template_name = "ticket_list.html"
 
     def get(self, request, *args, **kwargs):
-
         if not _is_collaborator(request, self.kwargs['ctx']):
             return HttpResponseForbidden()
 
@@ -236,7 +234,7 @@ class TicketListView2(ListView):
         for ticket in tickets:
             ticket.nb_coms = self.get_nb_com(ticket.pk) 
         
-        return render(request, self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx']}) #will nedd to replace all() by filter project
+        return render(request, self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx'])}) #will nedd to replace all() by filter project
 
 
     @classmethod  
@@ -277,7 +275,7 @@ class TicketDetailView(DetailView):
         cmt = Comment()
         form = self.form_class(instance = cmt)
 
-        return render(request, self.template_name, {'form': form, 'object': self.get_object(request), 'ctx': self.kwargs['ctx'] })    
+        return render(request, self.template_name, {'form': form, 'object': self.get_object(request), 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx']) })    
 
     @classmethod    
     def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
@@ -286,7 +284,7 @@ class TicketDetailView(DetailView):
     
     #@csrf_exempt
     def post(self, request, *args, **kwargs):
-
+       
         if request.POST.get('action', None) == 'edit_ticket':
            form=self.edit_ticket(request)
         else:
@@ -296,16 +294,16 @@ class TicketDetailView(DetailView):
             if request.method == 'POST':
                 form = CommentForm(request.POST, instance=comment_creation)
 
-            if form.is_valid():
-                form = form.save(commit=False)
-                form.author = request.user
-                form.save()
-                return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
-            else :
-                form = CommentForm(instance=comment_creation)
+                if form.is_valid():
+                    form = form.save(commit=False)
+                    form.author = request.user
+                    form.save()
+                    return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
+                else :
+                    form = CommentForm(instance=comment_creation)
                 #faire passer un message...
    
-        return render(request, 'ticket_detail.html', {'form': form, 'ctx': self.kwargs['ctx']}) #need to change that       
+        return render(request, 'ticket_detail.html', {'form': form, 'ctx': self.kwargs['ctx'],'collab_name':get_collab_name(self.kwargs['ctx'])}) #need to change that           
 
     def form_valid(self, form):
         """
@@ -334,21 +332,23 @@ class TicketDetailView(DetailView):
             else: return False 
 
 
-
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class AdminTicketListView(ListView):  
     model = Ticket
     template_name = "admin_ticket_list.html"
 
     def get(self, request, *args, **kwargs):
+        print ("I pass by GET in AdminTicketListView")
+        
         
         ctx = request.META['QUERY_STRING'][4:]
         print ("ctx : V1 : "+ str(ctx))
 
-        post_collab_ctx (request=request,ctx=ctx) #just to check
-
         if not _is_collaborator(request, ctx):
             return HttpResponseForbidden()
+
+        collab_name = _get_collab_extension(request, ctx) #need to change the name
+        post_collab_ctx (request=request,ctx=ctx, collab_name=collab_name )
 
         current_base_ctx = Ctx.objects.filter(ctx=ctx) 
         tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id)
@@ -357,9 +357,7 @@ class AdminTicketListView(ListView):
         for ticket in tickets:
             ticket.nb_coms = self.get_nb_com(ticket.pk) 
         
-        return render(request, self.template_name, {'object': tickets, 'ctx': ctx})
-
-
+        return render(request, self.template_name, {'object': tickets, 'ctx': ctx, 'collab_name':get_collab_name(ctx)})
 
     @classmethod  
     def get_nb_com(self, pk):
@@ -372,8 +370,10 @@ class AdminTicketListView2(ListView):
     template_name = "admin_ticket_list.html"
 
     def get(self, request, *args, **kwargs):
+        print ("I pass by GET in AdminTicketListView2")
+        
+        print (self.kwargs)
         print ("ctx : V2 : " +str(self.kwargs['ctx']) )
-        post_collab_ctx (request=request,ctx=self.kwargs['ctx']) #just to check
 
         if not _is_collaborator(request, self.kwargs['ctx']):
             return HttpResponseForbidden()
@@ -386,7 +386,7 @@ class AdminTicketListView2(ListView):
             ticket.nb_coms = self.get_nb_com(ticket.pk) 
         
 
-        return render(request, self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx']})
+        return render(request, self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx'])})
         # return render_to_response (self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx']}, context_instance=RequestContext(request))
 
     @classmethod  
@@ -408,8 +408,59 @@ class AdminTicketListView2(ListView):
         elif json.loads(request.POST.get('action', None)) == 'open':
             open_ticket (request)
       
-        
+        print ("I pass by POST in AdminTicketListView2")
         return self.redirect(request, ctx=self.kwargs['ctx'])
         # return render_to_response( self.template_name, { 'ctx': self.kwargs['ctx']} )
         # return render(request, self.template_name, {'ctx': self.kwargs['ctx']})
         
+
+@method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
+class AdminTicketDetailView(DetailView):
+
+    model = Comment
+    template_name = "admin_ticket_detail.html"
+    form_class = CommentForm
+
+    def get_object(self):
+        return [Comment.objects.filter(ticket_id = self.kwargs['pk']), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]
+        
+    def get_queryset (self):        
+        return get_object_or_404(Ticket, pk=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):   
+        context = super(AdminTicketDetailView, self).get_context_data(**kwargs)
+        return context
+
+    def get(self, request, *args, **kwargs):
+
+        if not _is_collaborator(request, self.kwargs['ctx']):
+            return HttpResponseForbidden()
+            
+        cmt = Comment()
+        form = self.form_class(instance = cmt)
+
+        return render(request, self.template_name, {'form': form, 'object': self.get_object(), 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx']) })    
+
+    @classmethod    
+    def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
+        url = reverse('ticket-detail-admin', kwargs = { 'pk':kwargs['pk'],'ctx': kwargs['ctx']})
+        return HttpResponseRedirect(url)
+
+    def post(self, request, *args, **kwargs):
+        comment_creation = Comment()
+        comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
+       
+        if request.method == 'POST':
+            form = CommentForm(request.POST, instance=comment_creation)
+
+        if form.is_valid():
+            p = form.save(commit=False)
+            p.author = request.user
+            p.save()
+            return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
+        else :
+            pass
+            #faire passer un message...
+
+        return render(request, 'admin_ticket_list.html', {'form': p, 'ctx': self.kwargs['ctx'],'collab_name':get_collab_name(self.kwargs['ctx'])}) #need to change that       
+   

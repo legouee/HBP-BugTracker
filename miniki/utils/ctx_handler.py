@@ -30,18 +30,22 @@ import json
 
 #we could welcome here all the function to handle future data of ctx tab
 
+def get_collab_name (ctx=None):
+    return get_object_or_404(Ctx, ctx=ctx).collab_name
+
 def get_collab_ctx (ctx=None):
     return Ctx.objects.filter(ctx=ctx)
 
-def post_collab_ctx (request=None, ctx=None ):
+def post_collab_ctx (request=None, ctx=None, collab_name=None ):
     if len(get_collab_ctx (ctx)) == 0 :
         obj = Ctx()
-        obj.collab = get_collab_id (request=request, context=ctx)
+        obj.collab = _get_hbp_collab_id (request=request, context=ctx)
         obj.ctx = ctx
+        obj.collab_name = collab_name
         obj.save()
     
     
-def get_collab_id (request=None, context=None):
+def _get_hbp_collab_id (request=None, context=None):
     svc_url = settings.HBP_COLLAB_SERVICE_URL
     url = '%scollab/context/%s/' % (svc_url, context)
     headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
@@ -67,8 +71,7 @@ def close_ticket (request):
     for pk in ticket_id :
         # ticket = Ticket.objects.filter(id=pk)
         ticket = get_object_or_404(Ticket, pk=pk)
-
-        ticket.status = 'close'
+        ticket.status = 'closed'
         ticket.save()
 
   
