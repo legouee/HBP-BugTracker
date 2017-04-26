@@ -71,7 +71,6 @@ def close_ticket (request):
     for pk in ticket_id :
         # ticket = Ticket.objects.filter(id=pk)
         ticket = get_object_or_404(Ticket, pk=pk)
-
         ticket.status = 'closed'
         ticket.save()
 

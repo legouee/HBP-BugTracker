@@ -23,7 +23,7 @@ from uuid import UUID
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-
+from django.views.decorators.csrf import csrf_exempt
 import bleach
 
 from markdown import markdown
@@ -136,9 +136,9 @@ def _is_collaborator(request, context):
     url = '%scollab/context/%s/' % (svc_url, context)
 
     headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
-
+    print("request:", request)
     res = requests.get(url, headers=headers)
-    print(res)
+    print("here ",res)
     if res.status_code != 200:
         return False
 
@@ -248,8 +248,15 @@ class TicketDetailView(DetailView):
     template_name = "ticket_detail.html"
     form_class = CommentForm
 
-    def get_object(self):
-        return [Comment.objects.filter(ticket_id = self.kwargs['pk']), get_object_or_404(Ticket, pk=self.kwargs['pk']) ]
+    def get_object(self,request):
+        comments=Comment.objects.filter(ticket_id = self.kwargs['pk'])
+        for comment in comments:
+            comment.is_author = self.check_user_is_author(request,comment)
+            print(comment.is_author)
+        ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])
+        ticket.is_author = self.check_user_is_author(request,ticket)
+        
+        return [comments, ticket ]
         
     def get_queryset (self):        
         return get_object_or_404(Ticket, pk=self.kwargs['pk'])
@@ -259,38 +266,44 @@ class TicketDetailView(DetailView):
         return context
 
     def get(self, request, *args, **kwargs):
-
+        print("in get")
+        print ("request", request)
+        print("ctx: ",self.kwargs['ctx'])
         if not _is_collaborator(request, self.kwargs['ctx']):
             return HttpResponseForbidden()
             
         cmt = Comment()
         form = self.form_class(instance = cmt)
 
-        return render(request, self.template_name, {'form': form, 'object': self.get_object(), 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx']) })    
+        return render(request, self.template_name, {'form': form, 'object': self.get_object(request), 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx']) })    
 
     @classmethod    
     def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
         url = reverse('ticket-detail', kwargs = { 'pk':kwargs['pk'],'ctx': kwargs['ctx']})
         return HttpResponseRedirect(url)
-
+    
+    #@csrf_exempt
     def post(self, request, *args, **kwargs):
-        comment_creation = Comment()
-        comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
        
-        if request.method == 'POST':
-            form = CommentForm(request.POST, instance=comment_creation)
+        if request.POST.get('action', None) == 'edit_ticket':
+           form=self.edit_ticket(request)
+        else:
+            comment_creation = Comment()
+            comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
+       
+            if request.method == 'POST':
+                form = CommentForm(request.POST, instance=comment_creation)
 
-        if form.is_valid():
-            p = form.save(commit=False)
-            p.author = request.user
-            p.save()
-            return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
-        else :
-            pass
-            #faire passer un message...
-
-        return render(request, 'ticket_list.html', {'form': p, 'ctx': self.kwargs['ctx'],'collab_name':get_collab_name(self.kwargs['ctx'])}) #need to change that       
-
+                if form.is_valid():
+                    form = form.save(commit=False)
+                    form.author = request.user
+                    form.save()
+                    return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
+                else :
+                    form = CommentForm(instance=comment_creation)
+                #faire passer un message...
+   
+        return render(request, 'ticket_detail.html', {'form': form, 'ctx': self.kwargs['ctx'],'collab_name':get_collab_name(self.kwargs['ctx'])}) #need to change that           
 
     def form_valid(self, form):
         """
@@ -301,11 +314,22 @@ class TicketDetailView(DetailView):
         model_instance.save()
         return HttpResponseRedirect(self.get_success_url())
 
-# @login_required(login_url='/login/hbp')
-# def edit(request):
-#     # return render(request, 'edit.html', {'form': form, 'ctx': str(context)})
-#     return render(request, 'ticket_list.html', {})
-    
+    def edit_ticket(self,request):
+        ticket_id = request.POST.get('pk')
+        queryset = Ticket.objects.get(pk = ticket_id)
+
+        form = TicketForm(request.POST, instance=queryset)
+        form.title = request.POST.get('title')
+        form.text = request.POST.get('text')
+
+        if form.is_valid():
+            form.save()
+
+        return form
+    def check_user_is_author(self,request,_object):
+            if str(request.user) == str(_object.author):
+                return True
+            else: return False 
 
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
@@ -389,9 +413,6 @@ class AdminTicketListView2(ListView):
         # return render_to_response( self.template_name, { 'ctx': self.kwargs['ctx']} )
         # return render(request, self.template_name, {'ctx': self.kwargs['ctx']})
         
-     
-
-
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class AdminTicketDetailView(DetailView):
@@ -442,13 +463,4 @@ class AdminTicketDetailView(DetailView):
             #faire passer un message...
 
         return render(request, 'admin_ticket_list.html', {'form': p, 'ctx': self.kwargs['ctx'],'collab_name':get_collab_name(self.kwargs['ctx'])}) #need to change that       
-
-
-    def form_valid(self, form):
-        """
-        If the form is valid, redirect to the supplied URL
-        """
-        model_instance = form.save(commit=False)
-        model_instance.ticket = self.object
-        model_instance.save()
-        return HttpResponseRedirect(self.get_success_url())
+   
