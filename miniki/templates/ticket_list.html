@@ -33,7 +33,7 @@ document.getElementById("current_url").innerHTML = window.location.href;
                         <tr id=table-ticket-list>
                             <td width=200 >
                                 Ticket #{{ticket.pk}} <br/>
-                                {{ticket.author}}
+                                <span class="glyphicon glyphicon-user"></span> {{ticket.author}}
                             </td> 
                             <td width=1600>
                                 {{ ticket.title }} 

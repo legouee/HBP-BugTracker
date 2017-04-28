@@ -1,28 +1,55 @@
 (function() {
-  // Define the miniki application, currently doing nothing.
-  var app = angular.module('miniki', ['hbpCommon']);
 
-  // app.controller('HomeForm', function($scope) {
-  //    // The form controller that manage the displays of preview
-  //    $scope.create = false
-  //    $scope.createProject = function () {
-  //      $scope.create = !$scope.create;
-  //      console.log("create")
-  //    };
-  //    $scope.saveProject = function () {
-  //      $scope.create = !$scope.create;
-  //      console.log("save")
-  //    };
-  // });
+// Define the miniki application, currently doing nothing.
+var app = angular.module('miniki', ['hbpCommon']);
 
 
-  app.controller('CommentForm', function($scope) {
-    // The form controller that manage the displays of preview
-    $scope.create = false
-    $scope.createComment = function () {
-      $scope.create = !$scope.create;
+app.controller('TicketForm', function($scope) {
+   // The form controller that manage the displays of preview
+    $("#TicketToEdit").hide();
+    // $scope.t=false
+    $scope.editTicket = function(ticket){
+      $("#TicketToEdit").show();
+      $("#TicketToShow").hide();
     };
-  });
+});
+
+
+app.controller('TicketEditSave', function($scope) {
+    
+    $scope.saveEditedTicket = function(pk){
+      // get ticket form
+      var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+      var title = $("#title").text()
+      var text = $("#text").text()
+      $.ajax({
+         url:"",
+         type:"POST",
+         data: {'pk':JSON.stringify(pk) ,'title':title  ,'text':text, 'action':"edit_ticket", 'csrfmiddlewaretoken': csrftoken}, 
+
+         success : function(json) {
+            alert('Your ticket have been edited!' );
+            },
+         error : function(xhr,errmsg,err) {
+            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            },
+        });
+      $("#ticket-title").replaceWith('<td id="ticket-title" class=title width=850>'+ title +'</td>');
+      $("#ticket-text").replaceWith('<td id="ticket-text" class=text width=850>'+ text +'</td>');
+      $("#TicketToEdit").hide();
+      $("#TicketToShow").show();
+      };
+});
+
+app.controller('CommentForm', function($scope) {
+    $("#CommentToEdit").hide();
+    // $scope.t=false
+    $scope.editTicket = function(ticket){
+      $("#TicketToEdit").show();
+      $("#TicketToShow").hide();
+    };
+});
+
 
   // Bootstrap function
   angular.bootstrap().invoke(function($http, $log) {
@@ -35,6 +62,7 @@
       $log.error('Cannot boot miniki application');
     });
   });
+
 
 
 
@@ -71,6 +99,7 @@
           };
           sendState();
   });
+
 
 
 }());

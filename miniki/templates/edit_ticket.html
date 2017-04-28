@@ -5,19 +5,16 @@
 
 {% block content %}
 
-<div class="navbar navbar-form">
-
-        <form action= "{% url 'ticket-list' %}">       
-
-            <input type="submit" value="Home" />
+ <div class="navbar navbar-form navbar-fixed-top">
+        <form action= "{% url 'ticket-list2' ctx=ctx %}">
+            <input type="submit" value="Ticket-list" />
         </form>
         <br/>
     </div>
+<br/> <br/> <br/>
+<h1 align=center>Edit ticket </h1>
 
-
-
-<form action="" class="ticket-form" method="POST"
-    ng-controller="ticketForm" ng-init='ticket = {{form.instance.as_json|jsonify}}'>
+<form action="" class="ticket-form" method="POST">
     <div class="ticket-form-fields"
         ng-show="!isPreviewOpen">
         {% csrf_token %}

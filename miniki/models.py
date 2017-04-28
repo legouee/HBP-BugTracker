@@ -8,6 +8,7 @@ class Ctx (models.Model):
     ctx = models.CharField(max_length=1024) 
     project_name = models.CharField(max_length=1024, default ="no_name")
 
+
     def as_json(self):
         return {
             'collabe': self.collab,
