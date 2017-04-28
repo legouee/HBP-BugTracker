@@ -31,17 +31,17 @@ import json
 #we could welcome here all the function to handle future data of ctx tab
 
 def get_collab_name (ctx=None):
-    return get_object_or_404(Ctx, ctx=ctx).collab_name
+    return get_object_or_404(Ctx, ctx=ctx).project_name
 
 def get_collab_ctx (ctx=None):
     return Ctx.objects.filter(ctx=ctx)
 
-def post_collab_ctx (request=None, ctx=None, collab_name=None ):
+def post_collab_ctx (request=None, ctx=None, project_name=None ):
     if len(get_collab_ctx (ctx)) == 0 :
         obj = Ctx()
         obj.collab = _get_hbp_collab_id (request=request, context=ctx)
         obj.ctx = ctx
-        obj.collab_name = collab_name
+        obj.project_name = project_name
         obj.save()
     
     
@@ -89,3 +89,28 @@ def open_ticket (request):
 
     
 
+def get_ctx_ctxstate (request):
+    try :
+        ctx, ctxstate = request.META['QUERY_STRING'][4:].split("&")
+    except:
+        print ("Except")
+        ctx = request.META['QUERY_STRING'][4:]
+        ctxstate = None
+    return (ctx, ctxstate)
+
+def handle_ctxstate (request):
+    ctx, ctxstate = get_ctx_ctxstate (request)
+
+    if ctxstate != None :
+        pk  = ctxstate[-1]
+      
+        if pk == 'n': #this is the list
+            return (ctx, None)
+        else : #this is a ticket detail
+            return (ctx, pk)
+    
+    print (ctx)
+    print (ctxstate)
+    
+
+    return (ctx, None)
