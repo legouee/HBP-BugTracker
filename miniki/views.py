@@ -38,7 +38,7 @@ from .models import Project
 from .models import Comment
 from .models import Ctx
 
-from .utils.ctx_handler import post_collab_ctx, get_collab_ctx, remove_ticket, close_ticket,open_ticket, get_collab_name
+from .utils.ctx_handler import post_collab_ctx, get_collab_ctx, remove_ticket, close_ticket,open_ticket, get_collab_name, handle_ctxstate
 import json
 from django.core import serializers
 
@@ -198,13 +198,28 @@ class TicketListView(ListView):
 
     def get(self, request, *args, **kwargs):
 
-        ctx = request.META['QUERY_STRING'][4:]
+        # for key, value in request.__dict__.items(): 
+        #     try :
+        #         for key2, value2 in value.items() :
+        #             try :
+        #                 for key3, value3 in value2.items() :
+        #                     print (key3, value3)        
+        #             except :
+        #                 print (key2, value2)       
+        #     except :
+        #         print (key, value)
+
+        ctx, pk = handle_ctxstate(request)  
         
         if not _is_collaborator(request, ctx):
             return HttpResponseForbidden()
 
-        collab_name = _get_collab_extension(request, ctx) #need to change the name
-        post_collab_ctx (request=request,ctx=ctx, collab_name=collab_name )
+        if pk : #if pk found in ctxstate then we need to redirect the user
+            return self.redirect(request, pk=pk, ctx=ctx)
+             
+
+        project_name = _get_collab_extension(request, ctx) #need to change the name
+        post_collab_ctx (request=request,ctx=ctx, project_name=project_name )
 
         current_base_ctx = Ctx.objects.filter(ctx=ctx)
         tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id) 
@@ -213,10 +228,15 @@ class TicketListView(ListView):
             ticket.nb_coms = self.get_nb_com(ticket.pk)                     
             
         return render(request, self.template_name, {'object': tickets, 'ctx': ctx, 'collab_name':get_collab_name(ctx)}) #will nedd to replace all() by filter project
+    
     @classmethod  
     def get_nb_com(self, pk):
         return Comment.objects.filter(ticket_id= pk).count()
 
+    @classmethod    
+    def redirect(self, request, *args, **kwargs): 
+        url = reverse('ticket-detail', kwargs = { 'pk':kwargs['pk'],'ctx': kwargs['ctx']})
+        return HttpResponseRedirect(url)
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )
 class TicketListView2(ListView):  
@@ -266,9 +286,19 @@ class TicketDetailView(DetailView):
         return context
 
     def get(self, request, *args, **kwargs):
-        print("in get")
-        print ("request", request)
-        print("ctx: ",self.kwargs['ctx'])
+
+
+        # for key, value in request.__dict__.items(): 
+        #     try :
+        #         for key2, value2 in value.items() :
+        #             try :
+        #                 for key3, value3 in value2.items() :
+        #                     print (key3, value3)        
+        #             except :
+        #                 print (key2, value2)       
+        #     except :
+        #         print (key, value)
+
         if not _is_collaborator(request, self.kwargs['ctx']):
             return HttpResponseForbidden()
             
@@ -278,7 +308,7 @@ class TicketDetailView(DetailView):
         return render(request, self.template_name, {'form': form, 'object': self.get_object(request), 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx']) })    
 
     @classmethod    
-    def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
+    def redirect(self, request, *args, **kwargs): 
         url = reverse('ticket-detail', kwargs = { 'pk':kwargs['pk'],'ctx': kwargs['ctx']})
         return HttpResponseRedirect(url)
     
@@ -338,17 +368,18 @@ class AdminTicketListView(ListView):
     template_name = "admin_ticket_list.html"
 
     def get(self, request, *args, **kwargs):
-        print ("I pass by GET in AdminTicketListView")
-        
-        
-        ctx = request.META['QUERY_STRING'][4:]
-        print ("ctx : V1 : "+ str(ctx))
+
+        ctx, pk = handle_ctxstate (request)
 
         if not _is_collaborator(request, ctx):
             return HttpResponseForbidden()
+        
+        if pk : #if pk found in ctxstate then we need to redirect the user
+            return self.redirect(request, pk=pk, ctx=ctx)
 
-        collab_name = _get_collab_extension(request, ctx) #need to change the name
-        post_collab_ctx (request=request,ctx=ctx, collab_name=collab_name )
+
+        project_name = _get_collab_extension(request, ctx) #need to change the name
+        post_collab_ctx (request=request,ctx=ctx, project_name=project_name )
 
         current_base_ctx = Ctx.objects.filter(ctx=ctx) 
         tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id)
@@ -362,6 +393,11 @@ class AdminTicketListView(ListView):
     @classmethod  
     def get_nb_com(self, pk):
         return Comment.objects.filter(ticket_id= pk).count()
+
+    @classmethod    
+    def redirect(self, request, *args, **kwargs): 
+        url = reverse('ticket-detail-admin', kwargs = { 'pk':kwargs['pk'],'ctx': kwargs['ctx']})
+        return HttpResponseRedirect(url)
 
 
 @method_decorator(login_required(login_url='/login/hbp'), name='dispatch' )

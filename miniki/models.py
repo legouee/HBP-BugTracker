@@ -6,14 +6,14 @@ import uuid
 class Ctx (models.Model):
     collab = models.CharField(max_length=1024) 
     ctx = models.CharField(max_length=1024) 
-    collab_name = models.CharField(max_length=1024, default ="no_name")
+    project_name = models.CharField(max_length=1024, default ="no_name")
 
 
     def as_json(self):
         return {
             'collabe': self.collab,
             'ctx': self.ctx,
-            'collab_name': self.collab_name,
+            'projecte_name': self.project_name,
         }
 
 class Project(models.Model):                   
