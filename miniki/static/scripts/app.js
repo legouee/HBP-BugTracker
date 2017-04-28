@@ -13,7 +13,6 @@ app.controller('TicketForm', function($scope) {
     };
 });
 
-
 app.controller('TicketEditSave', function($scope) {
     
     $scope.saveEditedTicket = function(pk){
@@ -27,7 +26,7 @@ app.controller('TicketEditSave', function($scope) {
          data: {'pk':JSON.stringify(pk) ,'title':title  ,'text':text, 'action':"edit_ticket", 'csrfmiddlewaretoken': csrftoken}, 
 
          success : function(json) {
-            alert('Your ticket have been edited!' );
+            alert('Your ticket havForme been edited!');
             },
          error : function(xhr,errmsg,err) {
             console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
@@ -40,7 +39,26 @@ app.controller('TicketEditSave', function($scope) {
       };
 });
 
+
+
 app.controller('CommentForm', function($scope) {
+   // The form controller that manage the displays of preview
+    // for (comment in comments){
+     var pk= $scope.getElementById('');
+     $("#CommentToEdit."+pk).hide();
+  //  } 
+  
+    // $scope.t=false
+    $scope.editTicket = function(comment){
+     
+      $("#TicketToEdit."+pk).show();
+      $("#TicketToShow."+pk).hide();
+    };
+});
+
+
+
+app.controller('CommentEditSave', function($scope) {
     $("#CommentToEdit").hide();
     // $scope.t=false
     $scope.editTicket = function(ticket){
@@ -61,4 +79,6 @@ angular.bootstrap().invoke(function($http, $log) {
     $log.error('Cannot boot miniki application');
   });
 });
+
+
 }());
