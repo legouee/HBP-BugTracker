@@ -40,7 +40,10 @@ font-weight: bold;
     /*border: 2px solid #e9e9e9;*/
 }
 
-
+#CommentTextbox{
+   max-height:200 px !important;
+   min-height: 150 px
+}
 
 #panel-title-style{ /*Ticket detail*/
     font-weight: bold;
