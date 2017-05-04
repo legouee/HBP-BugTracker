@@ -1,18 +1,13 @@
-{% extends "layout.html" %}
-{% load jsonify %}
-{% load markdown_deux_tags %}
+{% extends "layout.html" %} {% load jsonify %} {% load markdown_deux_tags %} {% block content %}
 
-
-{% block content %}
-
- <body ng-controller="Detail" ng-init="init({{object.1.pk}})"></body>
+<body ng-controller="Detail" ng-init="init({{object.1.pk}})"></body>
 
 <div class="navbar navbar-form navbar-fixed-top">
-        <form action= "{% url 'ticket-list2' ctx=ctx %}">
-            <input type="submit" value="Ticket-list" />
-        </form>
-        <br/>
-    </div>
+    <form action="{% url 'ticket-list2' ctx=ctx %}">
+        <input type="submit" value="Ticket-list" />
+    </form>
+    <br/>
+</div>
 <br/> <br/> <br/>
 <h1 align=center>{{ object.1.title }}</h1>
 <br/>
@@ -20,89 +15,90 @@
 <!--Ticket part-->
 <main>
     <!--panel to edit a ticket-->
-<div  class=ng-cloak id=TicketToEdit >
-    <style>  .ng-cloak { display: none !important; } </style>
-    
-    <form action="" class="ticket-form" onsubmit="return false" ng-controller="TicketEditSave" > 
-         {% csrf_token %}
-        <table class="table table-striped table-condensed" >
-            <tbody>
-                 
-                <tr  id="table-ticket-detail">
-                    <td width=200 >
-                        Ticket #{{object.1.pk}} <br/>
-                        <span class="glyphicon glyphicon-user"></span> {{ object.1.author }}
-                    </td>  
-                    <td class=title id="title" width=1000 contenteditable="true">
-                        {{ object.1.title }}
-                    </td>
-                    <td width=200 >
-                        {{ object.1.creation_date}} 
-                        {{ object.1.status }}
-                    </td>
-                    <td width=50> 
-                    </td>
-                </tr>
-                <tr id="table-ticket-detail-content">
-                    <td>
-                        <br/>
-                    </td>  
-                    <td class=text id="text" overflow=scroll contenteditable="true">
-                           <br/>
-                        {{ object.1.text|markdown}}
+    <div class=ng-cloak id=TicketToEdit>
+        <style>
+            .ng-cloak {
+                display: none !important;
+            }
+        </style>
 
-                    </td>
-                </tr>
-             </tbody>
-        </table>
+        <form action="" class="ticket-form" onsubmit="return false" ng-controller="TicketEditSave">
+            {% csrf_token %}
+            <table class="table table-striped table-condensed">
+                <tbody>
 
-          <div class="navbar navbar-form">
-                    <button type="submit" class="btn btn-primary" ng-click="saveEditedTicket({{object.1.pk}})" >Save</button> 
-                </div>
-    </form>
- </div>
+                    <tr id="table-ticket-detail">
+                        <td width=200>
+                            Ticket #{{object.1.pk}} <br/>
+                            <span class="glyphicon glyphicon-user"></span> {{ object.1.author }}
+                        </td>
 
-<!--panel to show a ticket-->
+                        <td class=title id="title" width=1000 contenteditable="true" bgcolor=ghostwhite>
+                            {{ object.1.title }}
+                        </td>
 
-        <div    id=TicketToShow>
+                        <td width=200>
+                            {{ object.1.creation_date}} {{ object.1.status }}
+                        </td>
+                        <td width=50>
+                        </td>
+                    </tr>
+                    <tr id="table-ticket-detail-content">
+                        <td>
+                            <br/>
+                        </td>
+                        <td class=text id="text" overflow=scroll contenteditable="true" bgcolor=ghostwhite>
+                            <br/> {{ object.1.text|markdown}}
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="navbar navbar-form">
+                <button type="submit" class="btn btn-primary" ng-click="saveEditedTicket({{object.1.pk}})">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <!--panel to show a ticket-->
+
+    <div id=TicketToShow>
         <table class="table table-striped table-condensed">
-            
+
             <tbody>
-                <tr  id="table-ticket-detail">
-                    <td width=200 >
+                <tr id="table-ticket-detail">
+                    <td width=200>
                         Ticket #{{object.1.pk}} <br/>
                         <span class="glyphicon glyphicon-user"></span> {{ object.1.author }}
-                    </td>  
+                    </td>
                     <td id='ticket-title' class=title width=1000>
                         <!--{{ object.1.title }}-->
                     </td>
-                    <td width=300 >
-                        {{ object.1.creation_date}} 
-                        {{ object.1.status }}
+                    <td width=300>
+                        {{ object.1.creation_date}} {{ object.1.status }}
                     </td>
                     <td width=50>
-                    <form action="" class="ticket-form" ng-controller="TicketForm" onsubmit="return false"> 
-                        {% if object.1.is_author %}
-                        <button type="active" class="glyphicon glyphicon-pencil" align=right ng-click="editTicket()"></button>
-                        {% endif %}
-                    </form>   
+                        <form action="" class="ticket-form" ng-controller="TicketForm" onsubmit="return false">
+                            {% if object.1.is_author %}
+                            <button type="active" class="glyphicon glyphicon-pencil" align=right ng-click="editTicket()"></button> {% endif %}
+                        </form>
                     </td>
                 </tr>
-             
+
                 <tr id="table-ticket-detail-content">
                     <td>
                         <br/>
-                    </td>  
+                    </td>
                     <td id='ticket-text' class=text overflow=scroll>
-                           <br/>
-                        {{ object.1.text|markdown}}
+                        <br/> {{ object.1.text|markdown}}
 
                     </td>
                 </tr>
-             </tbody>
-             
+            </tbody>
+
         </table>
-        </div>  
+    </div>
 </main>
 
 
@@ -110,80 +106,79 @@
 <!--comment part-->
 <main class="comment">
 
-    <div class="panel-heading"> 
+    <div class="panel-heading">
         <h3 class="panel-title" id="title-commment"> Comments </h3>
     </div>
 
     {% for comment in object.0.all %}
 
-        <!--panels to show comments-->
-        <div    id=CommentToShow.{{comment.pk}}>
-        <table class="table table-striped table-condensed" >
-                <div class="comment">
-                    <tbody>
-                        <tr  id="table-ticket-detail-comment">
-                            <td width=200 >
-                                <span class="glyphicon glyphicon-user"></span> {{ comment.author }}
-                            </td> 
-                            <td width=1000 >
-                            </td>
-                            <td width=300 >
-                                {{ comment.creation_date}}
-                            </td>
-                            <td width=50>
-                                <form action="" class="Commentform" ng-controller="CommentForm" onsubmit="return false" ng-init=> 
+    <!--panels to show comments-->
+    <div id=CommentToShow.{{comment.pk}}>
+        <table class="table table-striped table-condensed">
+            <div class="comment">
+                <tbody>
+                    <tr id="table-ticket-detail-comment">
+                        <td width=200>
+                            <span class="glyphicon glyphicon-user"></span> {{ comment.author }}
+                        </td>
+                        <td width=1000>
+                        </td>
+                        <td width=300>
+                            {{ comment.creation_date}}
+                        </td>
+                        <td width=50>
+                            <form action="" class="Commentform" ng-controller="CommentForm" onsubmit="return false" ng-init=>
                                 {% if comment.is_author %}
-                                <button type=button class="glyphicon glyphicon-pencil" ng-click="editComment({{comment.pk}})"></button>
-                                {% endif%}
-                                </form>
-                            </td>
-                        </tr>
+                                <button type=button class="glyphicon glyphicon-pencil" ng-click="editComment({{comment.pk}})"></button> {% endif%}
+                            </form>
+                        </td>
+                    </tr>
 
-                        <tr  id="table-ticket-detail-comment-content">
-                            <td width=200 >
-                            </td> 
-                            <td width=1000>
-                                <br/>
-                                {{ comment.text|markdown }}
-                            </td> 
-                            <td width=300 >
-                            </td> 
-                        </tr>
-                    </tbody>
-                </div>
+                    <tr id="table-ticket-detail-comment-content">
+                        <td width=200>
+                        </td>
+                        <td width=1000>
+                            <br/> {{ comment.text|markdown }}
+                        </td>
+                        <td width=300>
+                        </td>
+                    </tr>
+                </tbody>
+            </div>
         </table>
-        </div>
+    </div>
 
-        <!--pannels to edit a comment-->
-        <div  class=ng-cloack=  id=CommentToEdit.{{comment.pk}}>
-            <style>  .ng-cloak { display: none !important; } </style>
-    
-            <form action="" class="comment-form" onsubmit="return false" ng-controller="CommentEditSave()" ng-model="{{comment}}"> 
-                {% csrf_token %}
-                comment #{{comment.pk}}
-        </div>
-        {% endfor%}
+    <!--pannels to edit a comment-->
+    <div class=ng-cloack=i d=CommentToEdit.{{comment.pk}}>
+        <style>
+            .ng-cloak {
+                display: none !important;
+            }
+        </style>
+
+        <form action="" class="comment-form" onsubmit="return false" ng-controller="CommentEditSave()" ng-model="{{comment}}">
+            {% csrf_token %} comment #{{comment.pk}}
+    </div>
+    {% endfor%}
 </main>
 
-<main action="" class="commentForm" method="POST" >
-            <form action="" class="comment-form" method="POST">
-                <div class="comment-form-fields">
+<main action="" class="commentForm" method="POST">
+    <form action="" class="comment-form" method="POST">
+        <div class="comment-form-fields">
 
-                    {% csrf_token %}
-                    {{ form.non_field_errors }}
-                    {{ form.ctx }}
-                   
-                    <div class="form-group form-group-editor">
-                        <h4> Add a comment </h4>
-                        <p id="CommentTextbox" > {{form.text}} </p>
-                        <p class="help-text">{{ form.text.errors }}</p>
-                    </div>
-                </div>
+            {% csrf_token %} {{ form.non_field_errors }} {{ form.ctx }}
 
-                <div class="navbar navbar-form">
-                    <button type="submit" class="btn btn-primary">Save</button> 
-                </div>
-            </form>
+            <div class="form-group form-group-editor">
+                <h4> Add a comment </h4>
+                <p id="CommentTextbox"> {{form.text}} </p>
+                <p class="help-text">{{ form.text.errors }}</p>
+            </div>
+        </div>
+
+        <div class="navbar navbar-form">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
 
 </main>
 
