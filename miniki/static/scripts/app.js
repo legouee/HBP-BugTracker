@@ -15,27 +15,20 @@
     });
 
 
-    app.controller('TicketListForm', function($scope) {
-        $scope.init = function() {
+    // app.controller('TicketListForm', function($scope) {
+    //     $scope.init = function() {
 
-            // alert(object)
-            // $("#TicketToEdit").hide(); //+ pk.toString()).hide();
-        };
-        // The form controller that manage the displays of preview
-        // $("#TicketToEdit").hide(); //manque le pk ici....
-        // $scope.t=false
+    //     };
 
+    //     $scope.editTicket = function(pk) {
+    //         alert(pk)
+    //         var title = $("#ticket-title" + pk.toString()).text();
+    //         alert(title)
+    //         $("#ticket-title" + pk.toString()).replaceWith('<td id="ticket-title' + pk.toString() + '" class=title width=850 contenteditable="true">' + title + '</td>');
 
+    //     };
 
-        $scope.editTicket = function(pk) {
-            alert(pk)
-            var title = $("#ticket-title" + pk.toString()).text();
-            alert(title)
-            $("#ticket-title" + pk.toString()).replaceWith('<td id="ticket-title' + pk.toString() + '" class=title width=850 contenteditable="true">' + title + '</td>');
-
-        };
-
-    });
+    // });
 
     app.controller('TicketEditSave', function($scope) {
 
@@ -176,6 +169,5 @@
         };
         sendState();
     });
-
 
 }());
