@@ -1,34 +1,30 @@
-{% load static %}
-{% load oidc_session %}
+{% load static %} {% load oidc_session %}
 
 
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title>Tutorial Application</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-
-    {# ex Bower Dependencies #}
+    <meta name="viewport" content="width=device-width"> {# ex Bower Dependencies #}
     <link rel="stylesheet" href="{% static 'hbp-collaboratory-theme/dist/css/bootstrap.css' %}">
-	  <link rel="stylesheet" href="{% static 'css/style-create-ticket.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style-create-ticket.css' %}">
     <link rel="stylesheet" href="{% static 'css/style-ticket-detail.css' %}">
     <link rel="stylesheet" href="{% static 'css/style-ticket-list.css' %}">
 
 
-  </head>
-  <body>
-    {% hbp_oidc_session_handler request.user %}
+</head>
 
-    {% block content %}{% endblock %}
-
-    {# ex Bower Dependencies #}
+<body>
+    {% hbp_oidc_session_handler request.user %} {% block content %}{% endblock %} {# ex Bower Dependencies #}
 
     <script type="text/javascript" src="{% static 'lodash/lodash.min.js' %}"></script>
 
     <script type="text/javascript" src="{% static 'jquery/dist/jquery.min.js' %}"></script>
 
-    {#<script type="text/javascript" src="{% static 'lodash/dist/lodash.min.js' %}"></script>#}
+    {#
+    <script type="text/javascript" src="{% static 'lodash/dist/lodash.min.js' %}"></script>#}
 
     <script type="text/javascript" src="{% static 'angular/angular.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'angular-bootstrap/ui-bootstrap-tpls.min.js' %}"></script>
@@ -46,5 +42,6 @@
 
 
 
-  </body>
+</body>
+
 </html>
