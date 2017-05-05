@@ -271,10 +271,9 @@ class TicketDetailView(DetailView):
     form_class = CommentForm
 
     def get_object(self,request):
-        comments=Comment.objects.filter(ticket_id = self.kwargs['pk'])
+        comments= Comment.objects.filter(ticket_id = self.kwargs['pk'])
         for comment in comments:
             comment.is_author = self.check_user_is_author(request,comment)
-            print(comment.is_author)
         ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])
         ticket.is_author = self.check_user_is_author(request,ticket)
         
@@ -320,19 +319,23 @@ class TicketDetailView(DetailView):
         if request.POST.get('action', None) == 'edit_ticket':
            form=self.edit_ticket(request)
         else:
-            comment_creation = Comment()
-            comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
+            if request.POST.get('action', None) == 'edit_comment':
+                form=self.edit_comment(request)
+            else:
+             
+                comment_creation = Comment()
+                comment_creation.ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])      
        
-            if request.method == 'POST':
-                form = CommentForm(request.POST, instance=comment_creation)
+                if request.method == 'POST':
+                    form = CommentForm(request.POST, instance=comment_creation)
 
-                if form.is_valid():
-                    form = form.save(commit=False)
-                    form.author = request.user
-                    form.save()
-                    return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
-                else :
-                    form = CommentForm(instance=comment_creation)
+                    if form.is_valid():
+                        form = form.save(commit=False)
+                        form.author = request.user
+                        form.save()
+                        return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
+                    else :
+                        form = CommentForm(instance=comment_creation)
                 #faire passer un message...
    
         return render(request, 'ticket_detail.html', {'form': form, 'ctx': self.kwargs['ctx'],'collab_name':get_collab_name(self.kwargs['ctx'])})          
@@ -358,6 +361,19 @@ class TicketDetailView(DetailView):
             form.save()
 
         return form
+
+    def edit_comment(self,request):
+        comment_id = request.POST.get('pk')
+        queryset = Comment.objects.get(pk = comment_id)
+
+        form = CommentForm(request.POST, instance=queryset)
+        form.text = request.POST.get('text')
+
+        if form.is_valid():
+            form.save()
+
+        return form
+
     def check_user_is_author(self,request,_object):
             if str(request.user) == str(_object.author):
                 return True

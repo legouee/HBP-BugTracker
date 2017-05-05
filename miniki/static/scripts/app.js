@@ -15,8 +15,6 @@
     });
 
 
-
-
     app.controller('TicketListForm', function($scope) {
         $scope.init = function() {
 
@@ -40,7 +38,6 @@
     });
 
     app.controller('TicketEditSave', function($scope) {
-
 
         $scope.saveEditedTicket = function(pk) {
             // get ticket form
@@ -69,30 +66,44 @@
 
 
     app.controller('CommentForm', function($scope) {
-        // The form controller that manage the displays of preview
-        // for (comment in comments){
-        //  var pk= $scope.getElementById('');
-        var pk = 0;
-        $("#CommentToEdit." + pk).hide();
-        //  } 
 
-        // $scope.t=false
-        $scope.editTicket = function(comment) {
+        $scope.editComment = function(pk) {
+            var comtext = $("#editable-text-" + pk).text()
+            angular.element(document.querySelector("#editable-text-" + pk)).attr('contenteditable', "true")
+            _createButton("Save", saveEditedComment);
 
-            $("#TicketToEdit." + pk).show();
-            $("#TicketToShow." + pk).hide();
+            function _createButton(name, func) {
+                var btn = $('<input/>').attr({
+                    'type': 'button',
+                    'id': 'btn' + name,
+                    'value': name
+                }).bind('click', func);
+
+                $("#panelForButtonSave-" + pk).append(btn);
+            };
+
+            function saveEditedComment() {
+                // save in database
+                var text = $("#editable-text-" + pk).text()
+                var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+                $.ajax({
+                    url: "",
+                    type: "POST",
+                    data: { 'pk': JSON.stringify(pk), 'text': text, 'action': "edit_comment", 'csrfmiddlewaretoken': csrftoken },
+
+                    success: function(json) {
+                        alert('Your comment have been edited!');
+                    },
+                    error: function(xhr, errmsg, err) {
+                        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                    },
+                });
+                //  change view
+                $("#btnSave").remove();
+                angular.element(document.querySelector("#editable-text-" + pk)).attr('contenteditable', "false")
+            }
         };
-    });
 
-
-
-    app.controller('CommentEditSave', function($scope) {
-        $("#CommentToEdit").hide();
-        // $scope.t=false
-        $scope.editTicket = function(ticket) {
-            $("#TicketToEdit").show();
-            $("#TicketToShow").hide();
-        };
     });
 
 
@@ -137,7 +148,7 @@
                 eventName: 'workspace.context',
                 data: {
                     state: 'ticket.n'
-                }
+                },
             }, 'https://collab.humanbrainproject.eu/');
         };
         sendState();
