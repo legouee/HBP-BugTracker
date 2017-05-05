@@ -38,7 +38,7 @@ from .models import Project
 from .models import Comment
 from .models import Ctx
 
-from .utils.ctx_handler import post_collab_ctx, get_collab_ctx, remove_ticket, close_ticket,open_ticket, get_collab_name, handle_ctxstate
+from .utils.database_functions import post_collab_ctx, get_collab_ctx, remove_ticket, close_ticket,open_ticket, get_collab_name, handle_ctxstate
 import json
 from django.core import serializers
 
@@ -101,8 +101,7 @@ class CreateTicketView(TemplateView):
 
     def get(self, request, *args, **kwargs):
 
-        if not _is_collaborator(request, self.kwargs['ctx']):
-            return HttpResponseForbidden()
+        
 
         h = Ticket()
         form = self.form_class(instance = h)
@@ -136,9 +135,8 @@ def _is_collaborator(request, context):
     url = '%scollab/context/%s/' % (svc_url, context)
 
     headers = {'Authorization': get_auth_header(request.user.social_auth.get())}
-    print("request:", request)
     res = requests.get(url, headers=headers)
-    print("here ",res)
+
     if res.status_code != 200:
         return False
 
@@ -190,9 +188,6 @@ class TicketListView(ListView):
 
     def get(self, request, *args, **kwargs):
         ctx, pk = handle_ctxstate(request)  
-        
-        if not _is_collaborator(request, ctx):
-            return HttpResponseForbidden()
 
         if pk : #if pk found in ctxstate then we need to redirect the user
             return self.redirect(request, pk=pk, ctx=ctx)
@@ -224,8 +219,6 @@ class TicketListView2(ListView):
     template_name = "ticket_list.html"
 
     def get(self, request, *args, **kwargs):
-        if not _is_collaborator(request, self.kwargs['ctx']):
-            return HttpResponseForbidden()
 
         current_base_ctx = Ctx.objects.filter(ctx=self.kwargs['ctx']) 
         tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id)
@@ -265,9 +258,6 @@ class TicketDetailView(DetailView):
         return context
 
     def get(self, request, *args, **kwargs):
-
-        if not _is_collaborator(request, self.kwargs['ctx']):
-            return HttpResponseForbidden()
             
         cmt = Comment()
         form = self.form_class(instance = cmt)
@@ -416,6 +406,8 @@ class AdminTicketListView2(ListView):
 
  
     def post(self, request, *args, **kwargs):
+        if not _is_collaborator(request, self.kwargs['ctx']):
+            return HttpResponseForbidden()
 
         if json.loads(request.POST.get('action', None)) == 'close':
             close_ticket (request)
@@ -437,7 +429,6 @@ class AdminTicketDetailView(DetailView):
         comments=Comment.objects.filter(ticket_id = self.kwargs['pk'])
         for comment in comments:
             comment.is_author = self.check_user_is_author(request,comment)
-            print(comment.is_author)
         ticket = get_object_or_404(Ticket, pk=self.kwargs['pk'])
         ticket.is_author = self.check_user_is_author(request,ticket)
         
@@ -467,6 +458,9 @@ class AdminTicketDetailView(DetailView):
 
     def post(self, request, *args, **kwargs):
        
+        if not _is_collaborator(request, self.kwargs['ctx']):
+            return HttpResponseForbidden()
+
         if request.POST.get('action', None) == 'edit_ticket':
            form=self.edit_ticket(request)
         else:

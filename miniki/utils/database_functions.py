@@ -19,16 +19,14 @@ import requests
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.http import HttpResponse
 
-
 from django.shortcuts import get_object_or_404
 
 import json
-# from django.views.decorators.csrf import csrf_protect, csrf_exempt
 
 
-# from flask import Flask, request
-
-#we could welcome here all the function to handle future data of ctx tab
+"""
+This file has been made just to lighten the views code
+"""
 
 def get_collab_name (ctx=None):
     return get_object_or_404(Ctx, ctx=ctx).project_name
@@ -55,44 +53,35 @@ def _get_hbp_collab_id (request=None, context=None):
     return (collab_id)
 
 
-
-# @csrf_exempt
 def remove_ticket (request):
     ticket_id = request.POST.get('pk', None)
     ticket_id = json.loads(ticket_id)
     for pk in ticket_id :
         Ticket.objects.filter(id=pk).delete()
 
-   
 
 def close_ticket (request):
     ticket_id = request.POST.get('pk', None)
     ticket_id = json.loads(ticket_id)
     for pk in ticket_id :
-        # ticket = Ticket.objects.filter(id=pk)
         ticket = get_object_or_404(Ticket, pk=pk)
         ticket.status = 'closed'
         ticket.save()
 
-  
 
 def open_ticket (request):
     ticket_id = request.POST.get('pk', None)
     ticket_id = json.loads(ticket_id)
     for pk in ticket_id :
-        # ticket = Ticket.objects.filter(id=pk)
         ticket = get_object_or_404(Ticket, pk=pk)
-
         ticket.status = 'open'
         ticket.save()
-
-    
+  
 
 def get_ctx_ctxstate (request):
     try :
         ctx, ctxstate = request.META['QUERY_STRING'][4:].split("&")
     except:
-        print ("Except")
         ctx = request.META['QUERY_STRING'][4:]
         ctxstate = None
     return (ctx, ctxstate)
@@ -107,9 +96,5 @@ def handle_ctxstate (request):
             return (ctx, None)
         else : #this is a ticket detail
             return (ctx, pk)
-    
-    print (ctx)
-    print (ctxstate)
-    
 
     return (ctx, None)
