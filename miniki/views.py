@@ -23,7 +23,7 @@ from uuid import UUID
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+
 import bleach
 
 from markdown import markdown
@@ -41,8 +41,6 @@ from .models import Ctx
 from .utils.ctx_handler import post_collab_ctx, get_collab_ctx, remove_ticket, close_ticket,open_ticket, get_collab_name, handle_ctxstate
 import json
 from django.core import serializers
-
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
 
 from django.http import HttpResponse
 
@@ -162,9 +160,9 @@ def _get_collab_extension(request, context):
     return (json.loads(res._content)['collab']['title'])
 
 
-
 def _get_access_token(request):
     return request.user.social_auth.get().extra_data['access_token']
+
 
 @login_required(login_url='/login/hbp')
 def config(request):
@@ -190,9 +188,7 @@ class TicketListView(ListView):
     model = Ticket
     template_name = "ticket_list.html"
 
-
     def get(self, request, *args, **kwargs):
-
         ctx, pk = handle_ctxstate(request)  
         
         if not _is_collaborator(request, ctx):
@@ -202,7 +198,7 @@ class TicketListView(ListView):
             return self.redirect(request, pk=pk, ctx=ctx)
              
 
-        project_name = _get_collab_extension(request, ctx) #need to change the name
+        project_name = _get_collab_extension(request, ctx)
         post_collab_ctx (request=request,ctx=ctx, project_name=project_name )
 
         current_base_ctx = Ctx.objects.filter(ctx=ctx)
@@ -211,7 +207,7 @@ class TicketListView(ListView):
         for ticket in tickets:
             ticket.nb_coms = self.get_nb_com(ticket.pk)                     
             
-        return render(request, self.template_name, {'object': tickets, 'ctx': ctx, 'collab_name':get_collab_name(ctx)}) #will nedd to replace all() by filter project
+        return render(request, self.template_name, {'object': tickets, 'ctx': ctx, 'collab_name':get_collab_name(ctx)})
     
     @classmethod  
     def get_nb_com(self, pk):
@@ -238,7 +234,7 @@ class TicketListView2(ListView):
         for ticket in tickets:
             ticket.nb_coms = self.get_nb_com(ticket.pk) 
         
-        return render(request, self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx'])}) #will nedd to replace all() by filter project
+        return render(request, self.template_name, {'object': tickets, 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx'])}) 
 
 
     @classmethod  
@@ -283,7 +279,7 @@ class TicketDetailView(DetailView):
         url = reverse('ticket-detail', kwargs = { 'pk':kwargs['pk'],'ctx': kwargs['ctx']})
         return HttpResponseRedirect(url)
     
-    #@csrf_exempt
+
     def post(self, request, *args, **kwargs):
        
         if request.POST.get('action', None) == 'edit_ticket':
@@ -304,7 +300,7 @@ class TicketDetailView(DetailView):
                         form.author = request.user
                         form.save()
                         return self.redirect(request, pk=self.kwargs['pk'], ctx=self.kwargs['ctx'])
-                    else :#faire passer un message...
+                    else :# need faire passer un message...
                         form = CommentForm(instance=comment_creation)
                 
    
@@ -418,7 +414,7 @@ class AdminTicketListView2(ListView):
 
         return HttpResponseRedirect(url)
 
-    # @csrf_exempt
+ 
     def post(self, request, *args, **kwargs):
 
         if json.loads(request.POST.get('action', None)) == 'close':
@@ -465,7 +461,7 @@ class AdminTicketDetailView(DetailView):
         return render(request, self.template_name, {'form': form, 'object': self.get_object(request), 'ctx': self.kwargs['ctx'], 'collab_name':get_collab_name(self.kwargs['ctx']) })    
 
     @classmethod    
-    def redirect(self, request, *args, **kwargs): ### use to go back to TicketListView directly after creating a ticket
+    def redirect(self, request, *args, **kwargs): ### used to go back to TicketListView directly after creating a ticket
         url = reverse('ticket-detail-admin', kwargs = { 'pk':kwargs['pk'],'ctx': kwargs['ctx']})
         return HttpResponseRedirect(url)
 
@@ -492,7 +488,6 @@ class AdminTicketDetailView(DetailView):
         return render(request, 'ticket_detail.html', {'form': form, 'ctx': self.kwargs['ctx'],'collab_name':get_collab_name(self.kwargs['ctx'])}) 
 
 
-
     def edit_ticket(self,request):
         ticket_id = request.POST.get('pk')
         queryset = Ticket.objects.get(pk = ticket_id)
@@ -505,9 +500,6 @@ class AdminTicketDetailView(DetailView):
             form.save()
 
         return form
-
-
-
 
 
     def check_user_is_author(self,request,_object):

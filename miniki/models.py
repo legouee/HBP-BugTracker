@@ -20,7 +20,6 @@ class Project(models.Model):
     """A Project"""
 
     title = models.CharField(max_length=1024)
-    # ctx = models.UUIDField(unique=True)
 
     def __unicode__(self):
         return self.title
@@ -36,7 +35,7 @@ class Project(models.Model):
         }
     @models.permalink
     def get_absolute_url(self):  
-        return reverse('project-list' ) #, args=[str(self.ctx)])
+        return reverse('project-list' )
 
 
 class Ticket(models.Model):                   
@@ -64,7 +63,7 @@ class Ticket(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return reverse('ticket_list' )#, args=[str(self.ctx)])
+        return reverse('ticket_list' )
     @models.permalink
     def get_absolute_url():
         return reverse('ticket_list' )
