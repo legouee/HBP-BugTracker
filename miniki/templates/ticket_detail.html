@@ -3,9 +3,7 @@
 <body ng-controller="Detail" ng-init="init({{object.1.pk}})"></body>
 
 <div class="navbar navbar-form navbar-fixed-top">
-    <form action="{% url 'ticket-list2' ctx=ctx %}">
-        <input type="submit" value="Ticket-list" />
-    </form>
+    <a href="{% url 'ticket-list2' ctx=ctx %}">All-ticket</a>
     <br/>
 </div>
 <br/> <br/> <br/>
@@ -51,6 +49,8 @@
                             <br/> {{ object.1.text|markdown}}
 
                         </td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 </tbody>
             </table>

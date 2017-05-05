@@ -132,6 +132,29 @@
 
     app.controller('List', function($scope) {
         // this is used to clean the ctxstate in the URL of HBP when returning to list : no data
+        $scope.filter_value = "both"
+
+        $scope.set_filter_value = function(filter_value) {
+            $scope.filter_value = filter_value;
+
+        };
+
+        $scope.match_filter = function(ticket_status) {
+            // alert(ticket_status)
+
+            if ($scope.filter_value == 'both') {
+                return true
+            } else if ($scope.filter_value == ticket_status) {
+                return true
+
+            } else {
+                return false
+
+            }
+
+
+        };
+
         var sendState = function() {
             window.parent.postMessage({
                 eventName: 'workspace.context',

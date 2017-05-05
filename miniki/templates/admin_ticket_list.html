@@ -1,20 +1,14 @@
-{% extends "layout.html" %}
-{% load markdown_deux_tags %}
-{% block content %}
-
-{% csrf_token %}
+{% extends "layout.html" %} {% load markdown_deux_tags %} {% block content %} {% csrf_token %}
 
 
- <body ng-controller="List"></body>
+<body ng-controller="List"></body>
 
 
 
-    <div class="navbar navbar-form navbar-fixed-top">
-        <form action= "{% url 'ticket-admin2' ctx=ctx %}">
-            <input type="submit" value="Ticket-list" />
-        </form>
-        <br/>
-    </div>
+<div class="navbar navbar-form navbar-fixed-top">
+    <a href="{% url 'ticket-admin2' ctx=ctx %}">All-ticket</a>
+    <br/>
+</div>
 <br/> <br/> <br/>
 
 <h1 align=center>Admin {{collab_name}} : Tickets</h1>
@@ -23,89 +17,101 @@
 
 <p id="current_url"></p>
 <script>
-document.getElementById("current_url").innerHTML = window.location.href;
+    document.getElementById("current_url").innerHTML = window.location.href;
 </script>
 
 
-<table class="table table-striped table-condensed" >
+<table class="table table-striped table-condensed">
     <tbody>
-        <tr  id="table-ticket-detail">
-            <td width=200 >
+        <tr id="table-ticket-detail">
+            <td width=200>
                 <input style="float: right" type="button" onclick="myFunction2();" value="Apply" />
                 <table style="float: right" width=100>
                     <tr>
+
                         <td>
-                        <select id="action_select">
-                            <option value="nothing">Action</option>
-                            <option value="open">Open</option>
-                            <option value="close">Close</option>
+                            <select id="filter_select" ng-model='filter_value' ng-click="set_filter_value(filter_value)">
+                            <option ng-value='"both"' value="both"  >Display all tickets</option>
+                            <option ng-value='"open"' value="open"  >Display opened only</option>
+                            <option ng-value='"closed"' value="closed"  >Display closed only</option>
                         </select>
                         </td>
+
+
+                        <td>
+                            <select id="action_select">
+                            <option value="nothing">Action</option>
+                            <option value="open" >Open</option>
+                            <option value="close" >Close</option>
+                        </select>
+                        </td>
+
+                        <td></td>
                     </tr>
                 </table>
-            </td>                
+            </td>
         </tr>
     </tbody>
 </table>
 
 
+{% for ticket in object %}
+<!--<tr id=checkbox>-->
 
+<div ng-show="match_filter('{{ ticket.status }}') ">
 
-    {% for ticket in object %}
-    <!--<tr id=checkbox>-->
-        <input type="checkbox" name="name_box" id="myCheck" value="{{ ticket.pk }}"   >
+    <input type="checkbox" name="name_box" id="myCheck" value="{{ ticket.pk }}">
 
     <!--</tr>-->
 
-        <a href="{% url 'ticket-detail-admin' pk=ticket.pk ctx=ctx %}" class="list-group-item"  >
-            <table class="table table-striped table-condensed"  >
-                        <tbody>
+    <a href="{% url 'ticket-detail-admin' pk=ticket.pk ctx=ctx %}" class="list-group-item">
+        <table class="table table-striped table-condensed">
+            <tbody>
 
-                            <tr id=table-ticket-list>
-                                
-                                <td width=200 >
-                                    
-                                    Ticket #{{ticket.pk}} <br/>
-                                    {{ticket.author}}
-                                    
-                                </td> 
-                                <td width=1600>
-                                    
-                                    {{ ticket.title }} 
-                                    
-                                </td>
-                                <td width=400>
-                                {{ticket.creation_date}}
-                                {{ ticket.status }}
-                                
-                                </td>
-                            </tr>
-                            
-                            <tr id=table-ticket-list-content >
-                                <td>
-                                </td>
-                                <td id=cut-text>
-                                    <br/>
-                                    {{ ticket.text|markdown|truncatewords_html:60}}
-                                </td> 
-                                <td align=center>
-                                <span class="badge" id="badge-style" > 
+                <tr id=table-ticket-list>
+
+                    <td width=200>
+
+                        Ticket #{{ticket.pk}} <br/> {{ticket.author}}
+
+                    </td>
+                    <td width=1600>
+
+                        {{ ticket.title }}
+
+                    </td>
+                    <td width=400>
+                        {{ticket.creation_date}} {{ ticket.status }}
+
+                    </td>
+                </tr>
+
+                <tr id=table-ticket-list-content>
+                    <td>
+                    </td>
+                    <td id=cut-text>
+                        <br/> {{ ticket.text|markdown|truncatewords_html:60}}
+                    </td>
+                    <td align=center>
+                        number of comments
+                        <span class="badge" id="badge-style"> 
                                         {{ticket.nb_coms}}
                                     
                                     </span>
-                                </td>
-                            </tr>                             
-                        </tbody>
-            </table>
-        </a>
-        </br>
-    {% endfor %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </a>
+    </br>
+</div>
+{% endfor %}
 
-    <div class="navbar navbar-form">
-      <form action="{% url 'ticket-create' ctx=ctx%}">
-            <button class="btn btn-primary" id="btn-style">Create new ticket</button>
-      </form>      
-    </div>
+<div class="navbar navbar-form">
+    <form action="{% url 'ticket-create' ctx=ctx%}">
+        <button class="btn btn-primary" id="btn-style">Create new ticket</button>
+    </form>
+</div>
 
 </div>
 
@@ -121,7 +127,7 @@ function myFunction() {
 }
 </script>-->
 
- <!--</script>
+<!--</script>
  <button type=button onclick="check()">check ?</button>
 
 <script>
@@ -134,38 +140,77 @@ function check() {
 
 
 
+<script>
+    function filter_tickets() {
+        var filter_selected = document.getElementById("filter_select").value;
+        // { % verbatim %
+        // }
+        // set_filter_value()
+        alert("pas mal pas mal")
+        return filter_selected;
+    }
+</script>
+
+<!--<script>
+    function filter_tickets() {
+        var filter_selected = document.getElementById("filter_select").value
+        $.ajax({
+            //    url: "close_ticket/",
+            url: "{{ctx}}",
+            type: "GET",
+            data: {
+                'filter': JSON.stringify(filter_selected),
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+
+            success: function() {
+                alert('DONE!');
+                // window.location.reload(false);
+            },
+            error: function() {
+                alert('ERROR!');
+            },
+
+        });
+    }
+</script>-->
 
 
 
 <script>
-function myFunction2() {
-    var pk_list = getCheckedCheckboxesFor('name_box')
-    var action_selected = document.getElementById("action_select").value
-    $.ajax({
-//    url: "close_ticket/",
-   url: "{{ctx}}",
+    function myFunction2() {
+        var pk_list = getCheckedCheckboxesFor('name_box')
+        var action_selected = document.getElementById("action_select").value
+        $.ajax({
+            //    url: "close_ticket/",
+            url: "{{ctx}}",
 
-   type: "POST",
-//    type: "GET",
+            type: "POST",
+            //    type: "GET",
 
-   data: {
-       'pk': JSON.stringify(pk_list),
-       'action': JSON.stringify(action_selected),
-       'csrfmiddlewaretoken': '{{ csrf_token }}',
-       
-       },
-//    success: function(response){
-    //    $('#blurg').html(response).fadeIn(1500);
-    success: function(){alert('DONE!');},
-    error:function(){alert('ERROR!');},
-//    }
-});
-}
+            data: {
+                'pk': JSON.stringify(pk_list),
+                'action': JSON.stringify(action_selected),
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+
+            },
+            //    success: function(response){
+            //    $('#blurg').html(response).fadeIn(1500);
+            success: function() {
+                alert('DONE!');
+            },
+            error: function() {
+                alert('ERROR!');
+            },
+            //    }
+        });
+    }
 </script>
 
 <script type="text/javascript">
     function getCheckedCheckboxesFor(checkboxName) {
-        var checkboxes = document.querySelectorAll('input[name="' + checkboxName + '"]:checked'), values = [];
+        var checkboxes = document.querySelectorAll('input[name="' + checkboxName + '"]:checked'),
+            values = [];
         Array.prototype.forEach.call(checkboxes, function(el) {
             values.push(el.value);
         });
@@ -175,4 +220,3 @@ function myFunction2() {
 
 
 {% endblock %}
-

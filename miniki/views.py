@@ -420,6 +420,29 @@ class AdminTicketListView2(ListView):
             return HttpResponseForbidden()
 
         current_base_ctx = Ctx.objects.filter(ctx=self.kwargs['ctx']) 
+
+        print ("###### OKOKOK FILTER OKOKOK #######")
+        #filter the tickets
+        # if json.loads(request.GET.get('filter', None)) == 'closed':
+        #     print ("in closed")
+        #     tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id, status="closed")
+        #     # for i in tickets:
+        #     #     print i
+        #     # print (tickets)
+        #     print ( serializers.serialize("json", tickets))
+            
+            
+        # elif json.loads(request.GET.get('filter', None)) == 'opened':
+        #     print ("in opened")     
+        #     tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id, status="open") 
+            
+        #     print ( serializers.serialize("json", tickets))
+        #     # for i in tickets:
+        #     #     print i
+                        
+        
+        # else :
+        #     print ("in else")
         tickets = Ticket.objects.filter(ctx_id=current_base_ctx[0].id)
 
         ## add number of comments

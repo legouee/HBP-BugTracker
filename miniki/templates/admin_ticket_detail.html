@@ -1,9 +1,7 @@
 {% extends "layout.html" %} {% load jsonify %} {% load markdown_deux_tags %} {% block content %}
 
 <body ng-controller="Detail" ng-init="init({{object.1.pk}})"></body <div class="navbar navbar-form navbar-fixed-top">
-<form action="{% url 'ticket-admin2' ctx=ctx %}">
-    <input type="submit" value="Ticket-list" />
-</form>
+<a href="{% url 'ticket-admin2' ctx=ctx %}">All-ticket</a>
 <br/>
 </div>
 <br/> <br/> <br/>
@@ -49,6 +47,8 @@
                             <br/> {{ object.1.text|markdown}}
 
                         </td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -92,6 +92,8 @@
                         <br/> {{ object.1.text|markdown}}
 
                     </td>
+                    <td></td>
+                    <td></td>
                 </tr>
             </tbody>
 
